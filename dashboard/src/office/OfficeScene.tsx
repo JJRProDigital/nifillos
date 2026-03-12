@@ -15,13 +15,6 @@ extend({ Container, Graphics });
 const MIN_STAGE_W = 400;
 const MIN_STAGE_H = 320;
 
-function getMaxCols(count: number): number {
-  if (count <= 3) return Math.max(count, 1);
-  if (count <= 9) return 3;
-  if (count <= 16) return 4;
-  return 5;
-}
-
 export function OfficeScene() {
   const state = useSquadStore((s) =>
     s.selectedSquad ? s.activeStates.get(s.selectedSquad) : undefined
@@ -35,9 +28,8 @@ export function OfficeScene() {
     [state]
   );
 
-  const maxCols = getMaxCols(agents.length);
-  const cols = Math.min(agents.length, maxCols) || 1;
-  const rows = Math.ceil(agents.length / maxCols) || 1;
+  const cols = agents.length > 0 ? Math.max(...agents.map(a => a.desk.col)) : 1;
+  const rows = agents.length > 0 ? Math.max(...agents.map(a => a.desk.row)) : 1;
 
   const wallTop = TILE * 2;
   const marginX = Math.round(TILE * 1.5);

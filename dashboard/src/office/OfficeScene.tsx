@@ -28,14 +28,14 @@ export function OfficeScene() {
     [state]
   );
 
-  const cols = agents.length > 0 ? Math.max(...agents.map(a => a.desk.col)) : 1;
-  const rows = agents.length > 0 ? Math.max(...agents.map(a => a.desk.row)) : 1;
+  const maxCol = agents.length > 0 ? Math.max(...agents.map(a => a.desk.col)) : 1;
+  const maxRow = agents.length > 0 ? Math.max(...agents.map(a => a.desk.row)) : 1;
 
   const wallTop = TILE * 2;
   const marginX = Math.round(TILE * 1.5);
   const marginY = TILE * 1;
-  const floorW = marginX * 2 + cols * CELL_W;
-  const floorH = marginY * 2 + rows * CELL_H;
+  const floorW = marginX * 2 + maxCol * CELL_W;
+  const floorH = marginY * 2 + maxRow * CELL_H;
   const floorX = GRID_OFFSET_X - marginX;
   const floorY = GRID_OFFSET_Y - marginY;
   const stageW = Math.max(floorX + floorW + marginX, MIN_STAGE_W);

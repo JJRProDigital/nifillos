@@ -335,18 +335,26 @@ After a step completes output and there IS a next step (MANDATORY):
     - `"status": "completed"`
     - All agents: `"status": "done"`, `"deliverTo": null`
     - `"updatedAt"`: now
+    - `"completedAt"`: now
     - `"startedAt"`: preserve from existing `state.json`
     - Keep existing `"handoff"` object
 
 ### Post-Completion Cleanup
 
-After writing the final "completed" state to `squads/{name}/state.json` and waiting 10 seconds (so the dashboard can display the completed state), **delete** `squads/{name}/state.json`:
+After writing the final "completed" state to `squads/{name}/state.json`:
 
-```bash
-rm squads/{name}/state.json
-```
+1. Add the `completedAt` field (or `failedAt` if status is `failed`) with the current ISO timestamp
+2. Copy `state.json` to the run output folder for permanent history:
+   ```bash
+   cp squads/{name}/state.json squads/{name}/output/{run_id}/state.json
+   ```
+3. Wait 10 seconds (so the dashboard can display the completed state)
+4. Delete the working copy:
+   ```bash
+   rm squads/{name}/state.json
+   ```
 
-This ensures the squad no longer appears as active in the centralized dashboard.
+This archives the run state for the `runs` command while keeping the squad root clean.
 
 2. Update squad memory (`squads/{name}/_memory/memories.md`) with:
    - What the user approved/rejected

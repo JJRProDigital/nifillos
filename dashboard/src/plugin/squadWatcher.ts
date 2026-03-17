@@ -125,14 +125,15 @@ export function squadWatcherPlugin(): Plugin {
       });
 
       // Send snapshot on new connection
-      wss.on("connection", (ws) => {
-        ws.send(JSON.stringify(buildSnapshot(squadsDir)));
+      wss.on("connection", async (ws) => {
+        const snap = await buildSnapshot(squadsDir);
+        ws.send(JSON.stringify(snap));
       });
 
       // Ensure squads directory exists
-      if (!fs.existsSync(squadsDir)) {
-        fs.mkdirSync(squadsDir, { recursive: true });
-      }
+      fsp.mkdir(squadsDir, { recursive: true }).catch((err) => {
+        server.config.logger.error(`[squad-watcher] failed to create squads dir: ${err.message}`);
+      });
 
       // Debounce timers per squad to avoid reading partial writes
       const changeTimers = new Map<string, ReturnType<typeof setTimeout>>();
@@ -152,23 +153,24 @@ export function squadWatcherPlugin(): Plugin {
 
           // Debounce to handle rapid writes / partial file states
           clearTimeout(changeTimers.get(squadName));
-          changeTimers.set(squadName, setTimeout(() => {
+          changeTimers.set(squadName, setTimeout(async () => {
             const statePath = path.join(squadsDir, squadName, "state.json");
-            if (!fs.existsSync(statePath)) {
-              clearTimeout(changeTimers.get(squadName));
-              changeTimers.delete(squadName);
-              broadcast(wss, { type: "SQUAD_INACTIVE", squad: squadName });
-              return;
-            }
             try {
-              const raw = fs.readFileSync(statePath, "utf-8");
+              const raw = await fsp.readFile(statePath, "utf-8");
               const state: SquadState = JSON.parse(raw);
               broadcast(wss, { type: "SQUAD_UPDATE", squad: squadName, state });
-            } catch { /* skip invalid JSON during write */ }
+            } catch (err: unknown) {
+              if (err instanceof Error && 'code' in err && (err as NodeJS.ErrnoException).code === 'ENOENT') {
+                // File deleted — squad is inactive
+                changeTimers.delete(squadName);
+                broadcast(wss, { type: "SQUAD_INACTIVE", squad: squadName });
+              }
+              // Invalid JSON during partial write — silently skip, next event will retry
+            }
           }, 50));
 
         } else if (normalized.endsWith("squad.yaml")) {
-          broadcast(wss, buildSnapshot(squadsDir));
+          buildSnapshot(squadsDir).then((snap) => broadcast(wss, snap));
         }
       });
 

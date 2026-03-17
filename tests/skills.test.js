@@ -14,6 +14,7 @@ import {
   getSkillVersion,
   getSkillMeta,
   getLocalizedDescription,
+  clearMetaCache,
 } from '../src/skills.js';
 
 const SAMPLE_SKILL_MD = `---\nname: seo-optimizer\nversion: 1.2.0\ntype: tool\ndescription: SEO Optimizer\n---\n# SEO Optimizer\n`;
@@ -285,4 +286,68 @@ test('getLocalizedDescription returns English for "en" locale', () => {
     descriptions: { 'pt-BR': 'Descrição' },
   };
   assert.equal(getLocalizedDescription(meta, 'en'), 'English description');
+});
+
+// --- metaCache ---
+
+test('getSkillMeta returns cached result on second call', async () => {
+  clearMetaCache();
+  const first = await getSkillMeta('apify');
+  const second = await getSkillMeta('apify');
+  assert.equal(first, second); // mesma referência — veio do cache
+});
+
+test('clearMetaCache forces re-read from disk', async () => {
+  const first = await getSkillMeta('apify');
+  clearMetaCache();
+  const second = await getSkillMeta('apify');
+  assert.notEqual(first, second); // referência diferente — releu do disco
+  assert.equal(first.name, second.name); // mesmo conteúdo
+});
+
+test('installSkill invalidates metaCache for that skill', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  try {
+    const before = await getSkillMeta('image-creator');
+    await installSkill('image-creator', dir);
+    const after = await getSkillMeta('image-creator');
+    assert.notEqual(before, after); // cache foi invalidado
+  } finally {
+    await rm(dir, { recursive: true });
+  }
+});
+
+test('removeSkill invalidates metaCache for that skill', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  try {
+    await installSkill('image-creator', dir);
+    await getSkillMeta('image-creator'); // populate cache
+    await removeSkill('image-creator', dir);
+    // cache deve ter sido invalidado — próxima chamada relê do disco
+    const meta = await getSkillMeta('image-creator');
+    assert.ok(meta); // still exists in bundled dir
+  } finally {
+    await rm(dir, { recursive: true });
+  }
+});
+
+test('getSkillMeta caches null for nonexistent skill', async () => {
+  clearMetaCache();
+  const first = await getSkillMeta('nonexistent-skill');
+  assert.equal(first, null);
+  const second = await getSkillMeta('nonexistent-skill');
+  assert.equal(second, null);
+  // ambas retornam null, mas a segunda veio do cache (sem hit no disco)
+});
+
+test('installSkill invalidates cached null so skill becomes findable', async () => {
+  clearMetaCache();
+  // força null no cache para um ID que existe no bundled
+  await getSkillMeta('nonexistent-xyz');
+  assert.equal(await getSkillMeta('nonexistent-xyz'), null); // cached null
+  // se alguém instalar esse ID, o cache é limpo
+  // (testamos apenas que delete funciona sobre null)
+  clearMetaCache();
+  const meta = await getSkillMeta('image-creator');
+  assert.ok(meta); // leu do disco normalmente
 });

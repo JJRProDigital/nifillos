@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { listInstalled, installAgent, removeAgent, getAgentMeta, getLocalizedDescription } from './agents.js';
 import { loadLocale, t, getLocaleCode } from './i18n.js';
 import { loadSavedLocale } from './init.js';
+import { logEvent } from './logger.js';
 
 async function confirm(question) {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
@@ -93,12 +94,14 @@ async function runInstall(id, targetDir) {
     console.log(`  ${t('agentsInstalling', { id })}`);
     await installAgent(id, targetDir);
     console.log(`  ${t('agentsReinstalled', { id })}\n`);
+    await logEvent('agent:install', { name: id, reinstall: true }, targetDir);
     return;
   }
 
   console.log(`\n  ${t('agentsInstalling', { id })}`);
   await installAgent(id, targetDir);
   console.log(`  ${t('agentsInstalled', { id })}\n`);
+  await logEvent('agent:install', { name: id }, targetDir);
 }
 
 async function runRemove(id, targetDir) {
@@ -115,6 +118,7 @@ async function runRemove(id, targetDir) {
 
   console.log(`\n  ${t('agentsRemoving', { id })}`);
   await removeAgent(id, targetDir);
+  await logEvent('agent:remove', { name: id }, targetDir);
   console.log(`  ${t('agentsRemoved', { id })}\n`);
 }
 
@@ -131,6 +135,7 @@ async function runUpdate(targetDir) {
     await installAgent(id, targetDir);
     console.log(`  ${t('agentsInstalled', { id })}`);
   }
+  await logEvent('agent:update', { count: installed.length }, targetDir);
   console.log(`\n  ${t('agentsUpdateDone', { count: installed.length })}\n`);
 }
 
@@ -148,5 +153,6 @@ async function runUpdateOne(id, targetDir) {
 
   console.log(`\n  ${t('agentsInstalling', { id })}`);
   await installAgent(id, targetDir);
+  await logEvent('agent:update', { name: id }, targetDir);
   console.log(`  ${t('agentsInstalled', { id })}\n`);
 }

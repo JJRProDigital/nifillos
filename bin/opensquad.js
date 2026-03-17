@@ -5,6 +5,7 @@ import { init } from '../src/init.js';
 import { update } from '../src/update.js';
 import { skillsCli } from '../src/skills-cli.js';
 import { agentsCli } from '../src/agents-cli.js';
+import { listRuns, printRuns } from '../src/runs.js';
 
 const { positionals } = parseArgs({
   allowPositionals: true,
@@ -45,6 +46,10 @@ if (command === 'init') {
   const args = positionals.slice(2);
   const result = await agentsCli(subcommand, args, process.cwd());
   if (!result.success) process.exitCode = 1;
+} else if (command === 'runs') {
+  const squadName = positionals[1] || null;
+  const runs = await listRuns(squadName, process.cwd());
+  printRuns(runs);
 } else {
   console.log(`
   opensquad — Multi-agent orchestration for Claude Code
@@ -60,6 +65,7 @@ if (command === 'init') {
     npx opensquad agents install <name>   Install a predefined agent
     npx opensquad agents remove <name>    Remove an agent
     npx opensquad agents update           Update all agents
+    npx opensquad runs [squad-name]     View execution history
 
   Learn more: https://github.com/renatoasse/opensquad
   `);

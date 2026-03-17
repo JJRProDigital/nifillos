@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { loadLocale, t } from './i18n.js';
 import { getTemplateEntries, loadSavedLocale } from './init.js';
 import { listAvailable as listAvailableSkills, listInstalled as listInstalledSkills, installSkill, getSkillMeta } from './skills.js';
+import { logEvent } from './logger.js';
 
 async function loadSavedIdes(targetDir) {
   try {
@@ -133,6 +134,8 @@ export async function update(targetDir) {
   console.log(`  ${t('updatePreserved')}`);
   console.log(`  ${t('updateSuccess', { version: `v${newVersion}` })}`);
   console.log(`\n  ${t('updateLatestHint')}\n`);
+
+  await logEvent('update', { from: currentVersion || 'unknown', to: newVersion }, targetDir);
 
   return { success: true };
 }

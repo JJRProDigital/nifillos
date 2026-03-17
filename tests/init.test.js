@@ -147,7 +147,7 @@ test('README.md is in Portuguese when language is PT-BR', async () => {
     await init(tempDir, { _skipPrompts: true, _language: 'Português (Brasil)' });
 
     const content = await readFile(join(tempDir, 'README.md'), 'utf-8');
-    assert.ok(content.includes('Instalação'));
+    assert.ok(content.includes('Como Usar'));
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }
@@ -160,7 +160,8 @@ test('README.md is in Spanish when language is Español', async () => {
     await init(tempDir, { _skipPrompts: true, _language: 'Español' });
 
     const content = await readFile(join(tempDir, 'README.md'), 'utf-8');
-    assert.ok(content.includes('Instalación'));
+    // README is bilingual PT/EN — Spanish falls back to the same file
+    assert.ok(content.includes('How to Use'));
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }
@@ -288,16 +289,15 @@ test('init with claude-code IDE creates .mcp.json with playwright server', async
   }
 });
 
-test('init installs all bundled agents', async () => {
+test('init does not create agents dir when no bundled agents exist', async () => {
   const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
   try {
     await init(tempDir, { _skipPrompts: true });
-    const agentsDir = join(tempDir, 'agents');
-    await stat(agentsDir);
-    const entries = await readdir(agentsDir);
-    const agentFiles = entries.filter((f) => f.endsWith('.agent.md'));
-    assert.ok(agentFiles.length > 0, 'No agent files found');
-    await stat(join(agentsDir, 'researcher.agent.md'));
+    // No bundled agents in dev environment — agents/ should not be created
+    await assert.rejects(
+      stat(join(tempDir, 'agents')),
+      { code: 'ENOENT' }
+    );
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }

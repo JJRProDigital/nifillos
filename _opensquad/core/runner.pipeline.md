@@ -233,6 +233,7 @@ Apply this transformation consistently for every write in this step.
     You know your own environment — use the lightest model you can dispatch:
     Claude Code → `model: haiku` | Antigravity → Gemini Flash | Codex → smallest available model
   - If `model_tier: powerful` or absent/invalid: use the default model (no model override needed)
+- **Before building the subagent prompt**: Apply the Output Path Transformation (Step 1: run_id injection + Step 2: version folder) to all output paths referenced in the step file. Store the transformed path(s) in working memory — they will be used both in the prompt and in post-completion verification. Never pass raw paths from the step file to the subagent.
 - In the Task prompt, include:
   - The full agent persona from the party CSV
   - The full agent `.agent.md` content (persona, principles, voice guidance, anti-patterns)
@@ -241,9 +242,9 @@ Apply this transformation consistently for every write in this step.
   - The veto conditions from the step file (agent should self-check before completing)
   - The company context
   - The squad memory
-  - The path to save output
+  - The **transformed** path to save output (e.g., `squads/name/output/2026-03-20-140736/slides/v1/draft.md`)
 - Wait for the subagent to complete
-- Read the output file to verify it was created
+- Read the output file to verify it was created — use the **stored transformed path**, not the raw step path
 - Inform user: `✓ {Agent Name} completed`
 
 #### If `execution: inline`

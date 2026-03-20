@@ -114,7 +114,7 @@ export async function update(targetDir) {
     }
   }
 
-  // 6b. Install new non-MCP skills not already present
+  // 6b. Install new non-MCP, non-hybrid bundled skills not already present
   const availableSkills = await listAvailableSkills();
   const installedSkills = await listInstalledSkills(targetDir);
   for (const id of availableSkills) {
@@ -123,7 +123,6 @@ export async function update(targetDir) {
     const meta = await getSkillMeta(id);
     if (!meta) continue;
     if (meta.type === 'mcp' || meta.type === 'hybrid') continue;
-    if (meta.env?.length > 0) continue;
     await installSkill(id, targetDir);
     console.log(`  ${t('createdFile', { path: `skills/${id}/SKILL.md` })}`);
     count++;

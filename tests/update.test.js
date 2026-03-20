@@ -182,3 +182,22 @@ test('update preserves user-created agent files', async () => {
     await rm(tempDir, { recursive: true, force: true });
   }
 });
+
+test('update auto-imports bundled skills with env requirements', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  try {
+    await init(tempDir, { _skipPrompts: true });
+    // image-generator is the canonical non-MCP skill with env requirements (env: [OPENROUTER_API_KEY])
+    // Simulate a user who installed opensquad before this skill was bundled
+    await rm(join(tempDir, 'skills', 'image-generator'), { recursive: true, force: true });
+
+    await update(tempDir);
+
+    // image-generator has `env: [OPENROUTER_API_KEY]` and should be re-installed by update
+    const skillMd = join(tempDir, 'skills', 'image-generator', 'SKILL.md');
+    const content = await readFile(skillMd, 'utf-8');
+    assert.ok(content.includes('OPENROUTER_API_KEY'));
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+});

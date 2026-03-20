@@ -252,7 +252,7 @@ Apply this transformation consistently for every write in this step.
 - Announce: `{icon} {Agent Name} is working...`
 - Follow the step instructions
 - Present output directly in the conversation
-- Save output to the specified output file
+- Save output to the specified output file — apply the Output Path Transformation (Steps 1 and 2) to the path before writing. Do not write to the raw path from the step file.
 
 #### If `type: checkpoint`
 - Present the checkpoint message to the user

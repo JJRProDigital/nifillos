@@ -33,6 +33,7 @@ Los metadatos de skills instaladas solo en el proyecto (sin copia en el paquete)
 | [image-fetcher](./image-fetcher/) | hybrid | Acquire visual assets via search, screenshots, files. | _(none)_ | `npx nifillos install image-fetcher` |
 | [image-creator](./image-creator/) | mcp | Render HTML/CSS to PNG via Playwright. | _(none)_ | `npx nifillos install image-creator` |
 | [image-generator](./image-generator/) | script | Generate AI images via Openrouter. | `OPENROUTER_API_KEY` | `npx nifillos install image-generator` |
+| [pdf-export](./pdf-export/) | script | PDF desde URL/HTML (Playwright); flujo o Canvas directo sin archivo fuente (.txt/.doc). | _(none)_ | `npx nifillos install pdf-export` |
 | [nifillos-skill-creator](./nifillos-skill-creator/) | prompt | Crea nuevas skills (formato SKILL.md). | _(none)_ | `npx nifillos install nifillos-skill-creator` |
 | [nifillos-agent-creator](./nifillos-agent-creator/) | prompt | Crea guías de best practices / agentes. | _(none)_ | `npx nifillos install nifillos-agent-creator` |
 

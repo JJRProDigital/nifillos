@@ -6,6 +6,8 @@ cuadrillas/*/output/
 _nifillos/_memory/company.md
 _nifillos/_memory/preferences.md
 _nifillos/_browser_profile/
-docs/
+**/__pycache__/
+*.pyc
 .superpowers/
 temp/
+.claude/settings.local.json

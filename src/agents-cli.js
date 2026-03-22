@@ -19,7 +19,7 @@ async function confirm(question) {
 export async function agentsCli(subcommand, args, targetDir) {
   // Require initialized project
   try {
-    await stat(join(targetDir, '_opensquad'));
+    await stat(join(targetDir, '_nifillos'));
   } catch {
     await loadLocale('English');
     console.log(`\n  ${t('agentsNotInitialized')}\n`);
@@ -54,7 +54,7 @@ export async function agentsCli(subcommand, args, targetDir) {
 }
 
 async function runList(targetDir) {
-  console.log(`\n  Opensquad Agents\n`);
+  console.log(`\n  Nifillos agents\n`);
 
   const installed = await listInstalled(targetDir);
 
@@ -77,19 +77,19 @@ async function runList(targetDir) {
     console.log(`  ${t('agentsNoneInstalled')}`);
   }
 
-  console.log(`\n  Browse available agents at: https://github.com/renatoasse/opensquad/tree/main/agents\n`);
+  console.log(`\n  Browse bundled agents in the nifillos package under agents/.\n`);
 }
 
 async function runInstall(id, targetDir) {
   if (!id) {
-    console.log('\n  Usage: opensquad agents install <id>\n');
+    console.log('\n  Usage: nifillos agents install <id>\n');
     return false;
   }
 
   const installed = await listInstalled(targetDir);
   if (installed.includes(id)) {
     const answer = await confirm(`\n  ${t('agentsAlreadyInstalled', { id })}`);
-    // Accept 'y' (English) or 's' (Portuguese "sim") as affirmative answers
+    // Accept 'y' (yes) or 's' (Spanish "sí") as affirmative answers
     if (answer !== 'y' && answer !== 's') return false;
     console.log(`  ${t('agentsInstalling', { id })}`);
     await installAgent(id, targetDir);
@@ -106,7 +106,7 @@ async function runInstall(id, targetDir) {
 
 async function runRemove(id, targetDir) {
   if (!id) {
-    console.log('\n  Usage: opensquad agents remove <id>\n');
+    console.log('\n  Usage: nifillos agents remove <id>\n');
     return false;
   }
 
@@ -141,7 +141,7 @@ async function runUpdate(targetDir) {
 
 async function runUpdateOne(id, targetDir) {
   if (!id) {
-    console.log('\n  Usage: opensquad update <name>\n');
+    console.log('\n  Usage: nifillos update <name>\n');
     return;
   }
 

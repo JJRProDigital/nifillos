@@ -1,5 +1,5 @@
-# Quality Criteria — Instagram Carousel Squad
-**Squad:** instagram-carrossel
+# Quality Criteria — Instagram Carousel Crew
+**Crew:** instagram-carrossel
 **Updated:** 2026-03-03
 
 ---

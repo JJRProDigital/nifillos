@@ -2,7 +2,7 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Each squad execution creates a dedicated subfolder in `output/` so all run artifacts are grouped together.
+**Goal:** Each crew execution creates a dedicated subfolder in `output/` so all run artifacts are grouped together.
 
 **Architecture:** The Pipeline Runner gains a "Run Folder Creation" phase after step 1 completes. It extracts the topic from the research brief header, generates a URL-friendly slug, creates `output/YYYY-MM-DD-{slug}/`, and sets the `{run-folder}` variable for all subsequent steps. Step 1 uses `output/drafts/` as a temporary staging area; steps 2+ use `{run-folder}/drafts/`.
 
@@ -15,7 +15,7 @@
 ### Task 1: Add Run Folder Creation section to Pipeline Runner
 
 **Files:**
-- Modify: `_opensquad/core/runner.pipeline.md:107-117` (between "Veto Condition Enforcement" and "Review Loops")
+- Modify: `_nifillos/core/runner.pipeline.md:107-117` (between "Veto Condition Enforcement" and "Review Loops")
 
 **Step 1: Add the "Run Folder Creation" section**
 
@@ -40,13 +40,13 @@ After the FIRST pipeline step completes (and its checkpoint is resolved):
    - Truncate at 50 characters (on a word boundary)
 
 3. **Create run folder**:
-   - Path: `squads/{name}/output/YYYY-MM-DD-{slug}/`
+   - Path: `cuadrillas/{name}/output/YYYY-MM-DD-{slug}/`
    - Create subdirectories: `drafts/` and `final/`
    - If path already exists, append `-2`, `-3`, etc.
-   - Example: `squads/instagram-content/output/2026-02-26-inteligencia-artificial/`
+   - Example: `cuadrillas/instagram-content/output/2026-02-26-inteligencia-artificial/`
 
 4. **Move step 1 output**: Move the staging file to the run folder
-   - From: `squads/{name}/output/drafts/{filename}` → To: `{run-folder}/drafts/{filename}`
+   - From: `cuadrillas/{name}/output/drafts/{filename}` → To: `{run-folder}/drafts/{filename}`
 
 5. **Set `{run-folder}` variable**: Store the full run folder path in pipeline state.
    All subsequent steps resolve `{run-folder}` to this path.
@@ -61,7 +61,7 @@ After the FIRST pipeline step completes (and its checkpoint is resolved):
 
 Change line 121 from:
 ```
-1. Save final output to `squads/{name}/output/YYYY-MM-DD/{filename}.md`
+1. Save final output to `cuadrillas/{name}/output/YYYY-MM-DD/{filename}.md`
 ```
 To:
 ```
@@ -86,7 +86,7 @@ Add `run-folder-path` to the tracked state list (after line 152):
 **Step 4: Commit**
 
 ```bash
-git add _opensquad/core/runner.pipeline.md
+git add _nifillos/core/runner.pipeline.md
 git commit -m "feat(runner): add run folder creation after step 1"
 ```
 
@@ -95,7 +95,7 @@ git commit -m "feat(runner): add run folder creation after step 1"
 ### Task 2: Mirror runner changes to template
 
 **Files:**
-- Modify: `templates/_opensquad/core/runner.pipeline.md` (same changes as Task 1)
+- Modify: `templates/_nifillos/core/runner.pipeline.md` (same changes as Task 1)
 
 **Step 1: Apply identical changes**
 
@@ -107,25 +107,25 @@ The template runner is an exact mirror of the core runner. Apply all three chang
 **Step 2: Commit**
 
 ```bash
-git add templates/_opensquad/core/runner.pipeline.md
+git add templates/_nifillos/core/runner.pipeline.md
 git commit -m "feat(runner): mirror run folder creation to template"
 ```
 
 ---
 
-### Task 3: Update step files for instagram-content squad (steps 2-4)
+### Task 3: Update step files for instagram-content crew (steps 2-4)
 
 **Files:**
-- Modify: `squads/instagram-content/pipeline/steps/step-02-ideation.md:5,7` (frontmatter)
-- Modify: `squads/instagram-content/pipeline/steps/step-03-writing.md:5,7` (frontmatter)
-- Modify: `squads/instagram-content/pipeline/steps/step-04-review.md:5,6` (frontmatter)
-- Modify: `squads/instagram-content/pipeline/steps/step-03-writing.md:113` (body text)
+- Modify: `cuadrillas/instagram-content/pipeline/steps/step-02-ideation.md:5,7` (frontmatter)
+- Modify: `cuadrillas/instagram-content/pipeline/steps/step-03-writing.md:5,7` (frontmatter)
+- Modify: `cuadrillas/instagram-content/pipeline/steps/step-04-review.md:5,6` (frontmatter)
+- Modify: `cuadrillas/instagram-content/pipeline/steps/step-03-writing.md:113` (body text)
 
 **Step 1: Update step-02-ideation.md frontmatter**
 
 Change line 5:
 ```yaml
-inputFile: "{squad-root}/output/drafts/research.md"
+inputFile: "{crew-root}/output/drafts/research.md"
 ```
 To:
 ```yaml
@@ -134,7 +134,7 @@ inputFile: "{run-folder}/drafts/research.md"
 
 Change line 7:
 ```yaml
-outputFile: "{squad-root}/output/drafts/angles.md"
+outputFile: "{crew-root}/output/drafts/angles.md"
 ```
 To:
 ```yaml
@@ -145,7 +145,7 @@ outputFile: "{run-folder}/drafts/angles.md"
 
 Change line 5:
 ```yaml
-inputFile: "{squad-root}/output/drafts/angles.md"
+inputFile: "{crew-root}/output/drafts/angles.md"
 ```
 To:
 ```yaml
@@ -154,7 +154,7 @@ inputFile: "{run-folder}/drafts/angles.md"
 
 Change line 7:
 ```yaml
-outputFile: "{squad-root}/output/drafts/draft.md"
+outputFile: "{crew-root}/output/drafts/draft.md"
 ```
 To:
 ```yaml
@@ -165,7 +165,7 @@ outputFile: "{run-folder}/drafts/draft.md"
 
 Change line 113:
 ```markdown
-1. Read the review feedback from `{squad-root}/output/drafts/review.md`
+1. Read the review feedback from `{crew-root}/output/drafts/review.md`
 ```
 To:
 ```markdown
@@ -176,7 +176,7 @@ To:
 
 Change line 5:
 ```yaml
-inputFile: "{squad-root}/output/drafts/draft.md"
+inputFile: "{crew-root}/output/drafts/draft.md"
 ```
 To:
 ```yaml
@@ -185,7 +185,7 @@ inputFile: "{run-folder}/drafts/draft.md"
 
 Change line 6:
 ```yaml
-outputFile: "{squad-root}/output/drafts/review.md"
+outputFile: "{crew-root}/output/drafts/review.md"
 ```
 To:
 ```yaml
@@ -196,16 +196,16 @@ outputFile: "{run-folder}/drafts/review.md"
 
 Confirm that `step-01-research.md` still has:
 ```yaml
-outputFile: "{squad-root}/output/drafts/research.md"
+outputFile: "{crew-root}/output/drafts/research.md"
 ```
 This is correct — step 1 uses the staging area before the run folder exists.
 
 **Step 6: Commit**
 
 ```bash
-git add squads/instagram-content/pipeline/steps/step-02-ideation.md
-git add squads/instagram-content/pipeline/steps/step-03-writing.md
-git add squads/instagram-content/pipeline/steps/step-04-review.md
+git add cuadrillas/instagram-content/pipeline/steps/step-02-ideation.md
+git add cuadrillas/instagram-content/pipeline/steps/step-03-writing.md
+git add cuadrillas/instagram-content/pipeline/steps/step-04-review.md
 git commit -m "feat(steps): update instagram-content steps 2-4 to use {run-folder}"
 ```
 
@@ -214,9 +214,9 @@ git commit -m "feat(steps): update instagram-content steps 2-4 to use {run-folde
 ### Task 4: Update template step files (steps 2-4)
 
 **Files:**
-- Modify: `templates/squads/instagram-content/pipeline/steps/step-02-ideation.md:5,7`
-- Modify: `templates/squads/instagram-content/pipeline/steps/step-03-writing.md:5,7,113`
-- Modify: `templates/squads/instagram-content/pipeline/steps/step-04-review.md:5,6`
+- Modify: `templates/cuadrillas/instagram-content/pipeline/steps/step-02-ideation.md:5,7`
+- Modify: `templates/cuadrillas/instagram-content/pipeline/steps/step-03-writing.md:5,7,113`
+- Modify: `templates/cuadrillas/instagram-content/pipeline/steps/step-04-review.md:5,6`
 
 **Step 1: Apply identical frontmatter changes as Task 3**
 
@@ -228,21 +228,21 @@ Same changes for all three template step files:
 **Step 2: Commit**
 
 ```bash
-git add templates/squads/instagram-content/pipeline/steps/step-02-ideation.md
-git add templates/squads/instagram-content/pipeline/steps/step-03-writing.md
-git add templates/squads/instagram-content/pipeline/steps/step-04-review.md
+git add templates/cuadrillas/instagram-content/pipeline/steps/step-02-ideation.md
+git add templates/cuadrillas/instagram-content/pipeline/steps/step-03-writing.md
+git add templates/cuadrillas/instagram-content/pipeline/steps/step-04-review.md
 git commit -m "feat(steps): mirror run-folder changes to template steps"
 ```
 
 ---
 
-### Task 5: Update squad.yaml files
+### Task 5: Update cuadrilla.yaml files
 
 **Files:**
-- Modify: `squads/instagram-content/squad.yaml:31,39-40,48-49,55-56`
-- Modify: `templates/squads/instagram-content/squad.yaml:31,39-40,48-49,55-56`
+- Modify: `cuadrillas/instagram-content/cuadrilla.yaml:31,39-40,48-49,55-56`
+- Modify: `templates/cuadrillas/instagram-content/cuadrilla.yaml:31,39-40,48-49,55-56`
 
-**Step 1: Update squads/instagram-content/squad.yaml**
+**Step 1: Update cuadrillas/instagram-content/cuadrilla.yaml**
 
 Step 1 (research) keeps staging path — no change to line 31:
 ```yaml
@@ -282,16 +282,16 @@ To:
       output: "{run-folder}/drafts/review.md"
 ```
 
-**Step 2: Apply identical changes to template squad.yaml**
+**Step 2: Apply identical changes to template cuadrilla.yaml**
 
-Same changes to `templates/squads/instagram-content/squad.yaml`.
+Same changes to `templates/cuadrillas/instagram-content/cuadrilla.yaml`.
 
 **Step 3: Commit**
 
 ```bash
-git add squads/instagram-content/squad.yaml
-git add templates/squads/instagram-content/squad.yaml
-git commit -m "feat(yaml): update squad.yaml pipeline paths to use {run-folder}"
+git add cuadrillas/instagram-content/cuadrilla.yaml
+git add templates/cuadrillas/instagram-content/cuadrilla.yaml
+git commit -m "feat(yaml): update cuadrilla.yaml pipeline paths to use {run-folder}"
 ```
 
 ---
@@ -299,18 +299,18 @@ git commit -m "feat(yaml): update squad.yaml pipeline paths to use {run-folder}"
 ### Task 6: Update architect output directory instructions
 
 **Files:**
-- Modify: `_opensquad/core/architect.agent.yaml:439`
+- Modify: `_nifillos/core/architect.agent.yaml:439`
 
 **Step 1: Update the build phase directory creation instruction**
 
 Change line 439:
 ```
-      8. `squads/{code}/output/` — Empty output directory (create with mkdir)
+      8. `cuadrillas/{code}/output/` — Empty output directory (create with mkdir)
 ```
 To:
 ```
-      8. `squads/{code}/output/` — Output directory (create with mkdir)
-         - Also create `squads/{code}/output/drafts/` — Staging area for step 1
+      8. `cuadrillas/{code}/output/` — Output directory (create with mkdir)
+         - Also create `cuadrillas/{code}/output/drafts/` — Staging area for step 1
          - Run folders (`output/YYYY-MM-DD-{slug}/`) are created automatically by the Pipeline Runner
 ```
 
@@ -318,14 +318,14 @@ To:
 
 Add a note after line 675 to account for the new variable:
 ```
-      - [ ] Step 1's outputFile uses `{squad-root}/output/drafts/` (staging area)
+      - [ ] Step 1's outputFile uses `{crew-root}/output/drafts/` (staging area)
       - [ ] Steps 2+ use `{run-folder}/drafts/` for inputFile and outputFile
 ```
 
 **Step 3: Commit**
 
 ```bash
-git add _opensquad/core/architect.agent.yaml
+git add _nifillos/core/architect.agent.yaml
 git commit -m "feat(architect): update output directory instructions for run folders"
 ```
 
@@ -336,7 +336,7 @@ git commit -m "feat(architect): update output directory instructions for run fol
 **Step 1: Verify step 1 → step 2 path handoff**
 
 Read step-01-research.md and step-02-ideation.md. Confirm:
-- Step 1 `outputFile`: `{squad-root}/output/drafts/research.md` (staging)
+- Step 1 `outputFile`: `{crew-root}/output/drafts/research.md` (staging)
 - Step 2 `inputFile`: `{run-folder}/drafts/research.md` (run folder)
 - The runner's "Run Folder Creation" section moves the file between these paths
 
@@ -347,13 +347,13 @@ Read steps 2→3→4 and confirm inputFile/outputFile chain:
 - Step 3 output → Step 4 input: `{run-folder}/drafts/draft.md`
 - Step 4 output: `{run-folder}/drafts/review.md`
 
-**Step 3: Verify squad.yaml matches step files**
+**Step 3: Verify cuadrilla.yaml matches step files**
 
-Read squad.yaml and confirm paths match step file frontmatter for all steps.
+Read cuadrilla.yaml and confirm paths match step file frontmatter for all steps.
 
-**Step 4: Verify templates match squad files**
+**Step 4: Verify templates match crew files**
 
-Diff template files against squad files to confirm they're in sync.
+Diff template files against crew files to confirm they're in sync.
 
 **Step 5: Verify runner template matches runner**
 

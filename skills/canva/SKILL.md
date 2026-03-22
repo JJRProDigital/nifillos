@@ -4,10 +4,6 @@ description: >
   Create, search, autofill, and export designs from Canva.
   Enables agents to generate visual content, fill templates
   with brand assets, and export in various formats.
-description_pt-BR: >
-  Crie, busque, preencha e exporte designs do Canva.
-  Permite que agentes gerem conteúdo visual, preencham templates
-  com assets da marca e exportem em diversos formatos.
 description_es: >
   Crea, busca, completa y exporta diseños de Canva.
   Permite que los agentes generen contenido visual, completen plantillas

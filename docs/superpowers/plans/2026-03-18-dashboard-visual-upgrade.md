@@ -10,7 +10,7 @@
 
 **Spec:** `docs/superpowers/specs/2026-03-18-dashboard-visual-upgrade-design.md`
 
-**Verification:** No test framework in the dashboard. All verification is visual — run `cd dashboard && npm run dev`, open the browser, run a squad, and inspect the rendering. Use `npm run build` to catch type errors.
+**Verification:** No test framework in the dashboard. All verification is visual — run `cd dashboard && npm run dev`, open the browser, run a crew, and inspect the rendering. Use `npm run build` to catch type errors.
 
 ---
 
@@ -413,7 +413,7 @@ Expected: Clean compilation (no errors). The `CharacterColors` type now matches 
 
 Run: `cd dashboard && npm run dev`
 
-Open browser, run a squad, verify:
+Open browser, run a crew, verify:
 - Characters render at 48×48 with visible shading (hair highlights, jaw shadow, collar, belt buckle)
 - Characters are centered in their cells
 - No clipping or overlap issues
@@ -625,7 +625,7 @@ Expected: Clean compilation.
 
 Run: `cd dashboard && npm run dev`
 
-Open browser, run a squad. Verify:
+Open browser, run a crew. Verify:
 - Idle agents show relaxed arms at sides
 - Working agents animate between 2 frames (arms typing motion at 250ms)
 - Done agents show raised arms + smile
@@ -1197,7 +1197,7 @@ Expected: Clean build with no type errors and no warnings.
 
 Run: `cd dashboard && npm run dev`
 
-Open browser, run a squad through its full lifecycle. Verify the complete picture:
+Open browser, run a crew through its full lifecycle. Verify the complete picture:
 - Room renders correctly (floor, walls, furniture — unchanged)
 - Each agent desk shows detailed workstation (wood grain, beveled monitor, keyboard with keys, mouse on pad)
 - Each agent has unique accessories on their desk

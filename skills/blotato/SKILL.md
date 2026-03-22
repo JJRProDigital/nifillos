@@ -4,10 +4,6 @@ description: >
   Social media publishing and scheduling platform.
   Publish and schedule posts across Instagram, LinkedIn, Twitter/X,
   TikTok, YouTube, and more. Upload media and monitor post status.
-description_pt-BR: >
-  Plataforma de publicação e agendamento em redes sociais.
-  Publique e agende posts no Instagram, LinkedIn, Twitter/X,
-  TikTok, YouTube e mais. Faça upload de mídia e monitore o status dos posts.
 description_es: >
   Plataforma de publicación y programación en redes sociales.
   Publica y programa posts en Instagram, LinkedIn, Twitter/X,

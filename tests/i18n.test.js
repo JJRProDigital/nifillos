@@ -7,16 +7,16 @@ import { loadLocale, t, getLocaleCode } from '../src/i18n.js';
 
 test('loadLocale loads English by default', async () => {
   await loadLocale('English');
-  assert.equal(t('success'), '✅ Opensquad initialized successfully!');
+  assert.equal(t('success'), '✅ Nifillos initialized successfully!');
 });
 
-test('loadLocale loads Portuguese locale', async () => {
-  await loadLocale('Português (Brasil)');
-  assert.equal(t('success'), '✅ Opensquad inicializado com sucesso!');
+test('loadLocale loads Spanish locale', async () => {
+  await loadLocale('Español');
+  assert.equal(t('success'), '✅ ¡Nifillos inicializado con éxito!');
 });
 
 test('t falls back to English for missing keys', async () => {
-  await loadLocale('Português (Brasil)');
+  await loadLocale('Español');
   assert.equal(t('_test_fallback_only'), 'English fallback works');
 });
 
@@ -32,7 +32,7 @@ test('t returns key name for completely unknown keys', async () => {
 
 test('loadLocale falls back to English for unknown language', async () => {
   await loadLocale('Klingon');
-  assert.equal(t('success'), '✅ Opensquad initialized successfully!');
+  assert.equal(t('success'), '✅ Nifillos initialized successfully!');
 });
 
 test('all locales have update keys', async () => {
@@ -47,7 +47,7 @@ test('all locales have update keys', async () => {
     'updateFileCount',
     'updateLatestHint',
   ];
-  const localeFiles = ['en', 'pt-BR', 'es'];
+  const localeFiles = ['en', 'es'];
 
   for (const locale of localeFiles) {
     const content = JSON.parse(
@@ -62,11 +62,6 @@ test('all locales have update keys', async () => {
 test('getLocaleCode returns "en" by default', async () => {
   await loadLocale('English');
   assert.equal(getLocaleCode(), 'en');
-});
-
-test('getLocaleCode returns "pt-BR" after loading Portuguese locale', async () => {
-  await loadLocale('Português (Brasil)');
-  assert.equal(getLocaleCode(), 'pt-BR');
 });
 
 test('getLocaleCode returns "es" after loading Spanish locale', async () => {
@@ -90,7 +85,7 @@ test('all locales have skills keys', async () => {
     'skillsUpdateNone',
     'skillsError',
   ];
-  const localeFiles = ['en', 'pt-BR', 'es'];
+  const localeFiles = ['en', 'es'];
   for (const locale of localeFiles) {
     const content = JSON.parse(
       await readFile(join(LOCALES_DIR, `${locale}.json`), 'utf-8')
@@ -101,9 +96,36 @@ test('all locales have skills keys', async () => {
   }
 });
 
+test('all locales have migrate keys', async () => {
+  const LOCALES_DIR = join(dirname(fileURLToPath(import.meta.url)), '../src/locales');
+  const MIGRATE_KEYS = [
+    'migrateSection',
+    'migrateNothing',
+    'migrateRenamedRoot',
+    'migrateRenamedFile',
+    'migratePatchedYaml',
+    'migratePatchedState',
+    'migrateBothDirsWarn',
+    'migrateConflictYaml',
+    'migrateConflictParty',
+    'migrateTitle',
+    'migrateNoCuadrillasFolder',
+    'migrateNeedInit',
+  ];
+  const localeFiles = ['en', 'es'];
+  for (const locale of localeFiles) {
+    const content = JSON.parse(
+      await readFile(join(LOCALES_DIR, `${locale}.json`), 'utf-8')
+    );
+    for (const key of MIGRATE_KEYS) {
+      assert.ok(key in content, `${locale}.json missing key: ${key}`);
+    }
+  }
+});
+
 test('all locales have step1Cursor key', async () => {
   const LOCALES_DIR = join(dirname(fileURLToPath(import.meta.url)), '../src/locales');
-  const localeFiles = ['en', 'pt-BR', 'es'];
+  const localeFiles = ['en', 'es'];
 
   for (const locale of localeFiles) {
     const content = JSON.parse(

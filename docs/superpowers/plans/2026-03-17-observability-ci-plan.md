@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add CI, linting, CLI logging, and pipeline execution history to opensquad — split across 3 PRs.
+**Goal:** Add CI, linting, CLI logging, and pipeline execution history to Nifillos — split across 3 PRs.
 
 **Architecture:** Three sequential PRs: (1) fix failing tests, (2) ESLint + GitHub Actions, (3) observability. Each PR is independent and merges cleanly.
 
@@ -29,7 +29,7 @@ In `tests/init.test.js`, replace the test at line 291 that expects agents to exi
 
 ```js
 test('init does not create agents dir when no bundled agents exist', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     await init(tempDir, { _skipPrompts: true });
     // No bundled agents in dev environment — agents/ should not be created
@@ -49,7 +49,7 @@ In `tests/update.test.js`, replace the test at line 152. Since there are no bund
 
 ```js
 test('update succeeds when no bundled agents exist', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     await init(tempDir, { _skipPrompts: true });
     const result = await update(tempDir);
@@ -71,7 +71,7 @@ In `tests/update.test.js`, replace the test at line 177. Since there are no bund
 
 ```js
 test('update preserves user-created agent files', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     await init(tempDir, { _skipPrompts: true });
     // User manually created an agent
@@ -110,7 +110,7 @@ The README is in Portuguese by default (line 1-60 of `src/readme/README.md`). Up
 
 ```js
 test('README.md is in Portuguese when language is PT-BR', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true, _language: 'Português (Brasil)' });
@@ -129,7 +129,7 @@ The README has no Spanish section. Since `writeProjectReadme` copies the same bi
 
 ```js
 test('README.md is in Spanish when language is Español', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true, _language: 'Español' });
@@ -290,7 +290,7 @@ test('logEvent writes JSONL line to cli.log', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'osq-log-'));
   try {
     await logEvent('init', {}, dir);
-    const raw = await readFile(join(dir, '_opensquad', 'logs', 'cli.log'), 'utf-8');
+    const raw = await readFile(join(dir, '_nifillos', 'logs', 'cli.log'), 'utf-8');
     const entry = JSON.parse(raw.trim());
     assert.equal(entry.action, 'init');
     assert.ok(entry.timestamp);
@@ -304,7 +304,7 @@ test('logEvent appends multiple entries', async () => {
   try {
     await logEvent('init', {}, dir);
     await logEvent('update', {}, dir);
-    const raw = await readFile(join(dir, '_opensquad', 'logs', 'cli.log'), 'utf-8');
+    const raw = await readFile(join(dir, '_nifillos', 'logs', 'cli.log'), 'utf-8');
     const lines = raw.trim().split('\n');
     assert.equal(lines.length, 2);
   } finally {
@@ -316,7 +316,7 @@ test('logEvent includes details', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'osq-log-'));
   try {
     await logEvent('skill:install', { name: 'apify' }, dir);
-    const raw = await readFile(join(dir, '_opensquad', 'logs', 'cli.log'), 'utf-8');
+    const raw = await readFile(join(dir, '_nifillos', 'logs', 'cli.log'), 'utf-8');
     const entry = JSON.parse(raw.trim());
     assert.equal(entry.details.name, 'apify');
   } finally {
@@ -384,9 +384,9 @@ test('readCliLogs handles malformed lines gracefully', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'osq-log-'));
   try {
     const { mkdir, writeFile } = await import('node:fs/promises');
-    await mkdir(join(dir, '_opensquad', 'logs'), { recursive: true });
+    await mkdir(join(dir, '_nifillos', 'logs'), { recursive: true });
     await writeFile(
-      join(dir, '_opensquad', 'logs', 'cli.log'),
+      join(dir, '_nifillos', 'logs', 'cli.log'),
       'not json\n{"action":"init","timestamp":"2026-01-01T00:00:00Z","details":{}}\n',
       'utf-8'
     );
@@ -424,7 +424,7 @@ import { join } from 'node:path';
 
 export async function logEvent(action, details = {}, targetDir = process.cwd()) {
   try {
-    const logDir = join(targetDir, '_opensquad', 'logs');
+    const logDir = join(targetDir, '_nifillos', 'logs');
     await mkdir(logDir, { recursive: true });
     const entry = JSON.stringify({
       timestamp: new Date().toISOString(),
@@ -439,7 +439,7 @@ export async function logEvent(action, details = {}, targetDir = process.cwd()) 
 
 export async function readCliLogs({ action, limit } = {}, targetDir = process.cwd()) {
   try {
-    const raw = await readFile(join(targetDir, '_opensquad', 'logs', 'cli.log'), 'utf-8');
+    const raw = await readFile(join(targetDir, '_nifillos', 'logs', 'cli.log'), 'utf-8');
     const lines = raw.trim().split('\n');
     let entries = [];
     for (const line of lines) {
@@ -512,9 +512,9 @@ await logEvent('agent:update', { count: installed.length }, targetDir);
 await logEvent('agent:update', { name: id }, targetDir);
 ```
 
-- [ ] **Step 6: Add `_opensquad/logs/` to .gitignore template**
+- [ ] **Step 6: Add `_nifillos/logs/` to .gitignore template**
 
-In `templates/.gitignore`, add `_opensquad/logs/` so user log files are not committed to git. If the template `.gitignore` already lists `_opensquad/_browser_profile/`, add the logs entry nearby.
+In `templates/.gitignore`, add `_nifillos/logs/` so user log files are not committed to git. If the template `.gitignore` already lists `_nifillos/_browser_profile/`, add the logs entry nearby.
 
 - [ ] **Step 7: Run full test suite**
 
@@ -528,7 +528,7 @@ git add src/logger.js tests/logger.test.js src/init.js src/update.js src/skills-
 git commit -m "feat: add CLI execution logger
 
 Logs init, update, skill, and agent operations to
-_opensquad/logs/cli.log in JSONL format. Silent on failure."
+_nifillos/logs/cli.log in JSONL format. Silent on failure."
 ```
 
 ---
@@ -536,23 +536,23 @@ _opensquad/logs/cli.log in JSONL format. Silent on failure."
 ## Task 6: Make state.json persistent
 
 **Files:**
-- Modify: `_opensquad/core/runner.pipeline.md:341-349`
-- Modify: `templates/_opensquad/core/runner.pipeline.md:341-349`
+- Modify: `_nifillos/core/runner.pipeline.md:341-349`
+- Modify: `templates/_nifillos/core/runner.pipeline.md:341-349`
 
 - [ ] **Step 1: Update runner.pipeline.md — replace deletion with archive**
 
-In both `_opensquad/core/runner.pipeline.md` and `templates/_opensquad/core/runner.pipeline.md`, replace the "Post-Completion Cleanup" section (lines 341-349). The current text:
+In both `_nifillos/core/runner.pipeline.md` and `templates/_nifillos/core/runner.pipeline.md`, replace the "Post-Completion Cleanup" section (lines 341-349). The current text:
 
 ```markdown
 ### Post-Completion Cleanup
 
-After writing the final "completed" state to `squads/{name}/state.json` and waiting 10 seconds (so the dashboard can display the completed state), **delete** `squads/{name}/state.json`:
+After writing the final "completed" state to `cuadrillas/{name}/state.json` and waiting 10 seconds (so the dashboard can display the completed state), **delete** `cuadrillas/{name}/state.json`:
 
 \`\`\`bash
-rm squads/{name}/state.json
+rm cuadrillas/{name}/state.json
 \`\`\`
 
-This ensures the squad no longer appears as active in the centralized dashboard.
+This ensures the crew no longer appears as active in the centralized dashboard.
 ```
 
 Replace with:
@@ -560,20 +560,20 @@ Replace with:
 ```markdown
 ### Post-Completion Cleanup
 
-After writing the final "completed" state to `squads/{name}/state.json`:
+After writing the final "completed" state to `cuadrillas/{name}/state.json`:
 
 1. Add the `completedAt` field (or `failedAt` if status is `failed`) with the current ISO timestamp
 2. Copy `state.json` to the run output folder for permanent history:
    ```bash
-   cp squads/{name}/state.json squads/{name}/output/{run_id}/state.json
+   cp cuadrillas/{name}/state.json cuadrillas/{name}/output/{run_id}/state.json
    ```
 3. Wait 10 seconds (so the dashboard can display the completed state)
 4. Delete the working copy:
    ```bash
-   rm squads/{name}/state.json
+   rm cuadrillas/{name}/state.json
    ```
 
-This archives the run state for the `runs` command while keeping the squad root clean.
+This archives the run state for the `runs` command while keeping the crew root clean.
 ```
 
 - [ ] **Step 2: Also update step 1b to include completedAt/failedAt**
@@ -587,13 +587,13 @@ After `"updatedAt": "{ISO timestamp now}"` add:
 
 - [ ] **Step 3: Verify both files are identical**
 
-Run: `diff _opensquad/core/runner.pipeline.md templates/_opensquad/core/runner.pipeline.md`
+Run: `diff _nifillos/core/runner.pipeline.md templates/_nifillos/core/runner.pipeline.md`
 Expected: No differences.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add _opensquad/core/runner.pipeline.md templates/_opensquad/core/runner.pipeline.md
+git add _nifillos/core/runner.pipeline.md templates/_nifillos/core/runner.pipeline.md
 git commit -m "feat: archive state.json to output folder after pipeline completion
 
 Instead of just deleting state.json, the runner now copies it to
@@ -608,7 +608,7 @@ the working copy. Adds completedAt/failedAt timestamps."
 **Files:**
 - Create: `src/runs.js`
 - Create: `tests/runs.test.js`
-- Modify: `bin/opensquad.js`
+- Modify: `bin/Nifillos.js`
 
 - [ ] **Step 1: Write runs tests**
 
@@ -622,7 +622,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { listRuns, formatDuration } from '../src/runs.js';
 
-test('listRuns returns empty array when no squads exist', async () => {
+test('listRuns returns empty array when no crews exist', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'osq-runs-'));
   try {
     const runs = await listRuns(null, dir);
@@ -635,10 +635,10 @@ test('listRuns returns empty array when no squads exist', async () => {
 test('listRuns finds state.json in output directories', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'osq-runs-'));
   try {
-    const runDir = join(dir, 'squads', 'my-squad', 'output', '2026-03-17-120000');
+    const runDir = join(dir, 'crews', 'my-crew', 'output', '2026-03-17-120000');
     await mkdir(runDir, { recursive: true });
     await writeFile(join(runDir, 'state.json'), JSON.stringify({
-      squad: 'my-squad',
+      cuadrilla: 'my-crew',
       status: 'completed',
       step: { current: 3, total: 3 },
       startedAt: '2026-03-17T12:00:00Z',
@@ -647,28 +647,28 @@ test('listRuns finds state.json in output directories', async () => {
 
     const runs = await listRuns(null, dir);
     assert.equal(runs.length, 1);
-    assert.equal(runs[0].squad, 'my-squad');
+    assert.equal(runs[0].crew, 'my-crew');
     assert.equal(runs[0].status, 'completed');
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
 });
 
-test('listRuns filters by squad name', async () => {
+test('listRuns filters by crew name', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'osq-runs-'));
   try {
-    for (const name of ['squad-a', 'squad-b']) {
-      const runDir = join(dir, 'squads', name, 'output', '2026-03-17-120000');
+    for (const name of ['crew-a', 'crew-b']) {
+      const runDir = join(dir, 'crews', name, 'output', '2026-03-17-120000');
       await mkdir(runDir, { recursive: true });
       await writeFile(join(runDir, 'state.json'), JSON.stringify({
-        squad: name, status: 'completed', step: { current: 1, total: 1 },
+        cuadrilla: name, status: 'completed', step: { current: 1, total: 1 },
         startedAt: '2026-03-17T12:00:00Z', completedAt: '2026-03-17T12:01:00Z',
       }), 'utf-8');
     }
 
-    const runs = await listRuns('squad-a', dir);
+    const runs = await listRuns('crew-a', dir);
     assert.equal(runs.length, 1);
-    assert.equal(runs[0].squad, 'squad-a');
+    assert.equal(runs[0].crew, 'crew-a');
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
@@ -677,7 +677,7 @@ test('listRuns filters by squad name', async () => {
 test('listRuns returns unknown for runs without state.json', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'osq-runs-'));
   try {
-    const runDir = join(dir, 'squads', 'my-squad', 'output', '2026-03-17-120000');
+    const runDir = join(dir, 'crews', 'my-crew', 'output', '2026-03-17-120000');
     await mkdir(runDir, { recursive: true });
     // No state.json — just an empty run folder
 
@@ -692,7 +692,7 @@ test('listRuns returns unknown for runs without state.json', async () => {
 test('listRuns handles malformed state.json', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'osq-runs-'));
   try {
-    const runDir = join(dir, 'squads', 'my-squad', 'output', '2026-03-17-120000');
+    const runDir = join(dir, 'crews', 'my-crew', 'output', '2026-03-17-120000');
     await mkdir(runDir, { recursive: true });
     await writeFile(join(runDir, 'state.json'), 'not json', 'utf-8');
 
@@ -708,10 +708,10 @@ test('listRuns sorts by runId descending', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'osq-runs-'));
   try {
     for (const ts of ['2026-03-17-100000', '2026-03-17-120000', '2026-03-17-080000']) {
-      const runDir = join(dir, 'squads', 'my-squad', 'output', ts);
+      const runDir = join(dir, 'crews', 'my-crew', 'output', ts);
       await mkdir(runDir, { recursive: true });
       await writeFile(join(runDir, 'state.json'), JSON.stringify({
-        squad: 'my-squad', status: 'completed', step: { current: 1, total: 1 },
+        cuadrilla: 'my-crew', status: 'completed', step: { current: 1, total: 1 },
         startedAt: `2026-03-17T${ts.slice(11, 13)}:00:00Z`,
         completedAt: `2026-03-17T${ts.slice(11, 13)}:01:00Z`,
       }), 'utf-8');
@@ -731,7 +731,7 @@ test('listRuns limits to 20 results', async () => {
   try {
     for (let i = 0; i < 25; i++) {
       const ts = `2026-03-${String(i + 1).padStart(2, '0')}-120000`;
-      const runDir = join(dir, 'squads', 'my-squad', 'output', ts);
+      const runDir = join(dir, 'crews', 'my-crew', 'output', ts);
       await mkdir(runDir, { recursive: true });
     }
 
@@ -753,10 +753,10 @@ test('formatDuration formats milliseconds', () => {
 test('listRuns calculates duration from timestamps', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'osq-runs-'));
   try {
-    const runDir = join(dir, 'squads', 'my-squad', 'output', '2026-03-17-120000');
+    const runDir = join(dir, 'crews', 'my-crew', 'output', '2026-03-17-120000');
     await mkdir(runDir, { recursive: true });
     await writeFile(join(runDir, 'state.json'), JSON.stringify({
-      squad: 'my-squad', status: 'completed',
+      cuadrilla: 'my-crew', status: 'completed',
       step: { current: 3, total: 3 },
       startedAt: '2026-03-17T12:00:00Z',
       completedAt: '2026-03-17T12:05:30Z',
@@ -772,7 +772,7 @@ test('listRuns calculates duration from timestamps', async () => {
 test('listRuns ignores non-directory entries in output', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'osq-runs-'));
   try {
-    const outputDir = join(dir, 'squads', 'my-squad', 'output');
+    const outputDir = join(dir, 'crews', 'my-crew', 'output');
     await mkdir(outputDir, { recursive: true });
     await writeFile(join(outputDir, 'random-file.txt'), 'not a run', 'utf-8');
 
@@ -800,7 +800,7 @@ import { join } from 'node:path';
 const MAX_RUNS = 20;
 
 export async function listRuns(squadName, targetDir = process.cwd()) {
-  const squadsDir = join(targetDir, 'squads');
+  const squadsDir = join(targetDir, 'crews');
   let squadNames;
 
   try {
@@ -827,7 +827,7 @@ export async function listRuns(squadName, targetDir = process.cwd()) {
     }
 
     for (const runId of runDirs) {
-      const run = { squad: name, runId, status: 'unknown', steps: null, duration: null };
+      const run = { cuadrilla: name, runId, status: 'unknown', steps: null, duration: null };
 
       try {
         const raw = await readFile(join(outputDir, runId, 'state.json'), 'utf-8');
@@ -871,8 +871,8 @@ export function printRuns(runs) {
 
   let currentSquad = null;
   for (const run of runs) {
-    if (run.squad !== currentSquad) {
-      currentSquad = run.squad;
+    if (run.crew !== currentSquad) {
+      currentSquad = run.crew;
       console.log(`\n  ${currentSquad}`);
       console.log('  ' + '─'.repeat(50));
     }
@@ -893,7 +893,7 @@ Expected: All 10 tests pass.
 
 - [ ] **Step 5: Register runs command in CLI**
 
-In `bin/opensquad.js`, add the import and command handler:
+In `bin/Nifillos.js`, add the import and command handler:
 
 After the existing imports (line 4), add:
 ```js
@@ -910,7 +910,7 @@ Before the `else` block (line 48), add a new condition:
 
 Also add the `runs` command to the help text:
 ```
-    npx opensquad runs [squad-name]     View execution history
+    npx Nifillos runs [cuadrilla-name]     View execution history
 ```
 
 - [ ] **Step 6: Run full test suite**
@@ -928,13 +928,13 @@ Expected: Zero errors.
 ```bash
 git checkout -b feat/observability
 git add src/logger.js tests/logger.test.js src/init.js src/update.js src/skills-cli.js src/agents-cli.js
-git add _opensquad/core/runner.pipeline.md templates/_opensquad/core/runner.pipeline.md
-git add src/runs.js tests/runs.test.js bin/opensquad.js
+git add _nifillos/core/runner.pipeline.md templates/_nifillos/core/runner.pipeline.md
+git add src/runs.js tests/runs.test.js bin/Nifillos.js
 git commit -m "feat: add observability — CLI logger, persistent state.json, runs command
 
-- CLI logger records operations to _opensquad/logs/cli.log (JSONL, silent on failure)
+- CLI logger records operations to _nifillos/logs/cli.log (JSONL, silent on failure)
 - Pipeline runner now archives state.json to output/{run_id}/ after completion
-- New command: npx opensquad runs [squad-name] shows execution history
+- New command: npx Nifillos runs [cuadrilla-name] shows execution history
 - 20 new tests across logger and runs modules"
 ```
 

@@ -1,60 +1,54 @@
-# Opensquad Skill Catalog
+# Nifillos — catálogo de skills (empaquetadas)
 
-Browse available skills for your squads. Install any skill with:
+Las skills empaquetadas viven en la carpeta `skills/` de este paquete y se copian al proyecto con `npx nifillos init` o `npx nifillos install <id>`.
+
+## Instalación
 
 ```bash
-npx opensquad install <skill-name>
+npx nifillos install <skill-name>
 ```
 
-## Available Skills
+También puedes instalar desde una carpeta local (debe contener `SKILL.md`; el nombre de la carpeta es el id de la skill):
+
+```bash
+npx nifillos install ./mi-skill-local
+```
+
+O desde un repositorio Git (un solo skill en la raíz o en un único subdirectorio con `SKILL.md`):
+
+```bash
+npx nifillos install https://github.com/org/repo.git
+```
+
+Los metadatos de skills instaladas solo en el proyecto (sin copia en el paquete) se leen desde `skills/<id>/SKILL.md` al listar con `npx nifillos skills`.
+
+## Skills disponibles en este paquete
 
 | Skill | Type | Description | Env Vars | Install |
 |-------|------|-------------|----------|---------|
-| [apify](./apify/) | mcp | Web scraping and automation platform. Extract data from any website using pre-built Actors. | `APIFY_TOKEN` | `npx opensquad install apify` |
-| [canva](./canva/) | mcp | Create, search, autofill, and export designs from Canva. | _(none -- OAuth)_ | `npx opensquad install canva` |
-| [instagram-publisher](./instagram-publisher/) | script | Publish Instagram carousel posts from local JPEG images via the Graph API. | `INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_USER_ID` | `npx opensquad install instagram-publisher` |
-| [blotato](./blotato/) | mcp | Publish and schedule posts across Instagram, LinkedIn, Twitter/X, TikTok, YouTube, and more. | `BLOTATO_API_KEY` | `npx opensquad install blotato` |
-| [image-fetcher](./image-fetcher/) | hybrid | Acquire visual assets via web search, live screenshots (Playwright), and user-provided files. | _(none)_ | `npx opensquad install image-fetcher` |
-| [image-creator](./image-creator/) | mcp | Render HTML/CSS into production-ready PNG images via Playwright. | _(none)_ | `npx opensquad install image-creator` |
-| [image-generator](./image-generator/) | script | Generate AI images via Openrouter API. Test mode (cheap) and production mode (high-quality). Supports reference images for brand consistency. | `OPENROUTER_API_KEY` | `npx opensquad install image-generator` |
+| [apify](./apify/) | mcp | Web scraping and automation platform. | `APIFY_TOKEN` | `npx nifillos install apify` |
+| [canva](./canva/) | mcp | Create, search, autofill, and export designs from Canva. | _(OAuth)_ | `npx nifillos install canva` |
+| [instagram-publisher](./instagram-publisher/) | script | Publish Instagram carousel posts via Graph API. | `INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_USER_ID` | `npx nifillos install instagram-publisher` |
+| [blotato](./blotato/) | mcp | Publish and schedule posts across social platforms. | `BLOTATO_API_KEY` | `npx nifillos install blotato` |
+| [image-fetcher](./image-fetcher/) | hybrid | Acquire visual assets via search, screenshots, files. | _(none)_ | `npx nifillos install image-fetcher` |
+| [image-creator](./image-creator/) | mcp | Render HTML/CSS to PNG via Playwright. | _(none)_ | `npx nifillos install image-creator` |
+| [image-generator](./image-generator/) | script | Generate AI images via Openrouter. | `OPENROUTER_API_KEY` | `npx nifillos install image-generator` |
+| [nifillos-skill-creator](./nifillos-skill-creator/) | prompt | Crea nuevas skills (formato SKILL.md). | _(none)_ | `npx nifillos install nifillos-skill-creator` |
+| [nifillos-agent-creator](./nifillos-agent-creator/) | prompt | Crea guías de best practices / agentes. | _(none)_ | `npx nifillos install nifillos-agent-creator` |
 
-## Skill Types
+## Tipos de skill
 
-- **mcp** -- Connects to an external MCP server (stdio or HTTP transport)
-- **script** -- Runs a local script (Node.js, Python, etc.)
-- **hybrid** -- Combines MCP server access with local script capabilities
+- **mcp** — Integración con servidor MCP
+- **script** — Scripts locales
+- **hybrid** — MCP + scripts
+- **prompt** — Solo instrucciones en Markdown
 
-## Directory Structure
+## Añadir una skill al paquete npm
 
-Each skill lives in its own folder with a `SKILL.md` file:
+1. Carpeta bajo `skills/<id>/` con `SKILL.md` (frontmatter YAML válido).
+2. Actualiza la tabla de este README.
+3. Publica una nueva versión del paquete `nifillos`.
 
-```
-skills/
-  apify/
-    SKILL.md
-  canva/
-    SKILL.md
-  instagram-publisher/
-    SKILL.md
-    scripts/
-      publish.js
-  blotato/
-    SKILL.md
-  image-fetcher/
-    SKILL.md
-  image-creator/
-    SKILL.md
-  image-generator/
-    SKILL.md
-    scripts/
-      generate.py
-```
+## Estructura de directorio
 
-The `SKILL.md` file contains YAML frontmatter (name, type, version, MCP/script config, env vars, categories) and a Markdown body with usage instructions and available operations.
-
-## Adding a New Skill
-
-1. Create a new folder under `skills/` with the skill ID as the name
-2. Add a `SKILL.md` file with valid YAML frontmatter and Markdown body
-3. If the skill includes scripts, place them in a `scripts/` subfolder
-4. Update this README to include the new skill in the catalog table
+Ver `skills/nifillos-skill-creator/references/skill-format.md` para el formato completo de `SKILL.md`.

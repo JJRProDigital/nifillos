@@ -5,10 +5,20 @@ import { loadLocale, t } from './i18n.js';
 import { getTemplateEntries, loadSavedLocale } from './init.js';
 import { listAvailable as listAvailableSkills, listInstalled as listInstalledSkills, installSkill, getSkillMeta } from './skills.js';
 import { logEvent } from './logger.js';
+import { migrateLegacyLayout } from './migrate-legacy-layout.js';
+
+async function pathExists(p) {
+  try {
+    await stat(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 async function loadSavedIdes(targetDir) {
   try {
-    const prefsPath = join(targetDir, '_opensquad', '_memory', 'preferences.md');
+    const prefsPath = join(targetDir, '_nifillos', '_memory', 'preferences.md');
     const content = await readFile(prefsPath, 'utf-8');
     const match = content.match(/\*\*IDEs:\*\*\s*(.+)/);
     if (match) {
@@ -24,10 +34,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATES_DIR = join(__dirname, '..', 'templates');
 
 const PROTECTED_PATHS = [
-  '_opensquad/_memory',
-  '_opensquad/_investigations',
+  '_nifillos/_memory',
+  '_nifillos/_investigations',
   'agents',
-  'squads',
+  'cuadrillas',
 ];
 
 function isProtected(relativePath) {
@@ -38,11 +48,11 @@ function isProtected(relativePath) {
 }
 
 export async function update(targetDir) {
-  console.log('\n  🔄 Opensquad — Update\n');
+  console.log('\n  🔄 Nifillos — Update\n');
 
   // 1. Check initialized
   try {
-    await stat(join(targetDir, '_opensquad'));
+    await stat(join(targetDir, '_nifillos'));
   } catch {
     await loadLocale('English');
     console.log(`  ${t('updateNotInitialized')}`);
@@ -52,18 +62,33 @@ export async function update(targetDir) {
   // 2. Load user's locale
   await loadSavedLocale(targetDir);
 
+  const hasLegacyDirs =
+    (await pathExists(join(targetDir, 'squads'))) ||
+    (await pathExists(join(targetDir, 'cuadrillas')));
+  if (hasLegacyDirs) {
+    console.log(`\n  ${t('migrateSection')}`);
+    const migrated = await migrateLegacyLayout(targetDir);
+    const empty =
+      !migrated.rootRenamed &&
+      migrated.filesRenamed.length === 0 &&
+      migrated.yamlPatched.length === 0 &&
+      migrated.statePatched.length === 0 &&
+      migrated.warnings.length === 0;
+    if (empty) console.log(`  ${t('migrateNothing')}`);
+  }
+
   // 3. Read versions
   let currentVersion = null;
   try {
     currentVersion = (
-      await readFile(join(targetDir, '_opensquad', '.opensquad-version'), 'utf-8')
+      await readFile(join(targetDir, '_nifillos', '.nifillos-version'), 'utf-8')
     ).trim();
   } catch {
     // Legacy install — no version file
   }
 
   const newVersion = (
-    await readFile(join(TEMPLATES_DIR, '_opensquad', '.opensquad-version'), 'utf-8')
+    await readFile(join(TEMPLATES_DIR, '_nifillos', '.nifillos-version'), 'utf-8')
   ).trim();
 
   // 4. Announce
@@ -114,11 +139,11 @@ export async function update(targetDir) {
     }
   }
 
-  // 6b. Install new non-MCP, non-hybrid bundled skills not already present
+  // 7. Install new non-MCP, non-hybrid bundled skills not already present
   const availableSkills = await listAvailableSkills();
   const installedSkills = await listInstalledSkills(targetDir);
   for (const id of availableSkills) {
-    if (id === 'opensquad-skill-creator') continue;
+    if (id === 'nifillos-skill-creator') continue;
     if (installedSkills.includes(id)) continue;
     const meta = await getSkillMeta(id);
     if (!meta) continue;
@@ -128,7 +153,7 @@ export async function update(targetDir) {
     count++;
   }
 
-  // 7. Summary
+  // 8. Summary
   console.log(`\n  ${t('updateFileCount', { count })}`);
   console.log(`  ${t('updatePreserved')}`);
   console.log(`  ${t('updateSuccess', { version: `v${newVersion}` })}`);

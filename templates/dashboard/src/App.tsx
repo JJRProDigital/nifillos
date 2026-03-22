@@ -1,10 +1,10 @@
-import { useSquadSocket } from "@/hooks/useSquadSocket";
-import { SquadSelector } from "@/components/SquadSelector";
+import { useCuadrillaSocket } from "@/hooks/useCuadrillaSocket";
+import { CuadrillaSelector } from "@/components/CuadrillaSelector";
 import { OfficeScene } from "@/office/OfficeScene";
 import { StatusBar } from "@/components/StatusBar";
 
 export function App() {
-  useSquadSocket();
+  useCuadrillaSocket();
 
   return (
     <div
@@ -30,12 +30,12 @@ export function App() {
           letterSpacing: 0.5,
         }}
       >
-        opensquad Dashboard
+        Nifillos Dashboard
       </header>
 
       {/* Main content */}
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        <SquadSelector />
+        <CuadrillaSelector />
         <OfficeScene />
       </div>
 

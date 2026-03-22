@@ -5,11 +5,6 @@ description: >
   Accepts complete HTML content, opens it in a headless browser at
   the specified viewport, and captures a pixel-perfect screenshot.
   Generic engine -- any visual format is defined by the HTML template.
-description_pt-BR: >
-  Renderiza HTML/CSS em imagens prontas para produção via Playwright.
-  Aceita conteúdo HTML completo, abre em um navegador headless na
-  viewport especificada e captura uma screenshot pixel-perfect.
-  Motor genérico -- qualquer formato visual é definido pelo template HTML.
 description_es: >
   Renderiza HTML/CSS en imágenes listas para producción vía Playwright.
   Acepta contenido HTML completo, lo abre en un navegador headless en
@@ -34,9 +29,9 @@ Use the Visual Renderer when you need to generate production-ready images from H
 
 1. **Generate HTML** -- Write a complete, self-contained HTML file with inline CSS. The HTML IS the design -- all styling, layout, fonts, colors, and content must be embedded.
 
-2. **Save HTML** -- Write the HTML file to the squad's output folder (e.g., `output/slides/slide-01.html`)
+2. **Save HTML** -- Write the HTML file to the cuadrilla's output folder (e.g., `output/slides/slide-01.html`)
 
-3. **Start HTTP server** -- Before rendering, start a local HTTP server in the squad's output folder:
+3. **Start HTTP server** -- Before rendering, start a local HTTP server in the cuadrilla's output folder:
    ```bash
    python -m http.server 8765 --directory "OUTPUT_DIR" &
    for i in $(seq 1 30); do curl -s http://localhost:8765 > /dev/null 2>&1 && break || sleep 0.1; done
@@ -65,7 +60,7 @@ Use these standard dimensions:
 - Twitter/X Post: 1200 x 675
 - LinkedIn Post: 1200 x 627
 - YouTube Thumbnail: 1280 x 720
-- Custom: as specified by the squad
+- Custom: as specified by the cuadrilla
 
 ### HTML Template Guidelines
 

@@ -5,11 +5,6 @@ description: >
   Supports two modes: test (cheap model for iteration) and production (high-quality model for final output).
   Handles prompt construction, API calls, base64 decoding, and file saving.
   Supports reference images (logos, mascots) for brand-consistent generation.
-description_pt-BR: >
-  Gera imagens via API do Openrouter usando modelos de IA.
-  Suporta dois modos: test (modelo barato para iteração) e production (modelo de alta qualidade para output final).
-  Cuida da construção de prompts, chamadas de API, decodificação base64 e salvamento de arquivos.
-  Suporta imagens de referência (logos, mascotes) para geração consistente com a marca.
 type: script
 version: "1.0.0"
 script:
@@ -28,7 +23,7 @@ categories: [assets, images, ai, generation]
 Use the Image Generator when you need to create visual assets from text prompts. This skill calls the Openrouter API with AI image generation models and saves the resulting images locally.
 
 **IMPORTANT: Think twice before generating images.** Image generation costs money and takes time. Before generating:
-1. Check if a suitable image already exists in the squad's assets folder
+1. Check if a suitable image already exists in the cuadrilla's assets folder
 2. Check if a web search could find a free/open image that works
 3. Consider if the image is truly necessary for the content quality
 4. Only generate when no existing alternative is good enough
@@ -57,7 +52,7 @@ Use the Image Generator when you need to create visual assets from text prompts.
 ```bash
 python3 skills/image-generator/scripts/generate.py \
   --prompt "A detailed description of the image to generate" \
-  --output "squads/{squad}/output/{run_id}/assets/image-name.jpg" \
+  --output "cuadrillas/{cuadrilla}/output/{run_id}/assets/image-name.jpg" \
   --mode test
 ```
 
@@ -68,8 +63,8 @@ Use `--reference` to send a local image to the model as visual context. The mode
 ```bash
 python3 skills/image-generator/scripts/generate.py \
   --prompt "A social media banner featuring the company logo prominently in the center" \
-  --output "squads/{squad}/output/{run_id}/assets/banner.jpg" \
-  --reference "squads/{squad}/assets/logo.png" \
+  --output "cuadrillas/{cuadrilla}/output/{run_id}/assets/banner.jpg" \
+  --reference "cuadrillas/{cuadrilla}/assets/logo.png" \
   --mode production
 ```
 
@@ -79,7 +74,7 @@ Supported reference formats: PNG, JPEG, WEBP, GIF.
 
 ```bash
 python3 skills/image-generator/scripts/generate.py \
-  --batch "squads/{squad}/output/{run_id}/assets/batch.json" \
+  --batch "cuadrillas/{cuadrilla}/output/{run_id}/assets/batch.json" \
   --mode production
 ```
 

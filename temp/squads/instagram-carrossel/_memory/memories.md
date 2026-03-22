@@ -1,5 +1,5 @@
-# Squad Memories — instagram-carrossel
-**Squad:** Fábrica de Carrosséis
+# Crew Memories — instagram-carrossel
+**Crew:** Fábrica de Carrosséis
 **Created:** 2026-03-03
 
 ## Executions Log
@@ -22,4 +22,4 @@
 
 ## Recurring Issues
 
-*(Track any recurring problems to improve the squad over time)*
+*(Track any recurring problems to improve the crew over time)*

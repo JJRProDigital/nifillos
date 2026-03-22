@@ -2,9 +2,9 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Add two new tools (`asset-fetcher` and `visual-renderer`) to the Opensquad registry and update the Architect to suggest them for visual output squads.
+**Goal:** Add two new tools (`asset-fetcher` and `visual-renderer`) to the Nifillos registry and update the Architect to suggest them for visual output crews.
 
-**Architecture:** Two `.tool.yaml` files in `_opensquad/tools/registry/` following the existing schema (matching `canva.tool.yaml` and `apify.tool.yaml` format). Both use Playwright MCP. The Architect agent gets a new "Visual Output Squad Pattern" in Phase 4 to guide squad design when these tools are installed.
+**Architecture:** Two `.tool.yaml` files in `_nifillos/tools/registry/` following the existing schema (matching `canva.tool.yaml` and `apify.tool.yaml` format). Both use Playwright MCP. The Architect agent gets a new "Visual Output Crew Pattern" in Phase 4 to guide crew design when these tools are installed.
 
 **Tech Stack:** YAML (tool definitions), Markdown (Architect agent config), Playwright MCP (runtime dependency)
 
@@ -13,11 +13,11 @@
 ### Task 1: Create asset-fetcher.tool.yaml
 
 **Files:**
-- Create: `_opensquad/tools/registry/asset-fetcher.tool.yaml`
+- Create: `_nifillos/tools/registry/asset-fetcher.tool.yaml`
 
 **Step 1: Create the tool definition file**
 
-Write `_opensquad/tools/registry/asset-fetcher.tool.yaml` with this exact content:
+Write `_nifillos/tools/registry/asset-fetcher.tool.yaml` with this exact content:
 
 ```yaml
 name: Asset Fetcher
@@ -27,7 +27,7 @@ type: hybrid
 description: >
   Acquires visual assets from multiple sources: web image search,
   live website screenshots via Playwright, and user-provided files.
-  Organizes assets in the squad's reference folder.
+  Organizes assets in the cuadrilla's reference folder.
 
 mcp:
   server_name: playwright
@@ -45,7 +45,7 @@ instructions: |
      set viewport dimensions, and capture a screenshot.
 
   3. **Asset Organization** — Save all acquired assets with descriptive
-     filenames in the squad's reference/ or output/ folder.
+     filenames in the cuadrilla's reference/ or output/ folder.
 
   ## Screenshot Modes
 
@@ -100,15 +100,15 @@ useful_for: [content-design, social-media-content, visual-content, visual-enrich
 
 **Step 2: Validate YAML syntax**
 
-Run: `cd "d:\Coding Projects\opensquad" && node -e "const yaml = require('yaml'); const fs = require('fs'); const doc = yaml.parse(fs.readFileSync('_opensquad/tools/registry/asset-fetcher.tool.yaml', 'utf8')); console.log('Valid YAML. id:', doc.id, 'type:', doc.type, 'categories:', doc.categories)"`
+Run: `cd "d:\Coding Projects\Nifillos" && node -e "const yaml = require('yaml'); const fs = require('fs'); const doc = yaml.parse(fs.readFileSync('_nifillos/tools/registry/asset-fetcher.tool.yaml', 'utf8')); console.log('Valid YAML. id:', doc.id, 'type:', doc.type, 'categories:', doc.categories)"`
 
 Expected output: `Valid YAML. id: asset-fetcher type: hybrid categories: [ 'assets', 'scraping', 'automation', 'images' ]`
 
-If yaml module not available, use: `node -e "const fs = require('fs'); try { JSON.stringify(require('js-yaml').load(fs.readFileSync('_opensquad/tools/registry/asset-fetcher.tool.yaml', 'utf8'))); console.log('Valid') } catch(e) { console.log('Trying basic check...'); const content = fs.readFileSync('_opensquad/tools/registry/asset-fetcher.tool.yaml', 'utf8'); console.log('File exists, lines:', content.split('\n').length) }"`
+If yaml module not available, use: `node -e "const fs = require('fs'); try { JSON.stringify(require('js-yaml').load(fs.readFileSync('_nifillos/tools/registry/asset-fetcher.tool.yaml', 'utf8'))); console.log('Valid') } catch(e) { console.log('Trying basic check...'); const content = fs.readFileSync('_nifillos/tools/registry/asset-fetcher.tool.yaml', 'utf8'); console.log('File exists, lines:', content.split('\n').length) }"`
 
 **Step 3: Verify structure matches existing tools**
 
-Confirm the file has these required fields (per `_opensquad/core/tools.engine.md:20-39`):
+Confirm the file has these required fields (per `_nifillos/core/tools.engine.md:20-39`):
 - `name` (string) ✓
 - `id` (string) ✓
 - `version` (string) ✓
@@ -122,8 +122,8 @@ Confirm the file has these required fields (per `_opensquad/core/tools.engine.md
 **Step 4: Commit**
 
 ```bash
-git add _opensquad/tools/registry/asset-fetcher.tool.yaml
-git commit -m "feat: add asset-fetcher tool to Opensquad registry
+git add _nifillos/tools/registry/asset-fetcher.tool.yaml
+git commit -m "feat: add asset-fetcher tool to Nifillos registry
 
 Hybrid tool that acquires visual assets via web search and
 Playwright screenshots. Depends on Playwright MCP plugin."
@@ -134,11 +134,11 @@ Playwright screenshots. Depends on Playwright MCP plugin."
 ### Task 2: Create visual-renderer.tool.yaml
 
 **Files:**
-- Create: `_opensquad/tools/registry/visual-renderer.tool.yaml`
+- Create: `_nifillos/tools/registry/visual-renderer.tool.yaml`
 
 **Step 1: Create the tool definition file**
 
-Write `_opensquad/tools/registry/visual-renderer.tool.yaml` with this exact content:
+Write `_nifillos/tools/registry/visual-renderer.tool.yaml` with this exact content:
 
 ```yaml
 name: Visual Renderer
@@ -165,7 +165,7 @@ instructions: |
      inline CSS. The HTML IS the design — all styling, layout, fonts,
      colors, and content must be embedded.
 
-  2. **Save HTML** — Write the HTML file to the squad's output folder
+  2. **Save HTML** — Write the HTML file to the cuadrilla's output folder
      (e.g., `output/slides/slide-01.html`)
 
   3. **Render** — Use Playwright to:
@@ -186,7 +186,7 @@ instructions: |
   - Twitter/X Post: 1200 x 675
   - LinkedIn Post: 1200 x 627
   - YouTube Thumbnail: 1280 x 720
-  - Custom: as specified by the squad
+  - Custom: as specified by the crew
 
   ## HTML Template Guidelines
 
@@ -245,8 +245,8 @@ Same validation approach as Task 1, adapted for this file path.
 **Step 3: Commit**
 
 ```bash
-git add _opensquad/tools/registry/visual-renderer.tool.yaml
-git commit -m "feat: add visual-renderer tool to Opensquad registry
+git add _nifillos/tools/registry/visual-renderer.tool.yaml
+git commit -m "feat: add visual-renderer tool to Nifillos registry
 
 MCP tool that renders HTML/CSS into PNG images via Playwright.
 Generic engine — visual format defined entirely by HTML templates."
@@ -254,11 +254,11 @@ Generic engine — visual format defined entirely by HTML templates."
 
 ---
 
-### Task 3: Update Architect — add Visual Output Squad Pattern
+### Task 3: Update Architect — add Visual Output Crew Pattern
 
 **Files:**
-- Modify: `_opensquad/core/architect.agent.yaml:26-42` (principles section)
-- Modify: `_opensquad/core/architect.agent.yaml:375-459` (Phase 4 Design section)
+- Modify: `_nifillos/core/architect.agent.yaml:26-42` (principles section)
+- Modify: `_nifillos/core/architect.agent.yaml:375-459` (Phase 4 Design section)
 
 **Step 1: Add visual output principle**
 
@@ -266,7 +266,7 @@ In the `principles` array (line ~42 of `architect.agent.yaml`), add a new princi
 
 Find:
 ```yaml
-      - "Tool discovery: after extraction, scan _opensquad/tools/registry/ for tools matching the squad's needs and offer relevant integrations to the user before designing the squad"
+      - "Tool discovery: after extraction, scan _nifillos/tools/registry/ for tools matching the cuadrilla's needs and offer relevant integrations to the user before designing the crew"
 ```
 
 Add after it:
@@ -274,12 +274,12 @@ Add after it:
       - "Visual output: when visual-renderer and/or asset-fetcher tools are selected, add design/render steps to the pipeline and ensure at least one agent has design capability (HTML/CSS generation for visual-renderer, asset sourcing for asset-fetcher)"
 ```
 
-**Step 2: Add Visual Output Squad Pattern in Phase 4**
+**Step 2: Add Visual Output Crew Pattern in Phase 4**
 
-In Phase 4 Design section, after the Content Squad Pattern (item 4, which ends around line 439), add a new item 4.5 for Visual Output Pattern. Find the line that says:
+In Phase 4 Design section, after the Content Crew Pattern (item 4, which ends around line 439), add a new item 4.5 for Visual Output Pattern. Find the line that says:
 
 ```
-         Note: For non-content squads (data analysis, automation, etc.), the traditional pattern still applies:
+         Note: For non-content crews (data analysis, automation, etc.), the traditional pattern still applies:
          researcher + analyst + writer/executor + reviewer, without platform-specific creators.
 ```
 
@@ -289,7 +289,7 @@ Add after it:
 
       4.5. **Visual Output Pattern** (when visual-renderer or asset-fetcher tools are installed):
 
-         When the squad's tools list includes `visual-renderer` and/or `asset-fetcher`
+         When the cuadrilla's tools list includes `visual-renderer` and/or `asset-fetcher`
          (installed during Phase 3.5), modify the pipeline to include visual output steps:
 
          a. **Asset Acquisition step** (if `asset-fetcher` is installed):
@@ -307,10 +307,10 @@ Add after it:
               - Branding from company.md (colors, logo, fonts)
               - Platform viewport dimensions from visual-renderer instructions
             - Agent uses visual-renderer to capture HTML as PNG screenshots
-            - Output: PNG files in squad output folder + HTML source files for re-rendering
+            - Output: PNG files in crew output folder + HTML source files for re-rendering
             - CHECKPOINT after rendering: user reviews generated images
 
-         c. **Agent design for visual squads**:
+         c. **Agent design for visual crews**:
             - Option A: Add a **dedicated Designer agent** with HTML/CSS expertise
               - Alliterative name following convention (e.g., "Diana Design", "Vitor Visual")
               - Tools: [visual-renderer] (and optionally asset-fetcher)
@@ -318,7 +318,7 @@ Add after it:
             - Option B: Extend the **Creator agent** with design capability
               - Add visual-renderer to the creator's tools list
               - Add design tasks to the creator's task list
-              - Use when the squad is simple and doesn't warrant a separate designer
+              - Use when the crew is simple and doesn't warrant a separate designer
             - Choose Option A for Alta Performance mode, Option B for Econômico mode
 
          d. **Pipeline integration**:
@@ -340,7 +340,7 @@ Add after it:
 
 The Architect file is a large YAML with multi-line strings. Verify the file is still valid:
 
-Run: `node -e "const yaml = require('yaml'); const fs = require('fs'); const doc = yaml.parse(fs.readFileSync('_opensquad/core/architect.agent.yaml', 'utf8')); console.log('Valid. Principles count:', doc.agent.persona.principles.length)"`
+Run: `node -e "const yaml = require('yaml'); const fs = require('fs'); const doc = yaml.parse(fs.readFileSync('_nifillos/core/architect.agent.yaml', 'utf8')); console.log('Valid. Principles count:', doc.agent.persona.principles.length)"`
 
 Expected: principle count should be one more than before (was ~12, now ~13).
 
@@ -349,11 +349,11 @@ If yaml parser not available, do a basic sanity check: read the file and verify 
 **Step 4: Commit**
 
 ```bash
-git add _opensquad/core/architect.agent.yaml
+git add _nifillos/core/architect.agent.yaml
 git commit -m "feat: teach Architect about visual output tools
 
-Add Visual Output Squad Pattern to Phase 4 and a new principle
-for designing squads that use visual-renderer and asset-fetcher."
+Add Visual Output Crew Pattern to Phase 4 and a new principle
+for designing crews that use visual-renderer and asset-fetcher."
 ```
 
 ---
@@ -361,12 +361,12 @@ for designing squads that use visual-renderer and asset-fetcher."
 ### Task 4: Verify tool discovery works
 
 **Files:**
-- Read: `_opensquad/tools/registry/*.tool.yaml` (all tool files)
-- Read: `_opensquad/core/tools.engine.md` (discovery logic)
+- Read: `_nifillos/tools/registry/*.tool.yaml` (all tool files)
+- Read: `_nifillos/core/tools.engine.md` (discovery logic)
 
 **Step 1: List all registry tools**
 
-Run: `ls _opensquad/tools/registry/`
+Run: `ls _nifillos/tools/registry/`
 
 Expected: 4 files:
 - `apify.tool.yaml`
@@ -374,17 +374,17 @@ Expected: 4 files:
 - `canva.tool.yaml`
 - `visual-renderer.tool.yaml`
 
-**Step 2: Verify useful_for tags match content squad needs**
+**Step 2: Verify useful_for tags match content crew needs**
 
-Check that both new tools have `useful_for` entries that would match content creation squads:
+Check that both new tools have `useful_for` entries that would match content creation crews:
 
-Run: `grep -A1 "useful_for:" _opensquad/tools/registry/asset-fetcher.tool.yaml _opensquad/tools/registry/visual-renderer.tool.yaml`
+Run: `grep -A1 "useful_for:" _nifillos/tools/registry/asset-fetcher.tool.yaml _nifillos/tools/registry/visual-renderer.tool.yaml`
 
 Expected: Both should contain `content-design` and `social-media-content` in their `useful_for` arrays.
 
 **Step 3: Verify Architect principle is present**
 
-Run: `grep "Visual output" _opensquad/core/architect.agent.yaml`
+Run: `grep "Visual output" _nifillos/core/architect.agent.yaml`
 
 Expected: Should find the new principle about visual output.
 
@@ -398,9 +398,9 @@ If any fixes were needed, commit them. Otherwise, no action needed.
 
 | Task | Action | Files |
 |------|--------|-------|
-| 1 | Create asset-fetcher tool | `_opensquad/tools/registry/asset-fetcher.tool.yaml` |
-| 2 | Create visual-renderer tool | `_opensquad/tools/registry/visual-renderer.tool.yaml` |
-| 3 | Update Architect agent | `_opensquad/core/architect.agent.yaml` |
+| 1 | Create asset-fetcher tool | `_nifillos/tools/registry/asset-fetcher.tool.yaml` |
+| 2 | Create visual-renderer tool | `_nifillos/tools/registry/visual-renderer.tool.yaml` |
+| 3 | Update Architect agent | `_nifillos/core/architect.agent.yaml` |
 | 4 | Verify everything works | Read-only verification |
 
 **Total: 4 tasks, ~3 commits**

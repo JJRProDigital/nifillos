@@ -2,7 +2,7 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** During `opensquad init`, ask which IDEs the user wants to install (multi-select) and copy the appropriate config files for each selected IDE (Claude Code, Open Code, Codex, Antigravity).
+**Goal:** During `Nifillos init`, ask which IDEs the user wants to install (multi-select) and copy the appropriate config files for each selected IDE (Claude Code, Open Code, Codex, Antigravity).
 
 **Architecture:** IDE-specific template files move from `templates/` root into `templates/ide-templates/{ide}/`. `init.js` gains `copyCommonTemplates()` + `copyIdeTemplates(ides)`. `prompt.js` gains `multiChoose()` wrapping `@inquirer/checkbox`. The `_skipPrompts` path defaults to `['claude-code']` for backward-compatibility.
 
@@ -102,13 +102,13 @@ Add at the bottom of `tests/init.test.js`:
 
 ```js
 test('init with _ides installs only selected IDE files', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true, _ides: ['claude-code'] });
 
     // claude-code files exist
-    await stat(join(tempDir, '.claude', 'skills', 'opensquad', 'SKILL.md'));
+    await stat(join(tempDir, '.claude', 'skills', 'Nifillos', 'SKILL.md'));
     await stat(join(tempDir, 'CLAUDE.md'));
   } finally {
     await rm(tempDir, { recursive: true, force: true });
@@ -145,7 +145,7 @@ In `src/init.js`, make these changes:
 
 4. Update the preferences file write (line 73-80) — change `**IDE:**` to `**IDEs:**`:
    ```js
-   const prefsContent = `# Opensquad Preferences
+   const prefsContent = `# Nifillos Preferences
 
 - **User Name:** ${userName}
 - **Output Language:** ${language}
@@ -252,8 +252,8 @@ git commit -m "feat: add _ides option and split copyTemplates into common + ide-
 **Step 1: Create the new directory and move files**
 
 ```bash
-mkdir -p "templates/ide-templates/claude-code/.claude/skills/opensquad"
-cp "templates/.claude/skills/opensquad/SKILL.md" "templates/ide-templates/claude-code/.claude/skills/opensquad/SKILL.md"
+mkdir -p "templates/ide-templates/claude-code/.claude/skills/Nifillos"
+cp "templates/.claude/skills/Nifillos/SKILL.md" "templates/ide-templates/claude-code/.claude/skills/Nifillos/SKILL.md"
 cp "templates/CLAUDE.md" "templates/ide-templates/claude-code/CLAUDE.md"
 rm -rf "templates/.claude"
 rm "templates/CLAUDE.md"
@@ -290,7 +290,7 @@ Note: Use a string `includes('/ide-templates/')` check (normalizing backslashes)
 npm test
 ```
 
-Expected: All tests PASS. The test `init creates _opensquad directory structure` checks for `.claude/skills/opensquad/SKILL.md` — this now comes from `copyIdeTemplates(['claude-code'])` which is the default.
+Expected: All tests PASS. The test `init creates _nifillos directory structure` checks for `.claude/skills/Nifillos/SKILL.md` — this now comes from `copyIdeTemplates(['claude-code'])` which is the default.
 
 **Step 4: Commit**
 
@@ -313,14 +313,14 @@ Add at the bottom of `tests/init.test.js`:
 
 ```js
 test('init with _ides opencode creates AGENTS.md', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true, _ides: ['opencode'] });
 
     const content = await readFile(join(tempDir, 'AGENTS.md'), 'utf-8');
-    assert.ok(content.includes('Opensquad'));
-    assert.ok(content.includes('/opensquad'));
+    assert.ok(content.includes('Nifillos'));
+    assert.ok(content.includes('/Nifillos'));
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }
@@ -340,16 +340,16 @@ Expected: FAIL with "ENOENT: no such file or directory, open '.../AGENTS.md'"
 Create `templates/ide-templates/opencode/AGENTS.md` with this content (SKILL.md body, no YAML frontmatter):
 
 ```markdown
-# Opensquad Instructions
+# Nifillos Instructions
 
-You are now operating as the Opensquad system. Your primary role is to help users create, manage, and run AI agent squads.
+You are now operating as the Nifillos system. Your primary role is to help users create, manage, and run AI agent crews.
 
 ## Initialization
 
 On activation, perform these steps IN ORDER:
 
-1. Read the company context file: `{project-root}/_opensquad/_memory/company.md`
-2. Read the preferences file: `{project-root}/_opensquad/_memory/preferences.md`
+1. Read the company context file: `{project-root}/_nifillos/_memory/company.md`
+2. Read the preferences file: `{project-root}/_nifillos/_memory/preferences.md`
 3. Check if company.md is empty or contains only the template — if so, trigger ONBOARDING flow
 4. Otherwise, display the MAIN MENU
 
@@ -357,7 +357,7 @@ On activation, perform these steps IN ORDER:
 
 If `company.md` is empty or contains `<!-- NOT CONFIGURED -->`:
 
-1. Welcome the user warmly to Opensquad
+1. Welcome the user warmly to Nifillos
 2. Ask their name (save to preferences.md)
 3. Ask their preferred language for outputs (save to preferences.md)
 4. Ask for their company name/description and website URL
@@ -368,17 +368,17 @@ If `company.md` is empty or contains `<!-- NOT CONFIGURED -->`:
    - Tone of voice (inferred from website copy)
    - Social media profiles found
 6. Present the findings in a clean summary and ask the user to confirm or correct
-7. Save the confirmed profile to `_opensquad/_memory/company.md`
+7. Save the confirmed profile to `_nifillos/_memory/company.md`
 8. Show the main menu
 
 ## Main Menu
 
-When the user types `/opensquad` or asks for the menu, present an interactive selector using AskUserQuestion with these options (max 4 per question):
+When the user types `/Nifillos` or asks for the menu, present an interactive selector using AskUserQuestion with these options (max 4 per question):
 
 **Primary menu (first question):**
-- **Create a new squad** — Describe what you need and I'll build a squad for you
-- **Run an existing squad** — Execute a squad's pipeline
-- **My squads** — View, edit, or delete your squads
+- **Create a new crew** — Describe what you need and I'll build a crew for you
+- **Run an existing crew** — Execute a cuadrilla's pipeline
+- **My crews** — View, edit, or delete your crews
 - **More options** — Tools, company profile, settings, and help
 
 If the user selects "More options", present a second AskUserQuestion:
@@ -393,20 +393,20 @@ Parse user input and route to the appropriate action:
 
 | Input Pattern | Action |
 |---------------|--------|
-| `/opensquad` or `/opensquad menu` | Show main menu |
-| `/opensquad help` | Show help text |
-| `/opensquad create <description>` | Load Architect → Create Squad flow |
-| `/opensquad list` | List all squads in `squads/` directory |
-| `/opensquad run <name>` | Load Pipeline Runner → Execute squad |
-| `/opensquad dashboard <name>` | Load dashboard.prompt.md → generate squad dashboard |
-| `/opensquad edit <name> <changes>` | Load Architect → Edit Squad flow |
-| `/opensquad tools` | Load Tools Engine → Show tools menu |
-| `/opensquad delete <name>` | Confirm and delete squad directory |
-| `/opensquad edit-company` | Re-run company profile setup |
-| `/opensquad show-company` | Display company.md contents |
-| `/opensquad settings` | Show/edit preferences.md |
-| `/opensquad reset` | Confirm and reset all configuration |
-| Natural language about squads | Infer intent and route accordingly |
+| `/Nifillos` or `/Nifillos menu` | Show main menu |
+| `/Nifillos help` | Show help text |
+| `/Nifillos create <description>` | Load Architect → Create Crew flow |
+| `/Nifillos list` | List all crews in `cuadrillas/` directory |
+| `/Nifillos run <name>` | Load Pipeline Runner → Execute crew |
+| `/Nifillos dashboard <name>` | Load dashboard.prompt.md → generate crew dashboard |
+| `/Nifillos edit <name> <changes>` | Load Architect → Edit Crew flow |
+| `/Nifillos tools` | Load Tools Engine → Show tools menu |
+| `/Nifillos delete <name>` | Confirm and delete crew directory |
+| `/Nifillos edit-company` | Re-run company profile setup |
+| `/Nifillos show-company` | Display company.md contents |
+| `/Nifillos settings` | Show/edit preferences.md |
+| `/Nifillos reset` | Confirm and reset all configuration |
+| Natural language about crews | Infer intent and route accordingly |
 
 ## Loading Agents
 
@@ -415,18 +415,18 @@ When a specific agent needs to be activated:
 1. Read the agent's `.agent.md` file completely
 2. Adopt the agent's persona (role, identity, communication_style, principles)
 3. Follow the agent's menu/workflow instructions
-4. When the agent's task is complete, return to Opensquad main context
+4. When the agent's task is complete, return to Nifillos main context
 
 ## Loading the Pipeline Runner
 
-When running a squad:
+When running a crew:
 
-1. Read `squads/{name}/squad.yaml` to understand the pipeline
-2. Read `squads/{name}/squad-party.csv` to load all agent personas
+1. Read `cuadrillas/{name}/cuadrilla.yaml` to understand the pipeline
+2. Read `cuadrillas/{name}/cuadrilla-party.csv` to load all agent personas
 3. For each agent in the party CSV, also read their full `.agent.md` file from agents/ directory
-4. Load company context from `_opensquad/_memory/company.md`
-5. Load squad memory from `squads/{name}/_memory/memories.md`
-6. Read the pipeline runner instructions from `_opensquad/core/runner.pipeline.md`
+4. Load company context from `_nifillos/_memory/company.md`
+5. Load crew memory from `cuadrillas/{name}/_memory/memories.md`
+6. Read the pipeline runner instructions from `_nifillos/core/runner.pipeline.md`
 7. Execute the pipeline step by step following runner instructions
 
 ## Language Handling
@@ -439,12 +439,12 @@ When running a squad:
 ## Critical Rules
 
 - NEVER skip the onboarding if company.md is not configured
-- ALWAYS load company context before running any squad
+- ALWAYS load company context before running any crew
 - ALWAYS present checkpoints to the user — never skip them
-- ALWAYS save outputs to the squad's output directory
+- ALWAYS save outputs to the cuadrilla's output directory
 - When switching personas (inline execution), clearly indicate which agent is speaking
 - When using subagents, inform the user that background work is happening
-- After each pipeline run, update the squad's memories.md with key learnings
+- After each pipeline run, update the cuadrilla's memories.md with key learnings
 ```
 
 **Step 4: Run tests**
@@ -476,27 +476,27 @@ Add to `tests/init.test.js`:
 
 ```js
 test('init with _ides codex creates AGENTS.md', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true, _ides: ['codex'] });
 
     const content = await readFile(join(tempDir, 'AGENTS.md'), 'utf-8');
-    assert.ok(content.includes('Opensquad'));
+    assert.ok(content.includes('Nifillos'));
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }
 });
 
 test('init with opencode and codex both selected writes AGENTS.md only once', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true, _ides: ['opencode', 'codex'] });
 
     // AGENTS.md exists (written once, not duplicated)
     const content = await readFile(join(tempDir, 'AGENTS.md'), 'utf-8');
-    assert.ok(content.includes('Opensquad'));
+    assert.ok(content.includes('Nifillos'));
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }
@@ -548,7 +548,7 @@ Add to `tests/init.test.js`:
 
 ```js
 test('init with _ides antigravity creates .antigravity/rules.md', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true, _ides: ['antigravity'] });
@@ -557,8 +557,8 @@ test('init with _ides antigravity creates .antigravity/rules.md', async () => {
       join(tempDir, '.antigravity', 'rules.md'),
       'utf-8'
     );
-    assert.ok(content.includes('Opensquad'));
-    assert.ok(content.includes('/opensquad'));
+    assert.ok(content.includes('Nifillos'));
+    assert.ok(content.includes('/Nifillos'));
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }
@@ -731,7 +731,7 @@ Expected: All tests PASS (interactive path is not tested; `_skipPrompts` skips i
 **Step 5: Manual smoke test** (optional, for confidence)
 
 ```bash
-node bin/opensquad.js init /tmp/opensquad-smoke-test
+node bin/Nifillos.js init /tmp/Nifillos-smoke-test
 ```
 
 Expected: See the checkbox selector with Claude Code pre-selected, select multiple, confirm files are created.
@@ -748,18 +748,18 @@ git commit -m "feat: wire multi-select IDE checkbox into interactive init flow"
 ### Task 10: Update the `templates` SKILL.md to match the live SKILL.md
 
 **Files:**
-- Verify: `templates/ide-templates/claude-code/.claude/skills/opensquad/SKILL.md`
+- Verify: `templates/ide-templates/claude-code/.claude/skills/Nifillos/SKILL.md`
 
 **Step 1: Check if the template SKILL.md matches the live SKILL.md**
 
 ```bash
-diff templates/ide-templates/claude-code/.claude/skills/opensquad/SKILL.md .claude/skills/opensquad/SKILL.md
+diff templates/ide-templates/claude-code/.claude/skills/Nifillos/SKILL.md .claude/skills/Nifillos/SKILL.md
 ```
 
-Expected: If there are differences, the live `.claude/skills/opensquad/SKILL.md` is the source of truth. Copy it over:
+Expected: If there are differences, the live `.claude/skills/Nifillos/SKILL.md` is the source of truth. Copy it over:
 
 ```bash
-cp .claude/skills/opensquad/SKILL.md templates/ide-templates/claude-code/.claude/skills/opensquad/SKILL.md
+cp .claude/skills/Nifillos/SKILL.md templates/ide-templates/claude-code/.claude/skills/Nifillos/SKILL.md
 ```
 
 Also copy to AGENTS.md templates if needed (they're manually maintained copies).

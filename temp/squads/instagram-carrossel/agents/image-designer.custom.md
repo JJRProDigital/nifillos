@@ -1,10 +1,10 @@
 ---
 base_agent: image-designer
-id: "squads/instagram-carrossel/agents/image-designer"
+id: "cuadrillas/instagram-carrossel/agents/image-designer"
 name: "Davi Design"
 title: "Especialista em Design Visual Bold & Colorido"
 icon: "🎨"
-squad: "instagram-carrossel"
+crew: "instagram-carrossel"
 execution: inline
 skills:
   - image-creator
@@ -23,7 +23,7 @@ tasks:
 
 ## Additional Principles
 
-1. **Bold e colorido é o DNA visual deste squad.** Fundos escuros (deep navy, preto profundo) com texto branco e um acento vibrante (coral, electric blue, neon green, amarelo ouro) por série. Nunca usar paleta corporativa genérica (azul claro + branco + cinza).
+1. **Bold e colorido é o DNA visual deste crew.** Fundos escuros (deep navy, preto profundo) com texto branco e um acento vibrante (coral, electric blue, neon green, amarelo ouro) por série. Nunca usar paleta corporativa genérica (azul claro + branco + cinza).
 
 2. **Dado do slide 1 em destaque máximo.** O número ou percentual principal do hook deve usar a maior fonte disponível (56px+ hero) e a cor de acento. É o elemento visual mais importante do carrossel.
 
@@ -31,7 +31,7 @@ tasks:
 
 4. **Slide de reflexão = tratamento visual diferente.** O slide de reflexão (penúltimo de conteúdo) pode usar uma cor de fundo diferente ou um layout mais espaçado para criar uma pausa visual que amplifique o impacto emocional do texto.
 
-5. **Google Fonts via @import é o único recurso externo permitido.** Inter ou Poppins são as fontes padrão para este squad. Nunca usar fontes do sistema ou CDNs externos além do Google Fonts.
+5. **Google Fonts via @import é o único recurso externo permitido.** Inter ou Poppins são as fontes padrão para este crew. Nunca usar fontes do sistema ou CDNs externos além do Google Fonts.
 
 6. **Verificar o slide 1 antes de batch renderizar.** Sempre renderizar, verificar visualmente, e só então prosseguir para os demais slides.
 

@@ -1,5 +1,5 @@
-# Research Brief — Instagram Carousel Squad
-**Squad:** instagram-carrossel
+# Research Brief — Instagram Carousel Crew
+**Crew:** instagram-carrossel
 **Prepared:** 2026-03-03
 **Domains researched:** 4
 
@@ -104,7 +104,7 @@
 2. **Formato obrigatório: JPG ou PNG.** JPEG é o mais compatível. PNG é aceito mas recomenda-se converter para JPEG para melhor compatibilidade.
    - Confidence: HIGH | Source: Meta for Developers, Sprout Social, 2025
 
-3. **Todas as imagens do carrossel devem ter o mesmo aspect ratio.** A API default para 1:1 se não especificado. Para feed vertical (4:5): 1080×1350px. Para o formato 3:4 usado no squad: 1080×1440px precisa ser validado.
+3. **Todas as imagens do carrossel devem ter o mesmo aspect ratio.** A API default para 1:1 se não especificado. Para feed vertical (4:5): 1080×1350px. Para o formato 3:4 usado no crew: 1080×1440px precisa ser validado.
    - Confidence: HIGH | Source: Meta for Developers, AdManage, 2025
 
 4. **As imagens devem estar em servidor público acessível.** O Instagram faz curl das URLs durante criação dos media containers. Ferramentas como imgbb são usadas para hosting temporário antes do publish.

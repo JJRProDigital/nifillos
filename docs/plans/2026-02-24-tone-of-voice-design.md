@@ -5,7 +5,7 @@
 
 ## Problema
 
-O agente copywriter (Quill) no squad de Instagram — e agentes escritores de conteúdo em geral — produzem conteúdo sem perguntar ao usuário qual tom de voz utilizar. O tom deveria ser escolhido a cada execução, pois diferentes conteúdos pedem tons diferentes.
+O agente copywriter (Quill) no crew de Instagram — e agentes escritores de conteúdo em geral — produzem conteúdo sem perguntar ao usuário qual tom de voz utilizar. O tom deveria ser escolhido a cada execução, pois diferentes conteúdos pedem tons diferentes.
 
 ## Solução
 
@@ -39,17 +39,17 @@ O tom escolhido deve permear todo o conteúdo: hook, slides, CTA.
 
 ### 3. Mudança no arquiteto (Atlas)
 
-Quando Atlas cria um squad de **produção de conteúdo** (escrita, copy, posts, artigos), ele deve:
+Quando Atlas cria um crew de **produção de conteúdo** (escrita, copy, posts, artigos), ele deve:
 
 1. Gerar automaticamente o arquivo `pipeline/data/tone-of-voice.md` com os tons padrão
 2. Incluir no agente escritor/copywriter a instrução de perguntar o tom antes de produzir
 
-A detecção de squad de conteúdo é por tipo de trabalho (presença de agentes escritores/copywriters/redatores).
+A detecção de crew de conteúdo é por tipo de trabalho (presença de agentes escritores/copywriters/redatores).
 
 ## Escopo
 
 - **Template Instagram**: Adicionar `tone-of-voice.md` + modificar step-04
-- **Arquiteto (Atlas)**: Modificar lógica de geração de squads de conteúdo
+- **Arquiteto (Atlas)**: Modificar lógica de geração de crews de conteúdo
 
 ## Princípios
 

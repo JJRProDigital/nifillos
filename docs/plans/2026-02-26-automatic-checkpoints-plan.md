@@ -2,18 +2,18 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Move checkpoint logic into the Pipeline Runner so it automatically pauses after each agent step based on squad autonomy level and per-step checkpoint config (approve/select/skip).
+**Goal:** Move checkpoint logic into the Pipeline Runner so it automatically pauses after each agent step based on crew autonomy level and per-step checkpoint config (approve/select/skip).
 
-**Architecture:** The runner reads `autonomy` from squad.yaml and `checkpoint` from each step's frontmatter. After every agent step (post-veto), it resolves the checkpoint type and executes the appropriate interaction. Separate checkpoint step files are eliminated.
+**Architecture:** The runner reads `autonomy` from cuadrilla.yaml and `checkpoint` from each step's frontmatter. After every agent step (post-veto), it resolves the checkpoint type and executes the appropriate interaction. Separate checkpoint step files are eliminated.
 
-**Tech Stack:** Markdown prompt files (runner, step files), YAML configs (squad.yaml, pipeline.yaml, architect.agent.yaml)
+**Tech Stack:** Markdown prompt files (runner, step files), YAML configs (cuadrilla.yaml, pipeline.yaml, architect.agent.yaml)
 
 ---
 
 ### Task 1: Update runner.pipeline.md — Add checkpoint logic
 
 **Files:**
-- Modify: `templates/_opensquad/core/runner.pipeline.md`
+- Modify: `templates/_nifillos/core/runner.pipeline.md`
 
 **Step 1: Remove the `type: checkpoint` handler**
 
@@ -44,8 +44,8 @@ Determine which checkpoint to apply for this step:
   - Shorthand: `checkpoint: skip` equals `checkpoint: { type: skip }`
   - Full form: `checkpoint: { type: select, prompt: "...", max_feedback_cycles: 3 }`
 - If the step frontmatter has NO `checkpoint:` field:
-  - If squad.yaml has `autonomy: interactive` → default to `approve`
-  - If squad.yaml has `autonomy: autonomous` → default to `skip`
+  - If cuadrilla.yaml has `autonomy: interactive` → default to `approve`
+  - If cuadrilla.yaml has `autonomy: autonomous` → default to `skip`
 
 #### 2. Execute Checkpoint by Type
 
@@ -113,16 +113,16 @@ This state does NOT persist to disk — it exists only during the current run.
 **Step 4: Commit**
 
 ```bash
-git add templates/_opensquad/core/runner.pipeline.md
+git add templates/_nifillos/core/runner.pipeline.md
 git commit -m "feat: add automatic checkpoint logic to pipeline runner"
 ```
 
 ---
 
-### Task 2: Update instagram-content squad.yaml
+### Task 2: Update instagram-content cuadrilla.yaml
 
 **Files:**
-- Modify: `squads/instagram-content/squad.yaml`
+- Modify: `cuadrillas/instagram-content/cuadrilla.yaml`
 
 **Step 1: Change autonomy and remove checkpoint step IDs**
 
@@ -180,8 +180,8 @@ pipeline:
 **Step 2: Commit**
 
 ```bash
-git add squads/instagram-content/squad.yaml
-git commit -m "feat: update instagram-content squad.yaml with checkpoint config"
+git add cuadrillas/instagram-content/cuadrilla.yaml
+git commit -m "feat: update instagram-content cuadrilla.yaml with checkpoint config"
 ```
 
 ---
@@ -189,14 +189,14 @@ git commit -m "feat: update instagram-content squad.yaml with checkpoint config"
 ### Task 3: Update instagram-content pipeline.yaml
 
 **Files:**
-- Modify: `squads/instagram-content/pipeline/pipeline.yaml`
+- Modify: `cuadrillas/instagram-content/pipeline/pipeline.yaml`
 
 **Step 1: Remove checkpoint step files and renumber**
 
 ```yaml
 name: instagram-content-pipeline
 description: "Research → 🛑 Select → Ideate → 🛑 Select → Write → Review → 🛑 Approve"
-squad: instagram-content
+crew: instagram-content
 
 input:
   topic:
@@ -213,7 +213,7 @@ steps:
 **Step 2: Commit**
 
 ```bash
-git add squads/instagram-content/pipeline/pipeline.yaml
+git add cuadrillas/instagram-content/pipeline/pipeline.yaml
 git commit -m "feat: simplify pipeline.yaml — remove checkpoint step files"
 ```
 
@@ -222,7 +222,7 @@ git commit -m "feat: simplify pipeline.yaml — remove checkpoint step files"
 ### Task 4: Add checkpoint frontmatter to step-01-research.md
 
 **Files:**
-- Modify: `squads/instagram-content/pipeline/steps/step-01-research.md`
+- Modify: `cuadrillas/instagram-content/pipeline/steps/step-01-research.md`
 
 **Step 1: Add checkpoint field to frontmatter**
 
@@ -233,7 +233,7 @@ name: step-01-research
 agent: researcher
 execution: subagent
 nextStepFile: ./step-02-ideation.md
-outputFile: "{squad-root}/output/drafts/research.md"
+outputFile: "{crew-root}/output/drafts/research.md"
 ---
 ```
 
@@ -244,7 +244,7 @@ name: step-01-research
 agent: researcher
 execution: subagent
 nextStepFile: ./step-02-ideation.md
-outputFile: "{squad-root}/output/drafts/research.md"
+outputFile: "{crew-root}/output/drafts/research.md"
 checkpoint:
   type: select
   prompt: "Selecione as notícias e dados que quer usar para o conteúdo"
@@ -260,7 +260,7 @@ No change needed here — the current format already uses `## Key Findings`, `##
 **Step 3: Commit**
 
 ```bash
-git add squads/instagram-content/pipeline/steps/step-01-research.md
+git add cuadrillas/instagram-content/pipeline/steps/step-01-research.md
 git commit -m "feat: add checkpoint: select to research step"
 ```
 
@@ -269,7 +269,7 @@ git commit -m "feat: add checkpoint: select to research step"
 ### Task 5: Add checkpoint frontmatter to step-02-ideation.md
 
 **Files:**
-- Modify: `squads/instagram-content/pipeline/steps/step-02-ideation.md`
+- Modify: `cuadrillas/instagram-content/pipeline/steps/step-02-ideation.md`
 
 **Step 1: Add checkpoint field to frontmatter**
 
@@ -279,9 +279,9 @@ Change the frontmatter from:
 name: step-02-ideation
 agent: ideator
 execution: inline
-inputFile: "{squad-root}/output/drafts/research.md"
+inputFile: "{crew-root}/output/drafts/research.md"
 nextStepFile: ./step-03-user-choice.md
-outputFile: "{squad-root}/output/drafts/angles.md"
+outputFile: "{crew-root}/output/drafts/angles.md"
 ---
 ```
 
@@ -291,9 +291,9 @@ To:
 name: step-02-ideation
 agent: ideator
 execution: inline
-inputFile: "{squad-root}/output/drafts/research.md"
+inputFile: "{crew-root}/output/drafts/research.md"
 nextStepFile: ./step-03-writing.md
-outputFile: "{squad-root}/output/drafts/angles.md"
+outputFile: "{crew-root}/output/drafts/angles.md"
 checkpoint:
   type: select
   prompt: "Selecione os ângulos virais que quer desenvolver"
@@ -309,7 +309,7 @@ The current output format uses `🎯 ANGLE N:` formatting. For the `select` chec
 **Step 3: Commit**
 
 ```bash
-git add squads/instagram-content/pipeline/steps/step-02-ideation.md
+git add cuadrillas/instagram-content/pipeline/steps/step-02-ideation.md
 git commit -m "feat: add checkpoint: select to ideation step"
 ```
 
@@ -318,19 +318,19 @@ git commit -m "feat: add checkpoint: select to ideation step"
 ### Task 6: Delete step-03-user-choice.md and rename step-04 → step-03
 
 **Files:**
-- Delete: `squads/instagram-content/pipeline/steps/step-03-user-choice.md`
-- Rename: `squads/instagram-content/pipeline/steps/step-04-writing.md` → `squads/instagram-content/pipeline/steps/step-03-writing.md`
+- Delete: `cuadrillas/instagram-content/pipeline/steps/step-03-user-choice.md`
+- Rename: `cuadrillas/instagram-content/pipeline/steps/step-04-writing.md` → `cuadrillas/instagram-content/pipeline/steps/step-03-writing.md`
 
 **Step 1: Delete the checkpoint step file**
 
 ```bash
-rm squads/instagram-content/pipeline/steps/step-03-user-choice.md
+rm cuadrillas/instagram-content/pipeline/steps/step-03-user-choice.md
 ```
 
 **Step 2: Rename writing step**
 
 ```bash
-mv squads/instagram-content/pipeline/steps/step-04-writing.md squads/instagram-content/pipeline/steps/step-03-writing.md
+mv cuadrillas/instagram-content/pipeline/steps/step-04-writing.md cuadrillas/instagram-content/pipeline/steps/step-03-writing.md
 ```
 
 **Step 3: Update frontmatter in the renamed file**
@@ -341,9 +341,9 @@ Change the frontmatter of `step-03-writing.md` from:
 name: step-04-writing
 agent: copywriter
 execution: inline
-inputFile: "{squad-root}/output/drafts/selected-angle.md"
+inputFile: "{crew-root}/output/drafts/selected-angle.md"
 nextStepFile: ./step-05-review.md
-outputFile: "{squad-root}/output/drafts/draft.md"
+outputFile: "{crew-root}/output/drafts/draft.md"
 ---
 ```
 
@@ -353,9 +353,9 @@ To:
 name: step-03-writing
 agent: copywriter
 execution: inline
-inputFile: "{squad-root}/output/drafts/angles.md"
+inputFile: "{crew-root}/output/drafts/angles.md"
 nextStepFile: ./step-04-review.md
-outputFile: "{squad-root}/output/drafts/draft.md"
+outputFile: "{crew-root}/output/drafts/draft.md"
 checkpoint: skip
 ---
 ```
@@ -394,7 +394,7 @@ Also update the Output Example to include caption and hashtags.
 **Step 6: Commit**
 
 ```bash
-git add -A squads/instagram-content/pipeline/steps/
+git add -A cuadrillas/instagram-content/pipeline/steps/
 git commit -m "feat: remove checkpoint step, rename writing to step-03, add caption/hashtags"
 ```
 
@@ -403,13 +403,13 @@ git commit -m "feat: remove checkpoint step, rename writing to step-03, add capt
 ### Task 7: Rename step-05-review.md → step-04-review.md
 
 **Files:**
-- Rename: `squads/instagram-content/pipeline/steps/step-05-review.md` → `squads/instagram-content/pipeline/steps/step-04-review.md`
-- Delete: `squads/instagram-content/pipeline/steps/step-06-final.md`
+- Rename: `cuadrillas/instagram-content/pipeline/steps/step-05-review.md` → `cuadrillas/instagram-content/pipeline/steps/step-04-review.md`
+- Delete: `cuadrillas/instagram-content/pipeline/steps/step-06-final.md`
 
 **Step 1: Rename review step**
 
 ```bash
-mv squads/instagram-content/pipeline/steps/step-05-review.md squads/instagram-content/pipeline/steps/step-04-review.md
+mv cuadrillas/instagram-content/pipeline/steps/step-05-review.md cuadrillas/instagram-content/pipeline/steps/step-04-review.md
 ```
 
 **Step 2: Update frontmatter**
@@ -420,9 +420,9 @@ Change from:
 name: step-05-review
 agent: reviewer
 execution: inline
-inputFile: "{squad-root}/output/drafts/draft.md"
+inputFile: "{crew-root}/output/drafts/draft.md"
 nextStepFile: ./step-06-final.md
-outputFile: "{squad-root}/output/drafts/review.md"
+outputFile: "{crew-root}/output/drafts/review.md"
 onReject: step-04-writing
 maxCycles: 3
 ---
@@ -434,8 +434,8 @@ To:
 name: step-04-review
 agent: reviewer
 execution: inline
-inputFile: "{squad-root}/output/drafts/draft.md"
-outputFile: "{squad-root}/output/drafts/review.md"
+inputFile: "{crew-root}/output/drafts/draft.md"
+outputFile: "{crew-root}/output/drafts/review.md"
 onReject: step-03-writing
 maxCycles: 3
 checkpoint:
@@ -457,7 +457,7 @@ Change `# Step 5: Content Review` to `# Step 4: Content Review`.
 **Step 4: Delete step-06-final.md**
 
 ```bash
-rm squads/instagram-content/pipeline/steps/step-06-final.md
+rm cuadrillas/instagram-content/pipeline/steps/step-06-final.md
 ```
 
 The final save logic (memory update, output path) is already handled by the runner's "After Pipeline Completion" section. The output format (caption, hashtags) was moved to the writing step in Task 6.
@@ -465,7 +465,7 @@ The final save logic (memory update, output path) is already handled by the runn
 **Step 5: Commit**
 
 ```bash
-git add -A squads/instagram-content/pipeline/steps/
+git add -A cuadrillas/instagram-content/pipeline/steps/
 git commit -m "feat: rename review to step-04, remove final checkpoint step"
 ```
 
@@ -474,7 +474,7 @@ git commit -m "feat: rename review to step-04, remove final checkpoint step"
 ### Task 8: Update architect.agent.yaml — New checkpoint rules
 
 **Files:**
-- Modify: `templates/_opensquad/core/architect.agent.yaml`
+- Modify: `templates/_nifillos/core/architect.agent.yaml`
 
 **Step 1: Update principle about checkpoints**
 
@@ -489,20 +489,20 @@ To:
 
 **Step 2: Add autonomy question to Phase 1 Discovery**
 
-In the `create-squad` workflow, after question 3 (Frequency/Volume) and before question 4 (References), add:
+In the `create-cuadrilla` workflow, after question 3 (Frequency/Volume) and before question 4 (References), add:
 
 ```markdown
       3.5. **Autonomy**: "How much control do you want during execution?"
            Options: [Interactive — approve each step (recommended for content), Autonomous — run without stopping]
-           This sets the `autonomy` field in squad.yaml.
+           This sets the `autonomy` field in cuadrilla.yaml.
 ```
 
-**Step 3: Update Content Squad Pattern**
+**Step 3: Update Content Crew Pattern**
 
-Replace the Content Squad Pattern section (around lines 350-363). Change from:
+Replace the Content Crew Pattern section (around lines 350-363). Change from:
 
 ```markdown
-      4. Content Squad Pattern:
+      4. Content Crew Pattern:
          ...
          - The pipeline pattern is:
            Research → Ideation (angles) → 🛑 Angle Selection → Writing → Review → 🛑 Final
@@ -512,8 +512,8 @@ Replace the Content Squad Pattern section (around lines 350-363). Change from:
 To:
 
 ```markdown
-      4. Content Squad Pattern:
-         When designing a content creation squad (any squad that produces
+      4. Content Crew Pattern:
+         When designing a content creation crew (any crew that produces
          content like posts, articles, videos, newsletters, etc.):
          - Always include an Ideator agent between Research and Writing
          - The Ideator's role is "Viral Angle Strategist" — identifies the
@@ -523,22 +523,22 @@ To:
          - Checkpoints are declared in each step's frontmatter — NO separate checkpoint step files
          - The Ideator presents 5 angles, each with: angle name, tentative
            hook, suggested structure, and viral potential explanation
-         - Reference the instagram-content squad as the canonical example
+         - Reference the instagram-content crew as the canonical example
 ```
 
-**Step 4: Add checkpoint heuristics after the Content Squad Pattern**
+**Step 4: Add checkpoint heuristics after the Content Crew Pattern**
 
 Add a new section:
 
 ```markdown
       4.5. Checkpoint Heuristics:
-         When assigning checkpoint types to steps in interactive squads:
+         When assigning checkpoint types to steps in interactive crews:
          - Research / data gathering → checkpoint: { type: select } (user picks items)
          - Ideation / brainstorming → checkpoint: { type: select } (user picks direction)
          - Writing / creation → checkpoint: skip (goes directly to reviewer)
          - Review / QA → checkpoint: { type: approve } (user sees final result)
          - Analysis / processing → checkpoint: { type: approve } (user validates)
-         - GUARDRAIL: The last step in any interactive squad MUST have checkpoint: approve
+         - GUARDRAIL: The last step in any interactive crew MUST have checkpoint: approve
          - For select checkpoints, instruct agents to use ## headers to separate items in output
 ```
 
@@ -589,28 +589,28 @@ To:
 
 ```markdown
       - [ ] Every step has a checkpoint field (explicit or defaulting from autonomy)
-      - [ ] Last step has checkpoint: approve (guardrail for interactive squads)
+      - [ ] Last step has checkpoint: approve (guardrail for interactive crews)
       - [ ] No separate checkpoint step files exist in the pipeline
 ```
 
 **Step 8: Commit**
 
 ```bash
-git add templates/_opensquad/core/architect.agent.yaml
+git add templates/_nifillos/core/architect.agent.yaml
 git commit -m "feat: update architect with automatic checkpoint rules and heuristics"
 ```
 
 ---
 
-### Task 9: Update template squad (if exists)
+### Task 9: Update template crew (if exists)
 
 **Files:**
-- Check: `templates/squads/instagram-content/` — if this directory has step files and squad.yaml, apply the same changes as Tasks 2-7
+- Check: `templates/cuadrillas/instagram-content/` — if this directory has step files and cuadrilla.yaml, apply the same changes as Tasks 2-7
 
-**Step 1: Check if template squad files exist**
+**Step 1: Check if template crew files exist**
 
 ```bash
-ls templates/squads/instagram-content/pipeline/steps/ 2>/dev/null
+ls templates/cuadrillas/instagram-content/pipeline/steps/ 2>/dev/null
 ```
 
 If files exist, apply the same frontmatter changes, renaming, and deletions as described in Tasks 2-7. If the template directory is sparse or doesn't have step files (some templates are minimal), skip this task.
@@ -618,7 +618,7 @@ If files exist, apply the same frontmatter changes, renaming, and deletions as d
 **Step 2: Commit (if changes were made)**
 
 ```bash
-git add templates/squads/instagram-content/
+git add templates/cuadrillas/instagram-content/
 git commit -m "feat: update instagram-content template with checkpoint config"
 ```
 
@@ -629,7 +629,7 @@ git commit -m "feat: update instagram-content template with checkpoint config"
 **Step 1: Verify file structure**
 
 ```bash
-ls squads/instagram-content/pipeline/steps/
+ls cuadrillas/instagram-content/pipeline/steps/
 ```
 
 Expected:
@@ -646,7 +646,7 @@ No `step-03-user-choice.md` or `step-06-final.md`.
 
 Check that:
 - `pipeline.yaml` references exactly 4 step files
-- `squad.yaml` has 4 step entries with no `type: checkpoint` entries
+- `cuadrilla.yaml` has 4 step entries with no `type: checkpoint` entries
 - `step-02-ideation.md` frontmatter points `nextStepFile` to `step-03-writing.md`
 - `step-03-writing.md` frontmatter points `nextStepFile` to `step-04-review.md`
 - `step-04-review.md` frontmatter `onReject` points to `step-03-writing`

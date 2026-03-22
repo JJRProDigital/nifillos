@@ -1,227 +1,105 @@
-# opensquad
+# Nifillos
 
-Crie squads de agentes de IA que trabalham juntos — direto da sua IDE.
+CLI de orquestación multi-agente para tu IDE (licencia MIT). Incluye comando `/nifillos` en plantillas, instalación de skills por **id del paquete**, **ruta local** o **URL Git**, y metadatos leídos desde `skills/` del proyecto cuando la skill no está en el bundle.
 
-opensquad é um framework de orquestração multi-agente. Descreva o que você precisa em linguagem natural, e o opensquad cria uma equipe de agentes especializados que trabalham juntos automaticamente.
+## Requisitos
 
-## Veja em ação
+- Node.js **20+**
 
-[![Assista ao vídeo de lançamento](https://img.youtube.com/vi/CL1ppI4qHeU/maxresdefault.jpg)](https://www.youtube.com/watch?v=CL1ppI4qHeU)
+## Uso rápido
 
-## O que é um Squad?
-
-Um squad é uma equipe de agentes de IA que colaboram em uma tarefa. Cada agente tem um papel específico. Eles executam em pipeline — você só intervém nos checkpoints de decisão.
-
-Exemplo:
-
-- **Pesquisador** coleta informações e tendências do setor
-- **Estrategista** gera ideias e define a abordagem
-- **Redator** produz o conteúdo final
-- **Designer** cria as imagens para redes sociais
-- **Revisor** garante qualidade antes da entrega
-
-## Instalação
-
-**Pré-requisito:** Node.js 20+
+Inicializar un proyecto (copia plantillas, skills empaquetadas, configuración por IDE):
 
 ```bash
-npx opensquad init
+npx nifillos init
 ```
 
-Para atualizar uma instalação existente:
+Actualizar archivos del framework desde la versión instalada del paquete (respeta `_memory`, `cuadrillas`, etc.):
 
 ```bash
-npx opensquad update
+npx nifillos update
 ```
 
-## IDEs Suportadas
-
-| IDE | Status |
-|-----|--------|
-| Antigravity | Disponível |
-| Claude Code | Disponível |
-| Codex (OpenAI) | Disponível |
-| Open Code | Disponível |
-| Cursor | Disponível |
-| VS Code + Copilot | Disponível |
-
-## Escritório Virtual
-
-O Escritório Virtual é uma interface visual 2D que mostra seus agentes trabalhando em tempo real.
-
-**Passo 1 — Gere o dashboard** (na sua IDE):
-
-```
-/opensquad dashboard
-```
-
-**Passo 2 — Sirva localmente** (no terminal):
+`update` también comprueba y migra el diseño antiguo: renombra `squads/` → `cuadrillas/`, `squad.yaml` → `cuadrilla.yaml`, `squad-party.csv` → `cuadrilla-party.csv` y la clave `squad` → `cuadrilla` en `state.json` bajo `cuadrillas/`. Si solo quieres esa migración sin copiar plantillas del paquete:
 
 ```bash
-npx serve squads/<nome-do-squad>/dashboard
+npx nifillos migrate
 ```
 
-**Passo 3 —** Abra `http://localhost:3000` no seu navegador.
+Si coexisten `squads/` y `cuadrillas/`, el CLI no fusiona carpetas: hay que unir o borrar `squads/` a mano; los arreglos por archivo se aplican solo bajo `cuadrillas/`.
 
-## Criando seu Squad
+Skills:
 
-Abra o menu:
-
-```
-/opensquad
-```
-
-O **Opensquad** vai te mostrar todas as opções disponíveis. 
-
-Para criar um novo squad, basta selecionar a opção, e o **Arquiteto** faz algumas perguntas, projeta o squad e configura tudo automaticamente. Você aprova o design antes de qualquer execução.
-
-## Executando um Squad
-
-Você pode executar o squad novamente com /opensquad, ou pedindo diretamente:
-
-```
-/opensquad rode o squad <nome-do-squad>
+```bash
+npx nifillos skills
+npx nifillos install apify
+npx nifillos install ./ruta/a/mi-skill
+npx nifillos install https://github.com/usuario/repo-skill.git
+npx nifillos uninstall apify
 ```
 
-O squad executa automaticamente, pausando apenas nos checkpoints onde sua decisão é necessária.
+Otros comandos: `npx nifillos agents …`, `npx nifillos runs [cuadrilla]`. Ver ayuda:
 
-## Exemplos
-
-```
-/opensquad
-/opensquad crie um Squad que gera carrosséis de Instagram a partir de notícias quentes, cria as imagens e publica automaticamente
-/opensquad quero um Squad que produz todos os materiais de lançamento de infoproduto: páginas de vendas, mensagens de WhatsApp, emails e roteiros de CPL
-/opensquad crie um Squad que escreve tutoriais completos com prints de tela para treinamento de colaboradores
-/opensquad crie um "Squad que pega vídeos do YouTube e gera cortes virais automaticamente"
-/opensquad roda o squad carrosseis-instagram
-
+```bash
+npx nifillos
 ```
 
-## Comandos
+## En el IDE
 
-| Comando | O que faz |
-|---------|-----------|
-| `/opensquad` | Abre o menu principal |
-| `/opensquad help` | Mostra todos os comandos |
-| `/opensquad create` | Cria um novo squad |
-| `/opensquad run <nome>` | Executa um squad |
-| `/opensquad list` | Lista seus squads |
-| `/opensquad edit <nome>` | Modifica um squad |
-| `/opensquad skills` | Navega pelas skills instaladas |
-| `/opensquad install <nome>` | Instala uma skill do catálogo |
-| `/opensquad uninstall <nome>` | Remove uma skill instalada |
+Tras `init`, abre el proyecto en Cursor, Claude Code, Codex, etc. y usa el comando slash **`/nifillos`** (menú, crear cuadrilla, ejecutar, skills, …). Los archivos concretos dependen del IDE (por ejemplo `.cursor/rules/nifillos.mdc`, `.claude/skills/nifillos/SKILL.md`).
 
-## Licença
+## Extender el proyecto
 
-MIT — use como quiser.
+| Qué quieres | Dónde / cómo |
+|-------------|----------------|
+| Nueva skill en el **paquete** publicado | Añade `skills/<id>/SKILL.md`, actualiza [skills/README.md](skills/README.md), sube versión en `package.json`. |
+| Skill solo en un **proyecto** | Carpeta `skills/<id>/SKILL.md` o `npx nifillos install ./carpeta`. |
+| **MCP / “plugins”** | Skills tipo `mcp` / `hybrid` y `.mcp.json` en plantillas; perfil Playwright bajo `_nifillos/config/`. |
+| **Plantillas** | `templates/` (núcleo), `templates/ide-templates/<ide>/` (por IDE). |
+| **Cuadrillas de ejemplo** | `templates/cuadrillas/` o documentación en tu repo. |
+
+Convención de id de skill: `^[a-z0-9][a-z0-9-]*$`.
+
+## Desarrollo local del paquete
+
+```bash
+git clone <tu-repo>
+cd nifillos
+npm install
+npm test
+npm run lint
+```
+
+Publicar en npm (ajusta `repository` y `bugs` en [package.json](package.json)):
+
+```bash
+npm publish --access public
+```
+
+Uso sin publicar:
+
+```bash
+npm link
+nifillos init   # en la carpeta destino
+```
+
+## Licencia y atribución
+
+MIT. Ver [LICENSE](LICENSE) y [NOTICE](NOTICE).
 
 ---
 
-# opensquad (English)
+# Nifillos (English)
 
-Create AI squads that work together — right from your IDE.
-
-opensquad is a multi-agent orchestration framework. Describe what you need in plain language, and opensquad creates a team of specialized agents that work together automatically.
-
-## See it in action
-
-[![Watch the launch video](https://img.youtube.com/vi/CL1ppI4qHeU/maxresdefault.jpg)](https://www.youtube.com/watch?v=CL1ppI4qHeU)
-
-## What is a Squad?
-
-A squad is a team of AI agents that collaborate on a task. Each agent has a specific role. They run in a pipeline — you only step in at decision checkpoints.
-
-Example:
-
-- **Researcher** gathers information and industry trends
-- **Strategist** generates ideas and defines the approach
-- **Writer** produces the final content
-- **Reviewer** ensures quality before delivery
-
-## Installation
-
-**Prerequisite:** Node.js 20+
+**nifillos** npm CLI for multi-agent cuadrillas in your IDE (MIT). Slash command **`/nifillos`**, skill install by **bundled id**, **local path**, or **git URL**, and `getSkillMeta` fallback to the project’s `skills/` folder.
 
 ```bash
-npx opensquad init
+npx nifillos init
+npx nifillos update
+npx nifillos migrate   # optional: squads/ → cuadrillas/ and legacy keys only
+npx nifillos install <id|path|git-url>
 ```
 
-To update an existing installation:
+`update` runs the same layout migration as `migrate` when `squads/` or `cuadrillas/` exists. External automation (CI, scripts) should use paths **`cuadrillas/`**, **`cuadrilla.yaml`**, **`cuadrilla-party.csv`**, and dashboard/state field **`cuadrilla`** (not `squads` / `squad`).
 
-```bash
-npx opensquad update
-```
-
-## Supported IDEs
-
-| IDE | Status |
-|-----|--------|
-| Antigravity | Available |
-| Claude Code | Available |
-| Codex (OpenAI) | Available |
-| Open Code | Available |
-| Cursor | Available |
-| VS Code + Copilot | Available |
-
-## Virtual Office
-
-The Virtual Office is a 2D visual interface that shows your agents working in real time.
-
-**Step 1 — Generate the dashboard** (in your IDE):
-
-```
-/opensquad dashboard
-```
-
-**Step 2 — Serve it locally** (in terminal):
-
-```bash
-npx serve squads/<squad-name>/dashboard
-```
-
-**Step 3 —** Open `http://localhost:3000` in your browser.
-
-## Creating your Squad
-
-Describe what you need:
-
-```
-/opensquad create "A squad that writes LinkedIn posts about AI trends"
-```
-
-The **Architect** asks a few questions, designs the squad, and sets everything up automatically. You approve the design before any execution begins.
-
-## Running a Squad
-
-```
-/opensquad run <squad-name>
-```
-
-The squad runs automatically, pausing only at checkpoints where your decision is needed.
-
-## Examples
-
-```
-/opensquad create "Squad that generates Instagram carousels from trending news, creates the images, and publishes automatically"
-/opensquad create "Squad that produces all infoproduct launch materials: sales pages, WhatsApp messages, emails, and CPL scripts"
-/opensquad create "Squad that writes complete tutorials with screenshots for employee training"
-/opensquad create "Squad that takes YouTube videos and automatically generates viral clips"
-```
-
-## Commands
-
-| Command | What it does |
-|---------|-------------|
-| `/opensquad` | Open the main menu |
-| `/opensquad help` | Show all commands |
-| `/opensquad create` | Create a new squad |
-| `/opensquad run <name>` | Run a squad |
-| `/opensquad list` | See all your squads |
-| `/opensquad edit <name>` | Modify a squad |
-| `/opensquad skills` | Browse installed skills |
-| `/opensquad install <name>` | Install a skill from catalog |
-| `/opensquad uninstall <name>` | Remove an installed skill |
-
-## License
-
-MIT — use it however you want.
+See [skills/README.md](skills/README.md) for the bundled catalog and extension notes.

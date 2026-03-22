@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Image Generator — Opensquad Skill
+Image Generator — Nifillos Skill
 Generates images via Openrouter API using AI image models.
 
 Usage:

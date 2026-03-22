@@ -1,10 +1,10 @@
 ---
 base_agent: copywriter
-id: "squads/instagram-carrossel/agents/copywriter"
+id: "cuadrillas/instagram-carrossel/agents/copywriter"
 name: "Carlos Carrossel"
 title: "Estrategista de Conteúdo e Copy de Carrossel"
 icon: "✍️"
-squad: "instagram-carrossel"
+crew: "instagram-carrossel"
 execution: inline
 format: instagram-feed
 skills:
@@ -67,11 +67,11 @@ A sequência de tasks é sempre: generate-angles → (usuário escolhe) → crea
 
 5. **CTA conectado ao conteúdo.** O CTA deve fazer referência específica ao tema do carrossel. "Salva esse carrossel pra quando alguém te disser X" supera "Salva para mais tarde" pelo fator de relevância contextual.
 
-6. **Entregar sempre uma versão polida.** Neste squad, qualidade supera velocidade. Uma versão excelente vale mais que múltiplas medíocres.
+6. **Entregar sempre uma versão polida.** Neste crew, qualidade supera velocidade. Uma versão excelente vale mais que múltiplas medíocres.
 
 ## Niche-Specific Anti-Patterns
 
 - Nunca começar slide 1 com nome da marca, apresentação, ou "hoje vamos falar sobre..."
 - Nunca usar afirmações vagas: "muitos profissionais", "a maioria das empresas" — sempre números e fontes
 - Nunca terminar sem reflexão — informativos puros são esquecidos; reflexões são lembradas
-- Nunca CTA genérico desconectado: "nos siga para mais conteúdo" é proibido neste squad
+- Nunca CTA genérico desconectado: "nos siga para mais conteúdo" é proibido neste crew

@@ -5,16 +5,16 @@
 
 ## Summary
 
-Unify "tools" and "skills" into a single concept called **skills**. Everything an agent can use — MCP integrations, scripts, behavioral prompts — is a skill. The tools system (`_opensquad/tools/`) is fully replaced by a skills system (`_opensquad/skills/`).
+Unify "tools" and "skills" into a single concept called **skills**. Everything an agent can use — MCP integrations, scripts, behavioral prompts — is a skill. The tools system (`_nifillos/tools/`) is fully replaced by a skills system (`_nifillos/skills/`).
 
 ## Decisions
 
 1. **Single concept**: "Tools" cease to exist. Everything is a "skill".
 2. **Format**: `SKILL.md` with YAML frontmatter + Markdown body (Anthropic skill-creator pattern, extended).
-3. **Location**: `_opensquad/skills/` in user repo. Internal to pipeline runner only — no IDE-specific duplication.
-4. **Pre-installed**: Only `opensquad-skill-creator` ships with `npx opensquad-init`.
+3. **Location**: `_nifillos/skills/` in user repo. Internal to pipeline runner only — no IDE-specific duplication.
+4. **Pre-installed**: Only `nifillos-skill-creator` ships with `npx Nifillos-init`.
 5. **Catalog**: `skills/` at root of main repo (GitHub) with README documenting all available skills.
-6. **Install/update**: Both CLI (`npx opensquad install/update`) and chat (`/opensquad`).
+6. **Install/update**: Both CLI (`npx Nifillos install/update`) and chat (`/Nifillos`).
 7. **Skills engine**: `skills.engine.md` replaces `tools.engine.md`.
 8. **Missing skill at runtime**: Interactive prompt — "Skill X not found. Install now? (y/n)".
 9. **Skill creator**: Full eval/benchmark system adapted from Anthropic, minus description optimization, plus MCP/script support.
@@ -26,7 +26,7 @@ Unify "tools" and "skills" into a single concept called **skills**. Everything a
 ```
 skills/
 ├── README.md                          # Catalog of available skills + install instructions
-├── opensquad-skill-creator/
+├── nifillos-skill-creator/
 │   ├── SKILL.md
 │   ├── agents/
 │   │   ├── grader.md
@@ -55,12 +55,12 @@ skills/
     └── SKILL.md
 ```
 
-### Templates (copied by `npx opensquad-init`)
+### Templates (copied by `npx Nifillos-init`)
 
 ```
 templates/
-├── _opensquad/
-│   ├── .opensquad-version
+├── _nifillos/
+│   ├── .nifillos-version
 │   ├── _memory/
 │   │   ├── company.md
 │   │   └── preferences.md
@@ -71,7 +71,7 @@ templates/
 │   │   ├── platforms/
 │   │   └── prompts/
 │   └── skills/
-│       └── opensquad-skill-creator/
+│       └── nifillos-skill-creator/
 │           ├── SKILL.md
 │           ├── agents/
 │           ├── references/
@@ -86,9 +86,9 @@ templates/
 ### User repo (after init + some installs)
 
 ```
-_opensquad/
+_nifillos/
 ├── skills/
-│   ├── opensquad-skill-creator/        # Pre-installed
+│   ├── nifillos-skill-creator/        # Pre-installed
 │   │   ├── SKILL.md
 │   │   ├── agents/
 │   │   ├── references/
@@ -189,14 +189,14 @@ Combines `mcp` and `script` sections in the same frontmatter.
 
 | Command | Description |
 |---|---|
-| `npx opensquad install <name>` | Download skill from GitHub → `_opensquad/skills/<name>/` |
-| `npx opensquad install <name> --version X.Y.Z` | Install specific version |
-| `npx opensquad uninstall <name>` | Remove skill |
-| `npx opensquad update` | Update all installed skills |
-| `npx opensquad update <name>` | Update specific skill |
-| `npx opensquad skills` | List installed skills with status |
+| `npx Nifillos install <name>` | Download skill from GitHub → `_nifillos/skills/<name>/` |
+| `npx Nifillos install <name> --version X.Y.Z` | Install specific version |
+| `npx Nifillos uninstall <name>` | Remove skill |
+| `npx Nifillos update` | Update all installed skills |
+| `npx Nifillos update <name>` | Update specific skill |
+| `npx Nifillos skills` | List installed skills with status |
 
-### Chat (`/opensquad`)
+### Chat (`/Nifillos`)
 
 Natural language equivalents of CLI commands:
 - "instala a skill canva"
@@ -207,7 +207,7 @@ Natural language equivalents of CLI commands:
 ### Installation flow
 
 1. Fetch skill from GitHub repo (`skills/<name>/`)
-2. Copy entire folder to `_opensquad/skills/<name>/`
+2. Copy entire folder to `_nifillos/skills/<name>/`
 3. If skill has `env:` → check if variables exist in `.env`
 4. If env vars missing → warn user which to configure
 5. If skill has `mcp:` → configure MCP server in IDE config (`.claude/settings.local.json`, etc.)
@@ -215,8 +215,8 @@ Natural language equivalents of CLI commands:
 
 ### Missing skill at pipeline runtime
 
-1. Pipeline reads `skills:` from `squad.yaml`
-2. Checks if `_opensquad/skills/<name>/` exists
+1. Pipeline reads `skills:` from `cuadrilla.yaml`
+2. Checks if `_nifillos/skills/<name>/` exists
 3. If not → "Skill `canva` not found. Install now? (y/n)"
 4. If yes → run installation flow
 5. If no → pipeline stops with error
@@ -233,8 +233,8 @@ Replaces `tools.engine.md`. Responsibilities:
 
 ### 1. Resolution
 
-- Read `skills:` from `squad.yaml`
-- Load `_opensquad/skills/<name>/SKILL.md` for each skill
+- Read `skills:` from `cuadrilla.yaml`
+- Load `_nifillos/skills/<name>/SKILL.md` for each skill
 - Check type (mcp, script, prompt, hybrid)
 - Validate env vars are configured
 - Validate MCP server is accessible (if applicable)
@@ -263,14 +263,14 @@ The engine reads the SKILL.md body and injects after the agent's instructions:
 
 `web_search` and `web_fetch` are always available — no installation needed. The engine recognizes them by name and skips resolution.
 
-## Opensquad Skill Creator
+## Nifillos Skill Creator
 
-Pre-installed skill for creating new Opensquad skills. Adapted from Anthropic's skill-creator.
+Pre-installed skill for creating new Nifillos skills. Adapted from Anthropic's skill-creator.
 
 ### Structure
 
 ```
-opensquad-skill-creator/
+nifillos-skill-creator/
 ├── SKILL.md
 ├── agents/
 │   ├── grader.md
@@ -293,16 +293,16 @@ opensquad-skill-creator/
 4. **Test cases** — 2-3 realistic prompts, run with/without skill
 5. **Eval + review** — grading, benchmark viewer, user feedback
 6. **Iterate** — improve based on feedback, re-test
-7. **Finalize** — skill ready in `_opensquad/skills/<name>/`
+7. **Finalize** — skill ready in `_nifillos/skills/<name>/`
 
 ### Differences from Anthropic's skill-creator
 
-| Anthropic | Opensquad |
+| Anthropic | Nifillos |
 |---|---|
 | Creates prompt-only skills | Creates 4 types: mcp, script, hybrid, prompt |
 | Description optimization (trigger matching) | Removed — skills are referenced explicitly |
-| Skill goes to `.claude/skills/` | Skill goes to `_opensquad/skills/` |
-| Tested by running Claude with/without skill | Tested within squad agent context |
+| Skill goes to `.claude/skills/` | Skill goes to `_nifillos/skills/` |
+| Tested by running Claude with/without skill | Tested within crew agent context |
 | `package_skill.py` generates `.skill` file | Not needed — skill stays in final directory |
 
 ### What stays the same
@@ -325,26 +325,26 @@ New document the creator consults, documenting:
 
 ### Files removed
 
-- `_opensquad/tools/` (entire directory — registry, installed, scripts)
-- `_opensquad/core/tools.engine.md`
-- `templates/_opensquad/tools/` (entire directory)
+- `_nifillos/tools/` (entire directory — registry, installed, scripts)
+- `_nifillos/core/tools.engine.md`
+- `templates/_nifillos/tools/` (entire directory)
 
 ### Files renamed/replaced
 
 - `tools.engine.md` → `skills.engine.md` (rewritten)
-- In `squad.yaml`: `tools:` → `skills:`
+- In `cuadrilla.yaml`: `tools:` → `skills:`
 - In `.agent.md`: `tools:` → `skills:`
 
 ### Files requiring "tools" → "skills" reference updates
 
-- `_opensquad/core/architect.agent.yaml` — Phase 3.5 "Tool Discovery" → "Skill Discovery"
-- `_opensquad/core/runner.pipeline.md` — tool resolution sections
-- `_opensquad/core/prompts/*.prompt.md` — any tool mentions
+- `_nifillos/core/architect.agent.yaml` — Phase 3.5 "Tool Discovery" → "Skill Discovery"
+- `_nifillos/core/runner.pipeline.md` — tool resolution sections
+- `_nifillos/core/prompts/*.prompt.md` — any tool mentions
 - `templates/ide-templates/claude-code/CLAUDE.md`
 - `templates/ide-templates/antigravity/.antigravity/rules.md`
 - `templates/ide-templates/codex/AGENTS.md`
 - `templates/ide-templates/opencode/AGENTS.md`
-- `.claude/skills/opensquad/SKILL.md` — the `/opensquad` skill itself
+- `.claude/skills/Nifillos/SKILL.md` — the `/Nifillos` skill itself
 - `src/i18n.js` — internationalization keys
 - `src/skills.js` — CLI logic
 - `README.md`

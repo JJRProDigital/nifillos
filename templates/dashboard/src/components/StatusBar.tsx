@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { useSquadStore } from "@/store/useSquadStore";
+import { useCuadrillaStore } from "@/store/useCuadrillaStore";
 import { formatElapsed } from "@/lib/formatTime";
 
 export function StatusBar() {
-  const selectedSquad = useSquadStore((s) => s.selectedSquad);
-  const state = useSquadStore((s) =>
-    s.selectedSquad ? s.activeStates.get(s.selectedSquad) : undefined
+  const selectedCuadrilla = useCuadrillaStore((s) => s.selectedCuadrilla);
+  const state = useCuadrillaStore((s) =>
+    s.selectedCuadrilla ? s.activeStates.get(s.selectedCuadrilla) : undefined
   );
-  const isConnected = useSquadStore((s) => s.isConnected);
+  const isConnected = useCuadrillaStore((s) => s.isConnected);
 
   // Elapsed timer
   const [elapsed, setElapsed] = useState(0);
@@ -25,11 +25,11 @@ export function StatusBar() {
     return () => clearInterval(interval);
   }, [state?.startedAt]);
 
-  if (!selectedSquad || !state) {
+  if (!selectedCuadrilla || !state) {
     return (
       <footer style={footerStyle}>
         <span style={{ color: "var(--text-secondary)" }}>
-          Select an active squad to monitor
+          Selecciona una cuadrilla activa
         </span>
         <ConnectionDot connected={isConnected} />
       </footer>

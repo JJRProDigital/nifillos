@@ -2,9 +2,9 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Unify "tools" and "skills" into a single "skills" concept across the entire Opensquad codebase.
+**Goal:** Unify "tools" and "skills" into a single "skills" concept across the entire Nifillos codebase.
 
-**Architecture:** Replace `_opensquad/tools/` with `_opensquad/skills/`, convert all `.tool.yaml` files to `SKILL.md` format, rewrite the engine/runner/architect to use skills terminology, and update CLI to install skills to the new location.
+**Architecture:** Replace `_nifillos/tools/` with `_nifillos/skills/`, convert all `.tool.yaml` files to `SKILL.md` format, rewrite the engine/runner/architect to use skills terminology, and update CLI to install skills to the new location.
 
 **Tech Stack:** Node.js 20+, YAML frontmatter in Markdown, GitHub raw content API for skill distribution.
 
@@ -20,7 +20,7 @@ Convert the 6 existing `.tool.yaml` files into `SKILL.md` format in the `skills/
 - Create: `skills/apify/SKILL.md`
 - Create: `skills/canva/SKILL.md`
 - Create: `skills/instagram-publisher/SKILL.md`
-- Create: `skills/instagram-publisher/scripts/publish.js` (copy from `templates/squads/instagram-content/tools/publish.js`)
+- Create: `skills/instagram-publisher/scripts/publish.js` (copy from `templates/cuadrillas/instagram-content/tools/publish.js`)
 - Create: `skills/blotato/SKILL.md`
 - Create: `skills/asset-fetcher/SKILL.md`
 - Create: `skills/visual-renderer/SKILL.md`
@@ -31,12 +31,12 @@ Convert the 6 existing `.tool.yaml` files into `SKILL.md` format in the `skills/
 **Step 1: Read all existing tool definitions**
 
 Read these files to extract content for conversion:
-- `_opensquad/tools/registry/apify.tool.yaml`
-- `_opensquad/tools/registry/canva.tool.yaml`
-- `_opensquad/tools/registry/instagram-publisher.tool.yaml`
-- `_opensquad/tools/registry/asset-fetcher.tool.yaml`
-- `_opensquad/tools/registry/blotato.tool.yaml`
-- `_opensquad/tools/registry/visual-renderer.tool.yaml`
+- `_nifillos/tools/registry/apify.tool.yaml`
+- `_nifillos/tools/registry/canva.tool.yaml`
+- `_nifillos/tools/registry/instagram-publisher.tool.yaml`
+- `_nifillos/tools/registry/asset-fetcher.tool.yaml`
+- `_nifillos/tools/registry/blotato.tool.yaml`
+- `_nifillos/tools/registry/visual-renderer.tool.yaml`
 
 **Step 2: Create each skill SKILL.md**
 
@@ -93,19 +93,19 @@ Create all 6 skills following this pattern. For instagram-publisher (type: scrip
 Replace current README.md with a catalog documenting all available skills:
 
 ```markdown
-# Opensquad Skills Catalog
+# Nifillos Skills Catalog
 
-Available skills for Opensquad squads. Install via CLI or chat.
+Available skills for Nifillos crews. Install via CLI or chat.
 
 ## Installation
 
 \`\`\`bash
-npx opensquad install <skill-name>
+npx Nifillos install <skill-name>
 \`\`\`
 
 Or in your IDE chat:
 \`\`\`
-/opensquad install <skill-name>
+/Nifillos install <skill-name>
 \`\`\`
 
 ## Available Skills
@@ -134,20 +134,20 @@ git commit -m "feat: convert tool registry to SKILL.md catalog format"
 
 ---
 
-## Task 2: Create the opensquad-skill-creator
+## Task 2: Create the nifillos-skill-creator
 
-Create the skill that helps users create new Opensquad skills. Adapted from Anthropic's skill-creator (`temp/skill-creator/`).
+Create the skill that helps users create new Nifillos skills. Adapted from Anthropic's skill-creator (`temp/skill-creator/`).
 
 **Files:**
-- Create: `skills/opensquad-skill-creator/SKILL.md`
-- Create: `skills/opensquad-skill-creator/agents/grader.md`
-- Create: `skills/opensquad-skill-creator/agents/comparator.md`
-- Create: `skills/opensquad-skill-creator/agents/analyzer.md`
-- Create: `skills/opensquad-skill-creator/references/schemas.md`
-- Create: `skills/opensquad-skill-creator/references/skill-format.md`
-- Create: `skills/opensquad-skill-creator/scripts/aggregate_benchmark.py`
-- Create: `skills/opensquad-skill-creator/scripts/generate_report.py`
-- Create: `skills/opensquad-skill-creator/scripts/run_eval.py`
+- Create: `skills/nifillos-skill-creator/SKILL.md`
+- Create: `skills/nifillos-skill-creator/agents/grader.md`
+- Create: `skills/nifillos-skill-creator/agents/comparator.md`
+- Create: `skills/nifillos-skill-creator/agents/analyzer.md`
+- Create: `skills/nifillos-skill-creator/references/schemas.md`
+- Create: `skills/nifillos-skill-creator/references/skill-format.md`
+- Create: `skills/nifillos-skill-creator/scripts/aggregate_benchmark.py`
+- Create: `skills/nifillos-skill-creator/scripts/generate_report.py`
+- Create: `skills/nifillos-skill-creator/scripts/run_eval.py`
 - Reference: `temp/skill-creator/SKILL.md` (480 lines — primary source)
 - Reference: `temp/skill-creator/agents/*.md`
 - Reference: `temp/skill-creator/references/schemas.md`
@@ -157,7 +157,7 @@ Create the skill that helps users create new Opensquad skills. Adapted from Anth
 
 Adapt `temp/skill-creator/SKILL.md` with these changes:
 
-1. **Frontmatter**: `name: opensquad-skill-creator`, description focused on creating Opensquad skills
+1. **Frontmatter**: `name: nifillos-skill-creator`, description focused on creating Nifillos skills
 2. **Skill type selection**: Add a step after "Capture Intent" asking what type of skill:
    - "Is this an integration with an external API/service? (MCP)" → guide through MCP config
    - "Is this a custom script that does something specific? (Script)" → guide through script setup
@@ -165,11 +165,11 @@ Adapt `temp/skill-creator/SKILL.md` with these changes:
    - "Both MCP and script? (Hybrid)" → guide through both
 3. **Frontmatter generation**: After interview, generate the correct YAML frontmatter per type:
    - Refer to `references/skill-format.md` for schemas
-4. **Output location**: Skills go to `_opensquad/skills/<name>/` (not `.claude/skills/`)
+4. **Output location**: Skills go to `_nifillos/skills/<name>/` (not `.claude/skills/`)
 5. **Remove description optimization**: Delete the entire "Description Optimization" section and `run_loop` references
 6. **Remove packaging**: Delete `package_skill.py` references — skills stay in-place
-7. **Adapt testing**: Instead of "run Claude with skill", test within squad agent context:
-   - Create a temporary test squad
+7. **Adapt testing**: Instead of "run Claude with skill", test within crew agent context:
+   - Create a temporary test crew
    - Assign the skill to a test agent
    - Run the agent with the skill injected
 8. Keep: Core loop, eval system, grader/comparator/analyzer, benchmark viewer, iteration philosophy
@@ -179,7 +179,7 @@ Adapt `temp/skill-creator/SKILL.md` with these changes:
 Create `references/skill-format.md` documenting the SKILL.md format:
 
 ```markdown
-# Opensquad Skill Format
+# Nifillos Skill Format
 
 ## SKILL.md Structure
 
@@ -239,15 +239,15 @@ Only copy the ones needed (exclude `run_loop.py`, `improve_description.py`, `pac
 Keep: `aggregate_benchmark.py`, `generate_report.py`, `run_eval.py`, `quick_validate.py`, `utils.py`, `__init__.py`
 
 Also check if `eval-viewer/generate_review.py` and `eval-viewer/viewer.html` should be included — the SKILL.md references `generate_review.py` for the benchmark viewer. Include them:
-- Create: `skills/opensquad-skill-creator/eval-viewer/generate_review.py`
-- Create: `skills/opensquad-skill-creator/eval-viewer/viewer.html`
-- Create: `skills/opensquad-skill-creator/assets/eval_review.html` (for eval set review UI)
+- Create: `skills/nifillos-skill-creator/eval-viewer/generate_review.py`
+- Create: `skills/nifillos-skill-creator/eval-viewer/viewer.html`
+- Create: `skills/nifillos-skill-creator/assets/eval_review.html` (for eval set review UI)
 
 **Step 6: Commit**
 
 ```bash
-git add skills/opensquad-skill-creator/
-git commit -m "feat: create opensquad-skill-creator skill"
+git add skills/nifillos-skill-creator/
+git commit -m "feat: create nifillos-skill-creator skill"
 ```
 
 ---
@@ -257,26 +257,26 @@ git commit -m "feat: create opensquad-skill-creator skill"
 Replace `tools.engine.md` with the new skills engine.
 
 **Files:**
-- Create: `_opensquad/core/skills.engine.md`
-- Remove: `_opensquad/core/tools.engine.md` (done in Task 12)
+- Create: `_nifillos/core/skills.engine.md`
+- Remove: `_nifillos/core/tools.engine.md` (done in Task 12)
 
 **Step 1: Write skills.engine.md**
 
-Create `_opensquad/core/skills.engine.md` based on the design doc's "Skills Engine" section. This replaces the 245-line `tools.engine.md`.
+Create `_nifillos/core/skills.engine.md` based on the design doc's "Skills Engine" section. This replaces the 245-line `tools.engine.md`.
 
 Key differences from `tools.engine.md`:
-- **No registry**: Skills are installed directly as folders in `_opensquad/skills/`
+- **No registry**: Skills are installed directly as folders in `_nifillos/skills/`
 - **No .installed.yaml bindings**: A skill is installed if its folder exists
-- **No squad overrides**: Override mechanism removed for simplicity
+- **No crew overrides**: Override mechanism removed for simplicity
 - **Installation source**: GitHub raw content (`skills/<name>/`) instead of local registry
 - **Interactive install prompt**: When skill not found at runtime
 
 Structure of `skills.engine.md`:
 
 ```markdown
-# Opensquad Skills Engine
+# Nifillos Skills Engine
 
-You are the Skills Engine. Your job is to manage skill integrations for Opensquad squads.
+You are the Skills Engine. Your job is to manage skill integrations for Nifillos crews.
 
 ## Skill Types
 - **mcp**: MCP server integration
@@ -285,25 +285,25 @@ You are the Skills Engine. Your job is to manage skill integrations for Opensqua
 - **prompt**: Behavioral instructions only
 
 ## File Locations
-- **Installed skills**: `_opensquad/skills/` — each skill in its own subfolder
-- **Skill catalog**: https://github.com/opensquad-ai/opensquad/tree/main/skills
+- **Installed skills**: `_nifillos/skills/` — each skill in its own subfolder
+- **Skill catalog**: https://github.com/Nifillos-ai/Nifillos/tree/main/skills
 
 ## SKILL.md Format
-[Reference to skill-format.md in opensquad-skill-creator]
+[Reference to skill-format.md in nifillos-skill-creator]
 
 ## Operations
 
 ### 1. List Installed Skills
-1. Read all subdirectories in `_opensquad/skills/`
+1. Read all subdirectories in `_nifillos/skills/`
 2. For each, read SKILL.md frontmatter
 3. Display: name, type, version, description, env status
 
 ### 2. Install a Skill
 1. User provides skill name
 2. Fetch skill folder contents from GitHub:
-   - Fetch `https://raw.githubusercontent.com/opensquad-ai/opensquad/main/skills/<name>/SKILL.md`
+   - Fetch `https://raw.githubusercontent.com/Nifillos-ai/Nifillos/main/skills/<name>/SKILL.md`
    - For skills with scripts/references/assets: fetch each listed file
-3. Write to `_opensquad/skills/<name>/`
+3. Write to `_nifillos/skills/<name>/`
 4. Read SKILL.md frontmatter to check requirements:
    a. If `env:` present → check each var in `.env`, warn about missing ones
    b. If `mcp:` present → configure MCP in `.claude/settings.local.json`
@@ -313,18 +313,18 @@ You are the Skills Engine. Your job is to manage skill integrations for Opensqua
 
 ### 3. Remove a Skill
 1. User selects skill from installed list
-2. Warn which squads use this skill (scan squad.yaml files)
+2. Warn which crews use this skill (scan cuadrilla.yaml files)
 3. If confirmed:
-   a. Delete `_opensquad/skills/<name>/`
+   a. Delete `_nifillos/skills/<name>/`
    b. Remove MCP config from `.claude/settings.local.json` if applicable
-   c. Warn about dependent squads
+   c. Warn about dependent crews
 
 ### 4. Resolve Skills for Pipeline
 Called BEFORE pipeline execution:
-1. Read `squad.yaml` → `skills:` section
+1. Read `cuadrilla.yaml` → `skills:` section
 2. Separate native skills (web_search, web_fetch)
 3. For each non-native skill:
-   a. Check `_opensquad/skills/<name>/` exists
+   a. Check `_nifillos/skills/<name>/` exists
    b. If not → prompt: "Skill '{name}' not found. Install now? (y/n)"
       - If yes → run Install flow
       - If no → ERROR, stop pipeline
@@ -342,17 +342,17 @@ For each skill declared in agent's `.agent.md` frontmatter `skills:`:
 3. Multi-skill injection follows declaration order
 
 ### 6. Skill Discovery (called by Architect in Phase 3.5)
-1. Fetch skills/README.md from GitHub (or list `_opensquad/skills/` for already-installed)
-2. Match `categories` against squad needs
+1. Fetch skills/README.md from GitHub (or list `_nifillos/skills/` for already-installed)
+2. Match `categories` against crew needs
 3. Suggest relevant skills to user
 4. For each accepted → run Install flow
-5. Add to squad's `skills:` list
+5. Add to cuadrilla's `skills:` list
 ```
 
 **Step 2: Commit**
 
 ```bash
-git add _opensquad/core/skills.engine.md
+git add _nifillos/core/skills.engine.md
 git commit -m "feat: create skills.engine.md replacing tools.engine.md"
 ```
 
@@ -360,7 +360,7 @@ git commit -m "feat: create skills.engine.md replacing tools.engine.md"
 
 ## Task 4: Rewrite src/skills.js
 
-The current `src/skills.js` installs skills to `.claude/skills/`. Rewrite it to install to `_opensquad/skills/`.
+The current `src/skills.js` installs skills to `.claude/skills/`. Rewrite it to install to `_nifillos/skills/`.
 
 **Files:**
 - Modify: `src/skills.js:1-52`
@@ -369,11 +369,11 @@ The current `src/skills.js` installs skills to `.claude/skills/`. Rewrite it to 
 **Step 1: Write the failing tests**
 
 Rewrite `tests/skills.test.js` to test the new behavior:
-- `listInstalled` should scan `_opensquad/skills/` (not `.claude/skills/`)
-- `listInstalled` should exclude `opensquad-skill-creator` (the built-in, like old code excluded `opensquad`)
-- `installSkill` should write to `_opensquad/skills/<id>/SKILL.md`
+- `listInstalled` should scan `_nifillos/skills/` (not `.claude/skills/`)
+- `listInstalled` should exclude `nifillos-skill-creator` (the built-in, like old code excluded `Nifillos`)
+- `installSkill` should write to `_nifillos/skills/<id>/SKILL.md`
 - `installSkill` should handle skills with subdirectories (scripts/, references/, etc.)
-- `removeSkill` should delete from `_opensquad/skills/<id>/`
+- `removeSkill` should delete from `_nifillos/skills/<id>/`
 - `fetchManifest` is removed — no more manifest, we fetch individual skill files
 - New: `fetchSkillFiles` fetches the SKILL.md + any referenced subdirectory files
 - New: `getSkillVersion` reads version from SKILL.md frontmatter
@@ -387,14 +387,14 @@ Expected: FAIL — functions don't exist yet or have wrong behavior
 import { mkdir, readdir, readFile, rm, writeFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 
-const REGISTRY_BASE = 'https://raw.githubusercontent.com/opensquad-ai/opensquad/main';
+const REGISTRY_BASE = 'https://raw.githubusercontent.com/Nifillos-ai/Nifillos/main';
 
 export async function listInstalled(targetDir) {
   try {
-    const skillsDir = join(targetDir, '_opensquad', 'skills');
+    const skillsDir = join(targetDir, '_nifillos', 'skills');
     const entries = await readdir(skillsDir, { withFileTypes: true });
     return entries
-      .filter((e) => e.isDirectory() && e.name !== 'opensquad-skill-creator')
+      .filter((e) => e.isDirectory() && e.name !== 'nifillos-skill-creator')
       .map((e) => e.name);
   } catch (err) {
     if (err.code === 'ENOENT') return [];
@@ -414,21 +414,21 @@ export async function installSkill(id, targetDir, fetcher = fetch) {
   const res = await fetcher(url);
   if (!res.ok) throw new Error(`Skill '${id}' not found in registry (${res.status})`);
   const content = await res.text();
-  const destDir = join(targetDir, '_opensquad', 'skills', id);
+  const destDir = join(targetDir, '_nifillos', 'skills', id);
   await mkdir(destDir, { recursive: true });
   await writeFile(join(destDir, 'SKILL.md'), content, 'utf-8');
 }
 
 export async function removeSkill(id, targetDir) {
   validateSkillId(id);
-  const skillDir = join(targetDir, '_opensquad', 'skills', id);
+  const skillDir = join(targetDir, '_nifillos', 'skills', id);
   await rm(skillDir, { recursive: true, force: true });
 }
 
 export async function getSkillVersion(id, targetDir) {
   try {
     const skillMd = await readFile(
-      join(targetDir, '_opensquad', 'skills', id, 'SKILL.md'), 'utf-8'
+      join(targetDir, '_nifillos', 'skills', id, 'SKILL.md'), 'utf-8'
     );
     const match = skillMd.match(/^version:\s*"?([^"\n]+)"?/m);
     return match ? match[1].trim() : null;
@@ -447,20 +447,20 @@ Expected: PASS
 
 ```bash
 git add src/skills.js tests/skills.test.js
-git commit -m "feat: rewrite skills.js to install to _opensquad/skills/"
+git commit -m "feat: rewrite skills.js to install to _nifillos/skills/"
 ```
 
 ---
 
-## Task 5: Update CLI (bin/opensquad.js + src/skills-cli.js)
+## Task 5: Update CLI (bin/Nifillos.js + src/skills-cli.js)
 
-Update CLI to support new command structure: `npx opensquad install/uninstall/update/skills`.
+Update CLI to support new command structure: `npx Nifillos install/uninstall/update/skills`.
 
 **Files:**
-- Modify: `bin/opensquad.js:1-40`
+- Modify: `bin/Nifillos.js:1-40`
 - Modify: `src/skills-cli.js:1-143`
 
-**Step 1: Update bin/opensquad.js**
+**Step 1: Update bin/Nifillos.js**
 
 Add new top-level commands alongside existing ones:
 
@@ -485,8 +485,8 @@ const command = positionals[0];
 if (command === 'init') {
   await init(process.cwd());
 } else if (command === 'update') {
-  // 'npx opensquad update' with no args = update core
-  // 'npx opensquad update <name>' = update specific skill
+  // 'npx Nifillos update' with no args = update core
+  // 'npx Nifillos update <name>' = update specific skill
   const target = positionals[1];
   if (target) {
     const result = await skillsCli('update', [target], process.cwd());
@@ -508,17 +508,17 @@ if (command === 'init') {
   if (!result.success) process.exit(1);
 } else {
   console.log(`
-  opensquad — Multi-agent orchestration for Claude Code
+  Nifillos — Multi-agent orchestration for Claude Code
 
   Usage:
-    npx opensquad init                    Initialize Opensquad in current directory
-    npx opensquad update                  Update Opensquad core to the latest version
-    npx opensquad install <name>          Install a skill
-    npx opensquad uninstall <name>        Remove a skill
-    npx opensquad update <name>           Update a specific skill
-    npx opensquad skills                  List installed skills
+    npx Nifillos init                    Initialize Nifillos in current directory
+    npx Nifillos update                  Update Nifillos core to the latest version
+    npx Nifillos install <name>          Install a skill
+    npx Nifillos uninstall <name>        Remove a skill
+    npx Nifillos update <name>           Update a specific skill
+    npx Nifillos skills                  List installed skills
 
-  Learn more: https://github.com/opensquad-ai/opensquad
+  Learn more: https://github.com/Nifillos-ai/Nifillos
   `);
   process.exit(command ? 1 : 0);
 }
@@ -526,19 +526,19 @@ if (command === 'init') {
 
 **Step 2: Update src/skills-cli.js**
 
-Update to use the new `listInstalled` from `src/skills.js` (which now reads `_opensquad/skills/`).
+Update to use the new `listInstalled` from `src/skills.js` (which now reads `_nifillos/skills/`).
 
 Key changes:
-- `runList`: Instead of fetching manifest, just list installed skills from `_opensquad/skills/` and show a link to the GitHub catalog
-- `runInstall`: Install to `_opensquad/skills/` (already handled by updated `skills.js`)
-- `runRemove`: Remove from `_opensquad/skills/`
+- `runList`: Instead of fetching manifest, just list installed skills from `_nifillos/skills/` and show a link to the GitHub catalog
+- `runInstall`: Install to `_nifillos/skills/` (already handled by updated `skills.js`)
+- `runRemove`: Remove from `_nifillos/skills/`
 - `runUpdate`: Re-download each installed skill from GitHub
 - Remove `fetchManifest` dependency — no more manifest.json
 
 **Step 3: Commit**
 
 ```bash
-git add bin/opensquad.js src/skills-cli.js
+git add bin/Nifillos.js src/skills-cli.js
 git commit -m "feat: update CLI for new skills install/uninstall/update commands"
 ```
 
@@ -546,16 +546,16 @@ git commit -m "feat: update CLI for new skills install/uninstall/update commands
 
 ## Task 6: Update src/init.js
 
-Update the init flow to copy `opensquad-skill-creator` instead of the tools directory.
+Update the init flow to copy `nifillos-skill-creator` instead of the tools directory.
 
 **Files:**
 - Modify: `src/init.js:130-144` (copyCommonTemplates already handles this — but we need the templates to be correct)
 
 **Step 1: Verify init.js logic**
 
-The `copyCommonTemplates` function copies everything from `templates/` except `ide-templates/`. Since we'll update the templates directory (Task 10) to have `_opensquad/skills/` instead of `_opensquad/tools/`, the init.js code should work without changes.
+The `copyCommonTemplates` function copies everything from `templates/` except `ide-templates/`. Since we'll update the templates directory (Task 10) to have `_nifillos/skills/` instead of `_nifillos/tools/`, the init.js code should work without changes.
 
-Verify by reading the function — it recursively copies all files from `templates/` preserving directory structure. If `templates/_opensquad/skills/opensquad-skill-creator/` exists and `templates/_opensquad/tools/` is removed, init will automatically do the right thing.
+Verify by reading the function — it recursively copies all files from `templates/` preserving directory structure. If `templates/_nifillos/skills/nifillos-skill-creator/` exists and `templates/_nifillos/tools/` is removed, init will automatically do the right thing.
 
 **No code changes needed** — the templates directory change (Task 10) handles this.
 
@@ -573,26 +573,26 @@ The update flow copies templates to the user's directory, skipping protected pat
 **Files:**
 - Modify: `src/update.js:24-28` (PROTECTED_PATHS)
 
-**Step 1: Add _opensquad/skills to protected paths**
+**Step 1: Add _nifillos/skills to protected paths**
 
-User-installed skills should NOT be overwritten during update. Only the `opensquad-skill-creator` (which comes from templates) should be updated.
+User-installed skills should NOT be overwritten during update. Only the `nifillos-skill-creator` (which comes from templates) should be updated.
 
 ```javascript
 const PROTECTED_PATHS = [
-  '_opensquad/_memory',
-  '_opensquad/_investigations',
-  '_opensquad/skills',     // Don't overwrite user-installed skills
-  'squads',
+  '_nifillos/_memory',
+  '_nifillos/_investigations',
+  '_nifillos/skills',     // Don't overwrite user-installed skills
+  'crews',
 ];
 ```
 
 Wait — this would also prevent updating the skill-creator. We need a more nuanced approach:
 
-Actually, the template only contains `opensquad-skill-creator`. User-installed skills are NOT in templates. So the update would only copy the skill-creator, which is correct — we WANT to update the skill-creator.
+Actually, the template only contains `nifillos-skill-creator`. User-installed skills are NOT in templates. So the update would only copy the skill-creator, which is correct — we WANT to update the skill-creator.
 
-But with `_opensquad/skills` in PROTECTED_PATHS, we'd block that update. So we should NOT add it to protected paths. The update will:
-1. Copy `templates/_opensquad/skills/opensquad-skill-creator/` → overwrites with latest version ✅
-2. User-installed skills (e.g., `_opensquad/skills/canva/`) are NOT in templates, so they won't be touched ✅
+But with `_nifillos/skills` in PROTECTED_PATHS, we'd block that update. So we should NOT add it to protected paths. The update will:
+1. Copy `templates/_nifillos/skills/nifillos-skill-creator/` → overwrites with latest version ✅
+2. User-installed skills (e.g., `_nifillos/skills/canva/`) are NOT in templates, so they won't be touched ✅
 
 **No code changes needed** — the current logic already works correctly.
 
@@ -608,27 +608,27 @@ Expected: Tests may need updating if they assert on tools directory structure.
 Rename all "tool" references to "skill" and update Phase 3.5.
 
 **Files:**
-- Modify: `_opensquad/core/architect.agent.yaml`
+- Modify: `_nifillos/core/architect.agent.yaml`
 
 **Step 1: Apply changes**
 
 Global replacements in the file:
 1. Line 15: `tools.` → `skills.` in persona role
 2. Line 31: `Research tools use subagent` → `Research skills use subagent`
-3. Line 42: `"Tool discovery: after extraction, scan _opensquad/tools/registry/..."` → `"Skill discovery: after extraction, scan _opensquad/skills/ for installed skills and check the GitHub catalog for additional skills matching the squad's needs"`
+3. Line 42: `"Tool discovery: after extraction, scan _nifillos/tools/registry/..."` → `"Skill discovery: after extraction, scan _nifillos/skills/ for installed skills and check the GitHub catalog for additional skills matching the cuadrilla's needs"`
 4. Lines 303-322: Rewrite Phase 3.5 "Tool Discovery" → "Skill Discovery":
-   - Read installed skills from `_opensquad/skills/`
+   - Read installed skills from `_nifillos/skills/`
    - Also check GitHub catalog for available skills not yet installed
-   - Match `categories` against squad needs
+   - Match `categories` against crew needs
    - If skill not installed → offer to install
    - Reference `skills.engine.md` Operation 2 (Install) instead of `tools.engine.md`
-5. Lines 467-475: `tools:` → `skills:` in squad.yaml template
+5. Lines 467-475: `tools:` → `skills:` in cuadrilla.yaml template
 6. Line 509: Agent frontmatter `tools: []` → `skills: []`
 
 **Step 2: Commit**
 
 ```bash
-git add _opensquad/core/architect.agent.yaml
+git add _nifillos/core/architect.agent.yaml
 git commit -m "refactor: rename tools to skills in architect agent"
 ```
 
@@ -639,17 +639,17 @@ git commit -m "refactor: rename tools to skills in architect agent"
 Update the pipeline runner to resolve skills instead of tools.
 
 **Files:**
-- Modify: `_opensquad/core/runner.pipeline.md:16-24, 85-95`
+- Modify: `_nifillos/core/runner.pipeline.md:16-24, 85-95`
 
 **Step 1: Apply changes**
 
 1. Lines 16-24 (Initialization step 3 "Resolve tools"):
    Replace entire block with:
    ```
-   3. **Resolve skills**: Read `squad.yaml` → `skills` section. For each non-native skill:
-      a. Verify `_opensquad/skills/{skill}/SKILL.md` exists
+   3. **Resolve skills**: Read `cuadrilla.yaml` → `skills` section. For each non-native skill:
+      a. Verify `_nifillos/skills/{skill}/SKILL.md` exists
          - If missing → prompt user: "Skill '{skill}' is not installed. Install now? (y/n)"
-         - If yes → read `_opensquad/core/skills.engine.md`, follow Operation 2 (Install)
+         - If yes → read `_nifillos/core/skills.engine.md`, follow Operation 2 (Install)
          - If no → **ERROR**: stop pipeline
       b. Read SKILL.md, parse frontmatter for type
       c. If type: mcp, verify MCP is configured in `.claude/settings.local.json`
@@ -662,7 +662,7 @@ Update the pipeline runner to resolve skills instead of tools.
    ```
    4. **Inject skill instructions**: Check which skills the agent declares in its frontmatter `skills:`.
       For each non-native skill declared:
-      a. Read `_opensquad/skills/{skill}/SKILL.md`
+      a. Read `_nifillos/skills/{skill}/SKILL.md`
       b. Extract the Markdown body (everything after the YAML frontmatter)
       c. Append to the agent's context, after all agent instructions:
          --- SKILL INSTRUCTIONS ---
@@ -676,7 +676,7 @@ Update the pipeline runner to resolve skills instead of tools.
 **Step 2: Commit**
 
 ```bash
-git add _opensquad/core/runner.pipeline.md
+git add _nifillos/core/runner.pipeline.md
 git commit -m "refactor: rename tools to skills in pipeline runner"
 ```
 
@@ -687,43 +687,43 @@ git commit -m "refactor: rename tools to skills in pipeline runner"
 Remove tools, add skills, update all template files.
 
 **Files:**
-- Remove: `templates/_opensquad/tools/` (entire directory)
-- Remove: `templates/_opensquad/core/tools.engine.md`
-- Remove: `templates/squads/instagram-content/tools/` (directory)
-- Create: `templates/_opensquad/skills/opensquad-skill-creator/` (copy from `skills/opensquad-skill-creator/`)
-- Create: `templates/_opensquad/core/skills.engine.md` (copy from `_opensquad/core/skills.engine.md`)
-- Modify: `templates/_opensquad/core/architect.agent.yaml` (copy updated version)
-- Modify: `templates/_opensquad/core/runner.pipeline.md` (copy updated version)
-- Modify: `templates/squads/instagram-content/squad.yaml` (`tools:` → `skills:`)
-- Modify: `templates/squads/instagram-content/squad-party.csv` (if it references tools)
-- Modify: `templates/squads/instagram-content/agents/*.agent.md` (`tools:` → `skills:` in frontmatter)
+- Remove: `templates/_nifillos/tools/` (entire directory)
+- Remove: `templates/_nifillos/core/tools.engine.md`
+- Remove: `templates/cuadrillas/instagram-content/tools/` (directory)
+- Create: `templates/_nifillos/skills/nifillos-skill-creator/` (copy from `skills/nifillos-skill-creator/`)
+- Create: `templates/_nifillos/core/skills.engine.md` (copy from `_nifillos/core/skills.engine.md`)
+- Modify: `templates/_nifillos/core/architect.agent.yaml` (copy updated version)
+- Modify: `templates/_nifillos/core/runner.pipeline.md` (copy updated version)
+- Modify: `templates/cuadrillas/instagram-content/cuadrilla.yaml` (`tools:` → `skills:`)
+- Modify: `templates/cuadrillas/instagram-content/cuadrilla-party.csv` (if it references tools)
+- Modify: `templates/cuadrillas/instagram-content/agents/*.agent.md` (`tools:` → `skills:` in frontmatter)
 
 **Step 1: Remove old tools directories**
 
 ```bash
-rm -rf templates/_opensquad/tools/
-rm -f templates/_opensquad/core/tools.engine.md
-rm -rf templates/squads/instagram-content/tools/
+rm -rf templates/_nifillos/tools/
+rm -f templates/_nifillos/core/tools.engine.md
+rm -rf templates/cuadrillas/instagram-content/tools/
 ```
 
 **Step 2: Copy new skills files**
 
 ```bash
 # Copy skill-creator to templates
-cp -r skills/opensquad-skill-creator/ templates/_opensquad/skills/opensquad-skill-creator/
+cp -r skills/nifillos-skill-creator/ templates/_nifillos/skills/nifillos-skill-creator/
 
 # Copy updated core files to templates
-cp _opensquad/core/skills.engine.md templates/_opensquad/core/skills.engine.md
-cp _opensquad/core/architect.agent.yaml templates/_opensquad/core/architect.agent.yaml
-cp _opensquad/core/runner.pipeline.md templates/_opensquad/core/runner.pipeline.md
+cp _nifillos/core/skills.engine.md templates/_nifillos/core/skills.engine.md
+cp _nifillos/core/architect.agent.yaml templates/_nifillos/core/architect.agent.yaml
+cp _nifillos/core/runner.pipeline.md templates/_nifillos/core/runner.pipeline.md
 ```
 
-**Step 3: Update squad template files**
+**Step 3: Update crew template files**
 
-In `templates/squads/instagram-content/squad.yaml`:
+In `templates/cuadrillas/instagram-content/cuadrilla.yaml`:
 - Change `tools:` → `skills:`
 
-In each `templates/squads/instagram-content/agents/*.agent.md`:
+In each `templates/cuadrillas/instagram-content/agents/*.agent.md`:
 - Change `tools:` → `skills:` in frontmatter
 
 **Step 4: Commit**
@@ -737,61 +737,61 @@ git commit -m "refactor: update templates — remove tools, add skills"
 
 ## Task 11: Update IDE templates and SKILL.md files
 
-Update all IDE-specific template files and the live `/opensquad` skill.
+Update all IDE-specific template files and the live `/Nifillos` skill.
 
 **Files:**
-- Modify: `.claude/skills/opensquad/SKILL.md` (live — current project)
-- Modify: `templates/ide-templates/claude-code/.claude/skills/opensquad/SKILL.md`
+- Modify: `.claude/skills/Nifillos/SKILL.md` (live — current project)
+- Modify: `templates/ide-templates/claude-code/.claude/skills/Nifillos/SKILL.md`
 - Modify: `templates/ide-templates/claude-code/CLAUDE.md`
 - Modify: `templates/ide-templates/antigravity/.antigravity/rules.md`
 - Modify: `templates/ide-templates/codex/AGENTS.md`
 - Modify: `templates/ide-templates/opencode/AGENTS.md`
 
-**Step 1: Update .claude/skills/opensquad/SKILL.md (live)**
+**Step 1: Update .claude/skills/Nifillos/SKILL.md (live)**
 
-This is the main `/opensquad` skill with 200 lines. Changes:
+This is the main `/Nifillos` skill with 200 lines. Changes:
 
 1. **Main Menu** (lines 39-51): Remove "Tools" as separate option. Merge into "Skills":
    ```
    **Primary menu:**
-   - Create a new squad
-   - Run an existing squad
-   - My squads
+   - Create a new crew
+   - Run an existing crew
+   - My crews
    - More options — Skills, company profile, settings, and help
 
    **More options:**
-   - Skills — Browse, install, and manage skills for your squads
+   - Skills — Browse, install, and manage skills for your crews
    - Company profile
    - Settings & Help
    ```
 
 2. **Command Routing** (lines 57-73): Replace tools routes with skills:
    ```
-   | `/opensquad skills` | Load Skills Engine → Show skills menu |
-   | `/opensquad install <name>` | Install a skill from the catalog |
-   | `/opensquad uninstall <name>` | Remove an installed skill |
+   | `/Nifillos skills` | Load Skills Engine → Show skills menu |
+   | `/Nifillos install <name>` | Install a skill from the catalog |
+   | `/Nifillos uninstall <name>` | Remove an installed skill |
    ```
-   Remove: `| /opensquad tools |`
+   Remove: `| /Nifillos tools |`
 
 3. **Help Text** (lines 77-121): Remove TOOLS section, update SKILLS section:
    ```
    SKILLS
-     /opensquad skills           Browse installed skills
-     /opensquad install <name>   Install a skill from catalog
-     /opensquad uninstall <name> Remove a skill
+     /Nifillos skills           Browse installed skills
+     /Nifillos install <name>   Install a skill from catalog
+     /Nifillos uninstall <name> Remove a skill
    ```
 
 4. **Loading the Tools Engine** (lines 153-164): Replace entirely with "Loading the Skills Engine":
    ```
    ## Loading the Skills Engine
 
-   When the user selects "Skills" or types `/opensquad skills`:
+   When the user selects "Skills" or types `/Nifillos skills`:
 
-   1. Read `_opensquad/core/skills.engine.md` for the skills engine instructions
+   1. Read `_nifillos/core/skills.engine.md` for the skills engine instructions
    2. Present the skills submenu using AskUserQuestion:
       - **View installed skills** — See what skills are available
       - **Install a skill** — Browse the catalog and install
-      - **Create a skill** — Create a custom skill (uses opensquad-skill-creator)
+      - **Create a skill** — Create a custom skill (uses nifillos-skill-creator)
       - **Remove a skill** — Uninstall a skill
    3. Follow the corresponding operation in the skills engine
    ```
@@ -802,7 +802,7 @@ This is the main `/opensquad` skill with 200 lines. Changes:
 
 **Step 2: Update template SKILL.md (claude-code)**
 
-Apply the same changes to `templates/ide-templates/claude-code/.claude/skills/opensquad/SKILL.md`.
+Apply the same changes to `templates/ide-templates/claude-code/.claude/skills/Nifillos/SKILL.md`.
 Note: this is a separate file from the live one. Check if they differ and apply changes to both.
 
 **Step 3: Update CLAUDE.md template**
@@ -814,7 +814,7 @@ Note: this is a separate file from the live one. Check if they differ and apply 
 `templates/ide-templates/antigravity/.antigravity/rules.md` — has "Tools" menu reference at line 40-46. Replace "Tools" with "Skills":
 - Line 40: `- **More options** — Tools,` → `- **More options** — Skills,`
 - Lines 43-46: Replace Tools submenu with Skills
-- Line 61: `/opensquad tools` → `/opensquad skills`
+- Line 61: `/Nifillos tools` → `/Nifillos skills`
 
 **Step 5: Update Codex and OpenCode AGENTS.md**
 
@@ -823,7 +823,7 @@ Same changes as Antigravity — both files have identical content. Replace "Tool
 **Step 6: Commit**
 
 ```bash
-git add .claude/skills/opensquad/SKILL.md templates/ide-templates/
+git add .claude/skills/Nifillos/SKILL.md templates/ide-templates/
 git commit -m "refactor: update IDE templates — tools to skills"
 ```
 
@@ -841,7 +841,7 @@ Current CLAUDE.md at project root (35 lines). No direct "tool" references, but u
 
 Add to Directory Structure section:
 ```
-- `_opensquad/skills/` — Installed skills (integrations, scripts, prompts)
+- `_nifillos/skills/` — Installed skills (integrations, scripts, prompts)
 ```
 
 Remove any tools-related lines if present.
@@ -851,8 +851,8 @@ Remove any tools-related lines if present.
 Current README.md (102 lines). Add skills commands to the Commands table:
 
 ```markdown
-| `/opensquad skills` | Browse and install skills |
-| `/opensquad install <name>` | Install a skill |
+| `/Nifillos skills` | Browse and install skills |
+| `/Nifillos install <name>` | Install a skill |
 ```
 
 Remove any tools-related commands.
@@ -878,7 +878,7 @@ Update English locale keys and translate.
 **Step 1: Update en.json**
 
 The existing skills-related keys already work for the new system (they talk about "skills"). But we need to:
-- Update `skillsInstallHint` to use new command format: `Install with: npx opensquad install <id>`
+- Update `skillsInstallHint` to use new command format: `Install with: npx Nifillos install <id>`
 - Add new keys if needed for uninstall confirmation, skill type display, etc.
 - Remove any "tool"-related keys if they exist
 
@@ -906,16 +906,16 @@ Update all test files to work with the new skills structure.
 
 **Step 1: Finalize tests/skills.test.js**
 
-Ensure all tests use `_opensquad/skills/` paths instead of `.claude/skills/`:
-- `listInstalled` scans `_opensquad/skills/`, excludes `opensquad-skill-creator`
-- `installSkill` writes to `_opensquad/skills/<id>/SKILL.md`
-- `removeSkill` deletes from `_opensquad/skills/<id>/`
+Ensure all tests use `_nifillos/skills/` paths instead of `.claude/skills/`:
+- `listInstalled` scans `_nifillos/skills/`, excludes `nifillos-skill-creator`
+- `installSkill` writes to `_nifillos/skills/<id>/SKILL.md`
+- `removeSkill` deletes from `_nifillos/skills/<id>/`
 - Remove `fetchManifest` tests (function removed)
 - Add `getSkillVersion` tests
 
 **Step 2: Update tests/init.test.js**
 
-If tests assert on created file paths, update to expect `_opensquad/skills/opensquad-skill-creator/` instead of `_opensquad/tools/`.
+If tests assert on created file paths, update to expect `_nifillos/skills/nifillos-skill-creator/` instead of `_nifillos/tools/`.
 
 **Step 3: Update tests/update.test.js**
 
@@ -940,38 +940,38 @@ git commit -m "test: update all tests for skills system"
 Remove all old tools-related files from the working directory (not just templates).
 
 **Files:**
-- Remove: `_opensquad/tools/` (entire directory)
-- Remove: `_opensquad/core/tools.engine.md`
+- Remove: `_nifillos/tools/` (entire directory)
+- Remove: `_nifillos/core/tools.engine.md`
 
 **Step 1: Remove old tools directory**
 
 ```bash
-rm -rf _opensquad/tools/
-rm -f _opensquad/core/tools.engine.md
+rm -rf _nifillos/tools/
+rm -f _nifillos/core/tools.engine.md
 ```
 
 **Step 2: Copy skills engine to working directory**
 
 The `skills.engine.md` was created in Task 3 for the working directory.
-Verify it exists at `_opensquad/core/skills.engine.md`.
+Verify it exists at `_nifillos/core/skills.engine.md`.
 
 **Step 3: Copy skill-creator to working directory**
 
 ```bash
-cp -r skills/opensquad-skill-creator/ _opensquad/skills/opensquad-skill-creator/
+cp -r skills/nifillos-skill-creator/ _nifillos/skills/nifillos-skill-creator/
 ```
 
 **Step 4: Verify directory structure**
 
 ```bash
-# Should show skills/ with opensquad-skill-creator
-ls _opensquad/skills/
+# Should show skills/ with nifillos-skill-creator
+ls _nifillos/skills/
 
 # Should NOT exist
-ls _opensquad/tools/ 2>/dev/null && echo "ERROR: tools still exists" || echo "OK: tools removed"
+ls _nifillos/tools/ 2>/dev/null && echo "ERROR: tools still exists" || echo "OK: tools removed"
 
 # Should show skills.engine.md, NOT tools.engine.md
-ls _opensquad/core/*.engine.md
+ls _nifillos/core/*.engine.md
 ```
 
 **Step 5: Run full test suite**
@@ -993,32 +993,32 @@ git commit -m "refactor: remove old tools artifacts, complete skills migration"
 Check and update any core prompt files that mention "tools".
 
 **Files:**
-- Check: `_opensquad/core/prompts/*.prompt.md`
-- Check: `templates/_opensquad/core/prompts/*.prompt.md`
+- Check: `_nifillos/core/prompts/*.prompt.md`
+- Check: `templates/_nifillos/core/prompts/*.prompt.md`
 
 **Step 1: Search for "tool" references in prompts**
 
 ```bash
-grep -r "tool" _opensquad/core/prompts/ --include="*.md" -l
+grep -r "tool" _nifillos/core/prompts/ --include="*.md" -l
 ```
 
 **Step 2: Update any found references**
 
 For each file with "tool" references:
-- Replace "tool" → "skill" where it refers to the Opensquad concept
+- Replace "tool" → "skill" where it refers to the Nifillos concept
 - Keep "tool" if it refers to generic IDE tools (e.g., "Use the WebSearch tool")
 - Be careful with context — "tools" in agent frontmatter → "skills", but "Bash tool" stays
 
 **Step 3: Copy updated prompts to templates**
 
 ```bash
-cp _opensquad/core/prompts/*.prompt.md templates/_opensquad/core/prompts/
+cp _nifillos/core/prompts/*.prompt.md templates/_nifillos/core/prompts/
 ```
 
 **Step 4: Commit**
 
 ```bash
-git add _opensquad/core/prompts/ templates/_opensquad/core/prompts/
+git add _nifillos/core/prompts/ templates/_nifillos/core/prompts/
 git commit -m "refactor: update prompt templates — tools to skills"
 ```
 

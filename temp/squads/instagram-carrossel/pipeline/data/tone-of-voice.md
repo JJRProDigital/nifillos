@@ -1,5 +1,5 @@
-# Tone of Voice — Instagram Carousel Squad
-**Squad:** instagram-carrossel
+# Tone of Voice — Instagram Carousel Crew
+**Crew:** instagram-carrossel
 **Marca:** Comunidade Sem Codar
 **Aprovado em:** 2026-03-03
 

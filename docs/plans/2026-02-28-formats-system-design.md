@@ -16,7 +16,7 @@ Create a **Formats System** — a new abstraction that defines rules, structure,
 ### Directory
 
 ```
-_opensquad/core/formats/
+_nifillos/core/formats/
   instagram-feed.md
   instagram-reels.md
   instagram-stories.md
@@ -89,7 +89,7 @@ The `constraints` in YAML frontmatter are parseable — enables future automated
 agent: copywriter
 format: instagram-feed    # new optional field
 execution: inline
-outputFile: squads/my-squad/output/caption.md
+outputFile: cuadrillas/my-crew/output/caption.md
 ---
 ```
 
@@ -97,12 +97,12 @@ The `format` field is **optional**. Steps without it work as they do today.
 
 #### Pipeline Runner
 When executing a step with `format:`:
-1. Read `_opensquad/core/formats/{format}.md`
+1. Read `_nifillos/core/formats/{format}.md`
 2. Inject into agent context after overlays, before skill instructions:
 
 ```
 {base agent content}
-{squad overlay (.custom.md) if applicable}
+{crew overlay (.custom.md) if applicable}
 
 --- FORMAT: Instagram Feed Post ---
 
@@ -115,13 +115,13 @@ When executing a step with `format:`:
 
 **Context injection order:**
 ```
-Base Agent → Squad Overlay (.custom.md) → Format → Skill Instructions
+Base Agent → Crew Overlay (.custom.md) → Format → Skill Instructions
 ```
 
 #### Architect
-During squad creation (Phase 1 — Discovery), the Architect:
+During crew creation (Phase 1 — Discovery), the Architect:
 1. Asks about target platforms and content types
-2. Lists available formats from `_opensquad/core/formats/`
+2. Lists available formats from `_nifillos/core/formats/`
 3. Selects relevant formats
 4. Configures each pipeline step with the correct `format:` field
 
@@ -135,16 +135,16 @@ Any agent that receives a format context interprets it through their role:
 ### Scope Rules
 - **One format per step.** Multiple formats = separate steps in the pipeline
 - **Format is optional.** Steps without format work as before
-- **Formats are reusable.** The same format file is used across all squads
+- **Formats are reusable.** The same format file is used across all crews
 
 ### Deprecation
-The existing `_opensquad/core/platforms/` directory is **deprecated**. Platform-specific content is migrated into the relevant format files. Each format is self-contained — it includes both platform rules and format-specific instructions.
+The existing `_nifillos/core/platforms/` directory is **deprecated**. Platform-specific content is migrated into the relevant format files. Each format is self-contained — it includes both platform rules and format-specific instructions.
 
 ## Migration Path
-1. Create `_opensquad/core/formats/` directory
-2. Migrate content from `_opensquad/core/platforms/instagram.md` → `instagram-feed.md`, `instagram-reels.md`, `instagram-stories.md`
+1. Create `_nifillos/core/formats/` directory
+2. Migrate content from `_nifillos/core/platforms/instagram.md` → `instagram-feed.md`, `instagram-reels.md`, `instagram-stories.md`
 3. Migrate content from other platform files similarly
-4. Add deprecation notice to `_opensquad/core/platforms/*.md`
+4. Add deprecation notice to `_nifillos/core/platforms/*.md`
 5. Update Pipeline Runner to support `format:` field in step frontmatter
-6. Update Architect to ask about formats during squad creation
+6. Update Architect to ask about formats during crew creation
 7. Add new platforms not previously covered (WhatsApp, Email, Blog)

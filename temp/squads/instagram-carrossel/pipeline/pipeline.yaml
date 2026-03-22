@@ -1,7 +1,7 @@
 name: "Pipeline — Fábrica de Carrosséis"
 version: "2.0.0"
 created: "2026-03-03"
-squad: "instagram-carrossel"
+crew: "instagram-carrossel"
 
 description: >
   Pipeline completo para transformar um tema em carrossel de Instagram publicado

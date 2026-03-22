@@ -1,4 +1,4 @@
-# Sherlock — Content Investigator for Opensquad
+# Sherlock — Content Investigator for Nifillos
 
 **Date:** 2026-02-24
 **Status:** Approved
@@ -6,11 +6,11 @@
 
 ## Overview
 
-Sherlock is a content investigation feature for Opensquad that extracts and analyzes real content from social media profiles during squad creation. Instead of relying solely on generic web research, Sherlock navigates to reference profiles, extracts actual content, and identifies patterns that feed into richer squad design.
+Sherlock is a content investigation feature for Nifillos that extracts and analyzes real content from social media profiles during crew creation. Instead of relying solely on generic web research, Sherlock navigates to reference profiles, extracts actual content, and identifies patterns that feed into richer crew design.
 
 ## Trigger & Placement
 
-Sherlock runs during **squad creation** (Architect agent), as a new Phase 1.5 (Investigation Setup) that feeds into Phase 2 (Research).
+Sherlock runs during **crew creation** (Architect agent), as a new Phase 1.5 (Investigation Setup) that feeds into Phase 2 (Research).
 
 - **When:** After Discovery questions, before Research
 - **How:** Architect asks "Do you have reference profiles?" → dispatches Sherlock subagents in parallel with WebSearch
@@ -49,10 +49,10 @@ Sherlock runs during **squad creation** (Architect agent), as a new Phase 1.5 (I
 
 ### Smart Recommendations
 
-Based on squad type:
-- Carousel squad → recommend carousels + reels
-- Video squad → recommend long-form videos
-- Generic content squad → recommend diverse mix
+Based on crew type:
+- Carousel crew → recommend carousels + reels
+- Video crew → recommend long-form videos
+- Generic content crew → recommend diverse mix
 
 ### Platform-Specific Defaults
 
@@ -102,7 +102,7 @@ Based on squad type:
 ### Per Profile
 
 ```
-_opensquad/_investigations/{squad-code}/
+_nifillos/_investigations/{crew-code}/
 ├── {platform}-{username}/
 │   ├── raw-content.md        # All extracted content
 │   └── pattern-analysis.md   # Identified patterns
@@ -146,13 +146,13 @@ Total contents: {N}
 
 ## Engagement Patterns
 
-## Recommendations for Squad
+## Recommendations for Crew
 ```
 
 ### Consolidated Analysis (multiple profiles)
 
 ```markdown
-# Consolidated Investigation: {squad-name}
+# Consolidated Investigation: {crew-name}
 
 ## Profiles Analyzed
 ## Universal Patterns (common to all)
@@ -182,17 +182,17 @@ Total contents: {N}
 
 ### Persistence & Reuse
 
-Investigations saved in `_opensquad/_investigations/`. Enables:
-- Reuse between similar squads
+Investigations saved in `_nifillos/_investigations/`. Enables:
+- Reuse between similar crews
 - Re-investigate profiles later (compare evolution)
 - Architect can ask: "Found previous investigations for this niche. Reuse?"
 
 ## Complete Flow
 
 ```
-User: /opensquad create "Instagram carousel squad"
+User: /Nifillos create "Instagram carousel crew"
 
-Phase 1: Discovery → 5 questions about the squad
+Phase 1: Discovery → 5 questions about the crew
 Phase 1.5: Investigation Setup
   → "Have reference profiles?"
   → User provides URLs + configures types/quantity

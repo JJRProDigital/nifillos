@@ -10,11 +10,13 @@ import {
   listInstalled,
   listAvailable,
   installSkill,
+  installSkillFromPath,
   removeSkill,
   getSkillVersion,
   getSkillMeta,
   getLocalizedDescription,
   clearMetaCache,
+  looksLikeGitRemote,
 } from '../src/skills.js';
 
 const SAMPLE_SKILL_MD = `---\nname: seo-optimizer\nversion: 1.2.0\ntype: tool\ndescription: SEO Optimizer\n---\n# SEO Optimizer\n`;
@@ -22,7 +24,7 @@ const SAMPLE_SKILL_MD = `---\nname: seo-optimizer\nversion: 1.2.0\ntype: tool\nd
 // --- listInstalled ---
 
 test('listInstalled returns empty array when skills/ does not exist', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     const result = await listInstalled(dir);
     assert.deepEqual(result, []);
@@ -31,11 +33,11 @@ test('listInstalled returns empty array when skills/ does not exist', async () =
   }
 });
 
-test('listInstalled excludes the built-in opensquad-skill-creator skill', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+test('listInstalled excludes the built-in nifillos-skill-creator skill', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     const skillsDir = join(dir, 'skills');
-    await mkdir(join(skillsDir, 'opensquad-skill-creator'), { recursive: true });
+    await mkdir(join(skillsDir, 'nifillos-skill-creator'), { recursive: true });
     await mkdir(join(skillsDir, 'seo-optimizer'), { recursive: true });
     const result = await listInstalled(dir);
     assert.deepEqual(result, ['seo-optimizer']);
@@ -45,7 +47,7 @@ test('listInstalled excludes the built-in opensquad-skill-creator skill', async 
 });
 
 test('listInstalled returns installed skill ids from skills/', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     const skillsDir = join(dir, 'skills');
     await mkdir(join(skillsDir, 'seo-optimizer'), { recursive: true });
@@ -71,7 +73,7 @@ test('listAvailable returns bundled skill ids', async () => {
 // --- installSkill ---
 
 test('installSkill copies SKILL.md from bundled skills to skills/<id>/', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     await installSkill('image-creator', dir);
     const content = await readFile(join(dir, 'skills', 'image-creator', 'SKILL.md'), 'utf-8');
@@ -83,7 +85,7 @@ test('installSkill copies SKILL.md from bundled skills to skills/<id>/', async (
 });
 
 test('installSkill creates skills/ directory if missing', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     await installSkill('apify', dir);
     const content = await readFile(join(dir, 'skills', 'apify', 'SKILL.md'), 'utf-8');
@@ -94,7 +96,7 @@ test('installSkill creates skills/ directory if missing', async () => {
 });
 
 test('installSkill throws when skill not found in bundled skills', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     await assert.rejects(
       () => installSkill('nonexistent', dir),
@@ -106,7 +108,7 @@ test('installSkill throws when skill not found in bundled skills', async () => {
 });
 
 test('installSkill throws on invalid skill id', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     await assert.rejects(
       () => installSkill('../evil', dir),
@@ -117,13 +119,13 @@ test('installSkill throws on invalid skill id', async () => {
   }
 });
 
-test('installSkill copies full directory including subdirs for opensquad-skill-creator', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+test('installSkill copies full directory including subdirs for nifillos-skill-creator', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
-    await installSkill('opensquad-skill-creator', dir);
-    const skill = await readFile(join(dir, 'skills', 'opensquad-skill-creator', 'SKILL.md'), 'utf-8');
+    await installSkill('nifillos-skill-creator', dir);
+    const skill = await readFile(join(dir, 'skills', 'nifillos-skill-creator', 'SKILL.md'), 'utf-8');
     assert.ok(skill.length > 0);
-    const scripts = await readdir(join(dir, 'skills', 'opensquad-skill-creator', 'scripts'));
+    const scripts = await readdir(join(dir, 'skills', 'nifillos-skill-creator', 'scripts'));
     assert.ok(scripts.length > 0);
   } finally {
     await rm(dir, { recursive: true });
@@ -131,7 +133,7 @@ test('installSkill copies full directory including subdirs for opensquad-skill-c
 });
 
 test('installSkill skips copy when src and dest resolve to the same path', async () => {
-  // Simulates running init from inside the opensquad repo itself
+  // Simulates running init from inside the Nifillos repo itself
   const repoRoot = join(__dirname, '..');
   await assert.doesNotReject(() => installSkill('image-creator', repoRoot));
 });
@@ -139,7 +141,7 @@ test('installSkill skips copy when src and dest resolve to the same path', async
 // --- removeSkill ---
 
 test('removeSkill deletes the skill directory from skills/', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     const skillDir = join(dir, 'skills', 'seo-optimizer');
     await mkdir(skillDir, { recursive: true });
@@ -155,7 +157,7 @@ test('removeSkill deletes the skill directory from skills/', async () => {
 });
 
 test('removeSkill does not throw when skill not installed', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     await assert.doesNotReject(() => removeSkill('nonexistent', dir));
   } finally {
@@ -164,7 +166,7 @@ test('removeSkill does not throw when skill not installed', async () => {
 });
 
 test('removeSkill throws on invalid skill id', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     await assert.rejects(
       () => removeSkill('../evil', dir),
@@ -178,7 +180,7 @@ test('removeSkill throws on invalid skill id', async () => {
 // --- getSkillVersion ---
 
 test('getSkillVersion returns version from SKILL.md frontmatter', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     const skillDir = join(dir, 'skills', 'seo-optimizer');
     await mkdir(skillDir, { recursive: true });
@@ -191,7 +193,7 @@ test('getSkillVersion returns version from SKILL.md frontmatter', async () => {
 });
 
 test('getSkillVersion returns null when SKILL.md has no version', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     const skillDir = join(dir, 'skills', 'seo-optimizer');
     await mkdir(skillDir, { recursive: true });
@@ -204,7 +206,7 @@ test('getSkillVersion returns null when SKILL.md has no version', async () => {
 });
 
 test('getSkillVersion returns null when skill is not installed', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     const version = await getSkillVersion('nonexistent', dir);
     assert.equal(version, null);
@@ -214,7 +216,7 @@ test('getSkillVersion returns null when skill is not installed', async () => {
 });
 
 test('getSkillVersion returns null when SKILL.md has no frontmatter', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     const skillDir = join(dir, 'skills', 'seo-optimizer');
     await mkdir(skillDir, { recursive: true });
@@ -256,18 +258,10 @@ test('getSkillMeta returns descriptions object (empty until translations added)'
 
 // --- getLocalizedDescription ---
 
-test('getLocalizedDescription returns pt-BR description when available', () => {
-  const meta = {
-    description: 'English description',
-    descriptions: { 'pt-BR': 'Descrição em português', 'es': 'Descripción en español' },
-  };
-  assert.equal(getLocalizedDescription(meta, 'pt-BR'), 'Descrição em português');
-});
-
 test('getLocalizedDescription returns es description when available', () => {
   const meta = {
     description: 'English description',
-    descriptions: { 'pt-BR': 'Descrição em português', 'es': 'Descripción en español' },
+    descriptions: { es: 'Descripción en español' },
   };
   assert.equal(getLocalizedDescription(meta, 'es'), 'Descripción en español');
 });
@@ -277,13 +271,13 @@ test('getLocalizedDescription falls back to English when locale not available', 
     description: 'English description',
     descriptions: {},
   };
-  assert.equal(getLocalizedDescription(meta, 'pt-BR'), 'English description');
+  assert.equal(getLocalizedDescription(meta, 'fr'), 'English description');
 });
 
 test('getLocalizedDescription returns English for "en" locale', () => {
   const meta = {
     description: 'English description',
-    descriptions: { 'pt-BR': 'Descrição' },
+    descriptions: { es: 'Descripción' },
   };
   assert.equal(getLocalizedDescription(meta, 'en'), 'English description');
 });
@@ -306,7 +300,7 @@ test('clearMetaCache forces re-read from disk', async () => {
 });
 
 test('installSkill invalidates metaCache for that skill', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     const before = await getSkillMeta('image-creator');
     await installSkill('image-creator', dir);
@@ -318,7 +312,7 @@ test('installSkill invalidates metaCache for that skill', async () => {
 });
 
 test('removeSkill invalidates metaCache for that skill', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
   try {
     await installSkill('image-creator', dir);
     await getSkillMeta('image-creator'); // populate cache
@@ -350,4 +344,49 @@ test('installSkill invalidates cached null so skill becomes findable', async () 
   clearMetaCache();
   const meta = await getSkillMeta('image-creator');
   assert.ok(meta); // leu do disco normalmente
+});
+
+test('getSkillMeta falls back to project skills/ when targetDir is provided', async () => {
+  clearMetaCache();
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
+  try {
+    const skillDir = join(dir, 'skills', 'my-local-skill');
+    await mkdir(skillDir, { recursive: true });
+    await writeFile(
+      join(skillDir, 'SKILL.md'),
+      '---\nname: My Local\ndescription: Local only\ntype: prompt\n---\n',
+      'utf-8'
+    );
+    assert.equal(await getSkillMeta('my-local-skill'), null);
+    const meta = await getSkillMeta('my-local-skill', dir);
+    assert.ok(meta);
+    assert.equal(meta.name, 'My Local');
+    assert.equal(meta.type, 'prompt');
+  } finally {
+    await rm(dir, { recursive: true });
+  }
+});
+
+test('installSkillFromPath copies a directory skill into the project', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
+  const src = await mkdtemp(join(tmpdir(), 'nifillos-src-'));
+  try {
+    await mkdir(join(src, 'custom-pack'), { recursive: true });
+    await writeFile(
+      join(src, 'custom-pack', 'SKILL.md'),
+      '---\nname: custom\ndescription: x\ntype: prompt\n---\n',
+      'utf-8'
+    );
+    await installSkillFromPath(join(src, 'custom-pack'), dir);
+    const content = await readFile(join(dir, 'skills', 'custom-pack', 'SKILL.md'), 'utf-8');
+    assert.ok(content.includes('name: custom'));
+  } finally {
+    await rm(dir, { recursive: true });
+    await rm(src, { recursive: true });
+  }
+});
+
+test('looksLikeGitRemote detects https GitHub URLs', () => {
+  assert.equal(looksLikeGitRemote('https://github.com/foo/bar.git'), true);
+  assert.equal(looksLikeGitRemote('apify'), false);
 });

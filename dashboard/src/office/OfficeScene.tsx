@@ -1,13 +1,13 @@
 import { Application, extend } from "@pixi/react";
 import { Container, Graphics } from "pixi.js";
 import { useCallback, useMemo } from "react";
-import { useSquadStore } from "@/store/useSquadStore";
+import { useCuadrillaStore } from "@/store/useCuadrillaStore";
 import { AgentDesk, CELL_W, CELL_H, GRID_OFFSET_X, GRID_OFFSET_Y } from "./AgentDesk";
 import { HandoffEnvelope } from "./HandoffEnvelope";
 import { sortAgentsByDesk, findAgent } from "@/lib/normalizeState";
 import { drawFloor } from "./drawRoom";
 import { drawBookshelf, drawPlant, drawClock, drawWhiteboard, drawCoffeeMachine, drawFilingCabinet } from "./drawFurniture";
-import { TILE, COLORS, SCENE_SCALE } from "./palette";
+import { TILE, COLORS } from "./palette";
 import type { Graphics as PixiGraphics } from "pixi.js";
 
 extend({ Container, Graphics });
@@ -16,11 +16,11 @@ const MIN_STAGE_W = 400;
 const MIN_STAGE_H = 320;
 
 export function OfficeScene() {
-  const state = useSquadStore((s) =>
-    s.selectedSquad ? s.activeStates.get(s.selectedSquad) : undefined
+  const state = useCuadrillaStore((s) =>
+    s.selectedCuadrilla ? s.activeStates.get(s.selectedCuadrilla) : undefined
   );
-  const squadInfo = useSquadStore((s) =>
-    s.selectedSquad ? s.squads.get(s.selectedSquad) : undefined
+  const cuadrillaInfo = useCuadrillaStore((s) =>
+    s.selectedCuadrilla ? s.cuadrillas.get(s.selectedCuadrilla) : undefined
   );
 
   const agents = useMemo(
@@ -105,24 +105,24 @@ export function OfficeScene() {
           gap: 8,
         }}
       >
-        {squadInfo ? (
+        {cuadrillaInfo ? (
           <>
-            <span style={{ fontSize: 40 }}>{squadInfo.icon}</span>
-            <span style={{ fontSize: 16 }}>{squadInfo.name}</span>
-            <span style={{ fontSize: 12 }}>{squadInfo.description}</span>
-            <span style={{ fontSize: 11, marginTop: 8 }}>Not running</span>
+            <span style={{ fontSize: 40 }}>{cuadrillaInfo.icon}</span>
+            <span style={{ fontSize: 16 }}>{cuadrillaInfo.name}</span>
+            <span style={{ fontSize: 12 }}>{cuadrillaInfo.description}</span>
+            <span style={{ fontSize: 11, marginTop: 8 }}>Sin ejecución</span>
           </>
         ) : (
-          <span>Select a squad to monitor</span>
+          <span>Selecciona una cuadrilla</span>
         )}
       </div>
     );
   }
 
   return (
-    <div style={{ flex: 1, overflow: "auto", display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
-      <Application width={stageW * SCENE_SCALE} height={stageH * SCENE_SCALE} backgroundColor={0x101018}>
-        <pixiContainer scale={SCENE_SCALE}>
+    <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <Application width={stageW} height={stageH} backgroundColor={0x101018}>
+        <pixiContainer>
           <pixiGraphics draw={drawBackground} />
           {agents.map((agent, i) => (
             <AgentDesk key={agent.id} agent={agent} agentIndex={i} />

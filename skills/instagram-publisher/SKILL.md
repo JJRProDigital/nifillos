@@ -5,11 +5,6 @@ description: >
   Uploads images to catbox.moe for temporary public hosting, creates Instagram
   media containers via the Graph API, and publishes the carousel.
   Supports 2-10 images per post and retrieves the real post permalink.
-description_pt-BR: >
-  Publica carrosséis do Instagram a partir de imagens locais.
-  Faz upload das imagens para o catbox.moe como hospedagem pública temporária,
-  cria containers de mídia via Graph API e publica o carrossel.
-  Suporta de 2 a 10 imagens por post e obtém o permalink real.
 description_es: >
   Publica carruseles de Instagram a partir de imágenes locales.
   Sube las imágenes a catbox.moe como hosting público temporal, crea
@@ -38,7 +33,7 @@ Use the Instagram Publisher when you need to publish carousel posts directly to 
 
 ### Workflow
 
-1. List JPEG files in `squads/{squad}/output/images/` sorted by name.
+1. List JPEG files in `cuadrillas/{cuadrilla}/output/images/` sorted by name.
    If no files found: stop and ask the user to add images before continuing.
 2. Present the image list to the user with AskUserQuestion to confirm order.
 3. Extract the caption from the content draft:
@@ -46,7 +41,7 @@ Use the Instagram Publisher when you need to publish carousel posts directly to 
    - Max 2200 characters (Instagram limit)
 4. Run the publish script:
    ```
-   node --env-file=.env squads/{squad}/tools/publish.js \
+   node --env-file=.env cuadrillas/{cuadrilla}/tools/publish.js \
      --images "<comma-separated-ordered-paths>" \
      --caption "<caption>"
    ```
@@ -72,43 +67,43 @@ INSTAGRAM_USER_ID=
 
 #### INSTAGRAM_ACCESS_TOKEN
 
-Pré-requisito: conta Instagram Business conectada a uma Página do Facebook, e um app criado em [developers.facebook.com](https://developers.facebook.com/) (tipo: **Empresa**).
+Requisito: cuenta Instagram Business vinculada a una página de Facebook y una app creada en [developers.facebook.com](https://developers.facebook.com/) (tipo: **Empresa**).
 
-**Para obter um token de longa duração (válido 60 dias):**
+**Para obtener un token de larga duración (válido 60 días):**
 
-1. Acesse seu app → **Graph API Explorer**
-2. No dropdown do topo, selecione seu app
-3. Clique em **"Gerar token de acesso"**
-4. Ative as permissões:
+1. Entra en tu app → **Graph API Explorer**
+2. En el menú superior, selecciona tu app
+3. Pulsa **«Generar token de acceso»**
+4. Activa los permisos:
    - `instagram_content_publish`
    - `instagram_basic`
    - `pages_read_engagement`
-5. Clique em **"Gerar token de acesso"** e autorize — você receberá um token de curta duração (1h)
-6. Converta para longa duração (60 dias) com este GET:
+5. Pulsa **«Generar token de acceso»** y autoriza; recibirás un token de corta duración (1 h)
+6. Conviértelo a larga duración (60 días) con este GET:
    ```
    https://graph.facebook.com/oauth/access_token
      ?grant_type=fb_exchange_token
      &client_id={APP_ID}
      &client_secret={APP_SECRET}
-     &fb_exchange_token={TOKEN_CURTO}
+     &fb_exchange_token={TOKEN_CORTO}
    ```
-   _(APP_ID e APP_SECRET: seu app → Configurações → Básico)_
-7. Copie o `access_token` da resposta e cole em `.env`
+   _(APP_ID y APP_SECRET: tu app → Configuración → Básico)_
+7. Copia el `access_token` de la respuesta y pégalo en `.env`
 
-> O token expira em 60 dias. Repita o processo para renovar.
+> El token caduca a los 60 días. Repite el proceso para renovarlo.
 
 #### INSTAGRAM_USER_ID
 
-1. No Graph API Explorer (com o token acima), faça GET em:
+1. En Graph API Explorer (con el token anterior), haz GET a:
    ```
    /me/accounts
    ```
-2. Localize sua **Página do Facebook** na resposta e anote o `id`
-3. Faça GET em:
+2. Localiza tu **página de Facebook** en la respuesta y anota el `id`
+3. Haz GET a:
    ```
    /{page-id}?fields=instagram_business_account
    ```
-4. Copie o `id` dentro de `instagram_business_account` — esse é o seu User ID
+4. Copia el `id` dentro de `instagram_business_account` — ese es tu User ID
 
 ## Available operations
 

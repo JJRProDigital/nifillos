@@ -1,8 +1,8 @@
 node_modules/
 .env
 *.log
-squads/*/output/
-_opensquad/_memory/company.md
-_opensquad/_memory/preferences.md
-_opensquad/_browser_profile/
-_opensquad/logs/
+cuadrillas/*/output/
+_nifillos/_memory/company.md
+_nifillos/_memory/preferences.md
+_nifillos/_browser_profile/
+_nifillos/logs/

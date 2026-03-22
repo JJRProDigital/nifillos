@@ -1,25 +1,33 @@
 import { createInterface } from 'node:readline';
 import { stat } from 'node:fs/promises';
-import { join } from 'node:path';
-import { listInstalled, installSkill, removeSkill, getSkillMeta, getLocalizedDescription } from './skills.js';
+import { basename as pathBasename, resolve } from 'node:path';
+import {
+  listInstalled,
+  installSkill,
+  installSkillFromPath,
+  installSkillFromGit,
+  looksLikeGitRemote,
+  removeSkill,
+  getSkillMeta,
+  getLocalizedDescription,
+} from './skills.js';
 import { loadLocale, t, getLocaleCode } from './i18n.js';
 import { loadSavedLocale } from './init.js';
 import { logEvent } from './logger.js';
 
 async function confirm(question) {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
-  return new Promise((resolve) => {
+  return new Promise((resolveConfirm) => {
     rl.question(question, (answer) => {
       rl.close();
-      resolve(answer.trim().toLowerCase());
+      resolveConfirm(answer.trim().toLowerCase());
     });
   });
 }
 
 export async function skillsCli(subcommand, args, targetDir) {
-  // Require initialized project
   try {
-    await stat(join(targetDir, '_opensquad'));
+    await stat(resolve(targetDir, '_nifillos'));
   } catch {
     await loadLocale('English');
     console.log(`\n  ${t('skillsNotInitialized')}\n`);
@@ -54,14 +62,14 @@ export async function skillsCli(subcommand, args, targetDir) {
 }
 
 async function runList(targetDir) {
-  console.log(`\n  Opensquad Skills\n`);
+  console.log(`\n  Nifillos skills\n`);
 
   const installed = await listInstalled(targetDir);
 
   if (installed.length > 0) {
     console.log(`  ${t('skillsInstalledHeader')}`);
     for (const id of installed) {
-      const meta = await getSkillMeta(id);
+      const meta = await getSkillMeta(id, targetDir);
       if (meta) {
         const desc = getLocalizedDescription(meta, getLocaleCode());
         const parts = [meta.name];
@@ -76,36 +84,70 @@ async function runList(targetDir) {
     console.log(`  ${t('skillsNoneInstalled')}`);
   }
 
-  console.log(`\n  Browse available skills at: https://github.com/renatoasse/opensquad/tree/main/skills\n`);
+  console.log(
+    `\n  Bundled catalog: see the skills/ folder in the nifillos package (npm pack / GitHub).\n`
+  );
 }
 
-async function runInstall(id, targetDir) {
-  if (!id) {
-    console.log('\n  Usage: opensquad install <id>\n');
+async function runInstall(idOrPath, targetDir) {
+  if (!idOrPath) {
+    console.log('\n  Usage: nifillos install <id|path|git-url>\n');
     return false;
   }
 
-  const installed = await listInstalled(targetDir);
-  if (installed.includes(id)) {
-    const answer = await confirm(`\n  ${t('skillsAlreadyInstalled', { id })}`);
-    // Accept 'y' (English) or 's' (Portuguese "sim") as affirmative answers
-    if (answer !== 'y' && answer !== 's') return false;
-    console.log(`  ${t('skillsInstalling', { id })}`);
-    await installSkill(id, targetDir);
-    console.log(`  ${t('skillsReinstalled', { id })}\n`);
-    await logEvent('skill:install', { name: id, reinstall: true }, targetDir);
+  const fromCwd = resolve(process.cwd(), idOrPath);
+  try {
+    const st = await stat(fromCwd);
+    if (st.isDirectory()) {
+      const pathId = pathBasename(fromCwd);
+      const installed = await listInstalled(targetDir);
+      if (installed.includes(pathId)) {
+        const answer = await confirm(`\n  ${t('skillsAlreadyInstalled', { id: pathId })}`);
+        if (answer !== 'y' && answer !== 's') return false;
+        console.log(`  ${t('skillsInstalling', { id: pathId })}`);
+        await installSkillFromPath(fromCwd, targetDir);
+        console.log(`  ${t('skillsReinstalled', { id: pathId })}\n`);
+        await logEvent('skill:install', { name: pathId, reinstall: true, source: 'path' }, targetDir);
+        return;
+      }
+      console.log(`\n  ${t('skillsInstalling', { id: pathId })}`);
+      await installSkillFromPath(fromCwd, targetDir);
+      console.log(`  ${t('skillsInstalled', { id: pathId })}\n`);
+      await logEvent('skill:install', { name: pathId, source: 'path' }, targetDir);
+      return;
+    }
+  } catch {
+    /* not a directory */
+  }
+
+  if (looksLikeGitRemote(idOrPath)) {
+    console.log(`\n  ${t('skillsInstalling', { id: idOrPath })}`);
+    const id = await installSkillFromGit(idOrPath, targetDir);
+    console.log(`  ${t('skillsInstalled', { id })}\n`);
+    await logEvent('skill:install', { name: id, url: idOrPath, source: 'git' }, targetDir);
     return;
   }
 
-  console.log(`\n  ${t('skillsInstalling', { id })}`);
-  await installSkill(id, targetDir);
-  console.log(`  ${t('skillsInstalled', { id })}\n`);
-  await logEvent('skill:install', { name: id }, targetDir);
+  const installed = await listInstalled(targetDir);
+  if (installed.includes(idOrPath)) {
+    const answer = await confirm(`\n  ${t('skillsAlreadyInstalled', { id: idOrPath })}`);
+    if (answer !== 'y' && answer !== 's') return false;
+    console.log(`  ${t('skillsInstalling', { id: idOrPath })}`);
+    await installSkill(idOrPath, targetDir);
+    console.log(`  ${t('skillsReinstalled', { id: idOrPath })}\n`);
+    await logEvent('skill:install', { name: idOrPath, reinstall: true }, targetDir);
+    return;
+  }
+
+  console.log(`\n  ${t('skillsInstalling', { id: idOrPath })}`);
+  await installSkill(idOrPath, targetDir);
+  console.log(`  ${t('skillsInstalled', { id: idOrPath })}\n`);
+  await logEvent('skill:install', { name: idOrPath }, targetDir);
 }
 
 async function runRemove(id, targetDir) {
   if (!id) {
-    console.log('\n  Usage: opensquad uninstall <id>\n');
+    console.log('\n  Usage: nifillos uninstall <id>\n');
     return false;
   }
 
@@ -140,7 +182,7 @@ async function runUpdate(targetDir) {
 
 async function runUpdateOne(id, targetDir) {
   if (!id) {
-    console.log('\n  Usage: opensquad update <name>\n');
+    console.log('\n  Usage: nifillos update <name>\n');
     return;
   }
 

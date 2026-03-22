@@ -7,11 +7,11 @@ Alternative to PR #7 (`feat/observability-ci`). Same goals, split into 3 focused
 - Master test suite passes (currently 5 failures)
 - Automated CI on every push/PR
 - CLI operation logging for debugging
-- Pipeline execution history via `npx opensquad runs`
+- Pipeline execution history via `npx Nifillos runs`
 
 ## Decisions
 
-- **Run logging reads `state.json` directly** — no separate `run-log.json`. The runner already writes `state.json` during execution; after completion, it copies `state.json` into the run's output directory (`squads/{name}/output/{run_id}/state.json`) for permanent history, then deletes the working copy from the squad root. Fewer files, fewer instructions, fewer tokens.
+- **Run logging reads `state.json` directly** — no separate `run-log.json`. The runner already writes `state.json` during execution; after completion, it copies `state.json` into the run's output directory (`cuadrillas/{name}/output/{run_id}/state.json`) for permanent history, then deletes the working copy from the crew root. Fewer files, fewer instructions, fewer tokens.
 - **Run log is minimal** — only essential fields to avoid inflating token usage.
 - **Logger errors are silent** — never breaks the operation being logged.
 - **ESLint is error-only** — no style rules, just catches real bugs.
@@ -126,7 +126,7 @@ jobs:
 **New file:** `src/logger.js`
 
 ```js
-// logEvent(action, details) — appends to _opensquad/logs/cli.log
+// logEvent(action, details) — appends to _nifillos/logs/cli.log
 // readCliLogs({ action, since, limit }) — reads with optional filters
 ```
 
@@ -145,14 +145,14 @@ jobs:
 ### 3b. Persistent state.json
 
 **Modified files:**
-- `_opensquad/core/runner.pipeline.md`
-- `templates/_opensquad/core/runner.pipeline.md`
+- `_nifillos/core/runner.pipeline.md`
+- `templates/_nifillos/core/runner.pipeline.md`
 
 **Change:** Instead of deleting `state.json` after pipeline completion, the runner:
 
 1. Marks the final status with a `completedAt` or `failedAt` timestamp
-2. Copies `state.json` to `squads/{name}/output/{run_id}/state.json` for permanent history
-3. Deletes the working copy from the squad root (so it's clean for the next run)
+2. Copies `state.json` to `cuadrillas/{name}/output/{run_id}/state.json` for permanent history
+3. Deletes the working copy from the crew root (so it's clean for the next run)
 
 Completed state example:
 ```json
@@ -171,25 +171,25 @@ Failed state example:
 }
 ```
 
-**Important:** Both `_opensquad/core/runner.pipeline.md` and `templates/_opensquad/core/runner.pipeline.md` must be modified identically to prevent drift between installed instances and the template.
+**Important:** Both `_nifillos/core/runner.pipeline.md` and `templates/_nifillos/core/runner.pipeline.md` must be modified identically to prevent drift between installed instances and the template.
 
 ### 3c. Runs command
 
 **New file:** `src/runs.js`
 
 ```js
-// listRuns(squadName?) — scans squads/*/output/*/state.json
+// listRuns(squadName?) — scans cuadrillas/*/output/*/state.json
 // printRuns(runs) — formatted console output
 // formatDuration(ms) — "2m 30s" format
 ```
 
-**Modified file:** `bin/opensquad.js` — registers `runs` command
+**Modified file:** `bin/Nifillos.js` — registers `runs` command
 
 **Behavior:**
-- `npx opensquad runs` — all squads
-- `npx opensquad runs my-squad` — filter by squad
-- Reads `state.json` from each `squads/*/output/*/` directory
-- Shows: squad name, run date, status, step count, duration
+- `npx Nifillos runs` — all crews
+- `npx Nifillos runs my-crew` — filter by crew
+- Reads `state.json` from each `cuadrillas/*/output/*/` directory
+- Shows: crew name, run date, status, step count, duration
 - Fallback: runs without `state.json` show as "unknown"
 - Sorted by date descending, limit 20
 - Graceful handling of malformed JSON
@@ -204,6 +204,6 @@ Failed state example:
 
 - All new tests pass
 - `npm test` full suite green
-- `npx opensquad runs` shows "No runs found." on fresh project
-- After a pipeline run, `state.json` is archived in `output/{run_id}/` and `npx opensquad runs` shows the run
+- `npx Nifillos runs` shows "No runs found." on fresh project
+- After a pipeline run, `state.json` is archived in `output/{run_id}/` and `npx Nifillos runs` shows the run
 - Duration is calculated from `startedAt` and `completedAt`/`failedAt` fields in `state.json`

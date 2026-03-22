@@ -3,15 +3,11 @@ name: image-fetcher
 description: >
   Acquires visual assets from multiple sources: web image search,
   live website screenshots via Playwright, and user-provided files.
-  Organizes assets in the squad's reference folder.
-description_pt-BR: >
-  Obtém assets visuais de múltiplas fontes: busca de imagens na web,
-  capturas de sites via Playwright e arquivos fornecidos pelo usuário.
-  Organiza os assets na pasta de referência do squad.
+  Organizes assets in the cuadrilla's reference folder.
 description_es: >
   Obtiene assets visuales de múltiples fuentes: búsqueda de imágenes en la web,
   capturas de sitios vía Playwright y archivos proporcionados por el usuario.
-  Organiza los assets en la carpeta de referencia del squad.
+  Organiza los assets en la carpeta de referencia del cuadrilla.
 type: hybrid
 version: "1.0.0"
 mcp:
@@ -23,7 +19,7 @@ categories: [assets, scraping, automation, images]
 
 ## When to use
 
-Use the Asset Fetcher when you need to acquire visual assets for content creation. It supports three acquisition modes: web image search, live website screenshots via Playwright, and organizing user-provided files. All assets are saved to the squad's reference or output folder with descriptive filenames and metadata.
+Use the Asset Fetcher when you need to acquire visual assets for content creation. It supports three acquisition modes: web image search, live website screenshots via Playwright, and organizing user-provided files. All assets are saved to the cuadrilla's reference or output folder with descriptive filenames and metadata.
 
 ## Instructions
 
@@ -33,7 +29,7 @@ Use the Asset Fetcher when you need to acquire visual assets for content creatio
 
 2. **Live Screenshot** -- Use Playwright MCP to navigate to a URL, set viewport dimensions, and capture a screenshot.
 
-3. **Asset Organization** -- Save all acquired assets with descriptive filenames in the squad's reference/ or output/ folder.
+3. **Asset Organization** -- Save all acquired assets with descriptive filenames in the cuadrilla's reference/ or output/ folder.
 
 ### Screenshot Modes
 

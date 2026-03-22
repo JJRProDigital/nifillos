@@ -53,9 +53,9 @@ export async function getAgentMeta(id) {
       if (descInline) description = descInline[1].trim();
     }
 
-    // localized descriptions: description_pt-BR, description_es, etc.
+    // localized descriptions: description_es, etc.
     const descriptions = {};
-    for (const code of ['pt-BR', 'es']) {
+    for (const code of ['es']) {
       const key = `description_${code}`;
       // folded scalar
       const blockMatch = fm.match(new RegExp(`^${key}:\\s*>\\s*\\n((?:\\s{2,}.+\\n?)+)`, 'm'));

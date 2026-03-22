@@ -1,11 +1,11 @@
-# Incremental Run Folders for Squad Output
+# Incremental Run Folders for Crew Output
 
 **Date:** 2026-02-24
 **Status:** Approved
 
 ## Problem
 
-All squad executions dump intermediate files (research.md, ideas.md, draft.md, etc.) into a single `output/drafts/` folder. Each run overwrites the previous one, losing all history.
+All crew executions dump intermediate files (research.md, ideas.md, draft.md, etc.) into a single `output/drafts/` folder. Each run overwrites the previous one, losing all history.
 
 ## Solution
 
@@ -21,20 +21,20 @@ Each pipeline execution creates a new numbered folder inside `output/`, containi
 
 At pipeline start, the Pipeline Runner:
 
-1. Scans `squads/{name}/output/` for folders matching `{N}-*` pattern
+1. Scans `cuadrillas/{name}/output/` for folders matching `{N}-*` pattern
 2. Computes `nextId = max(existing IDs) + 1` (defaults to 1 if empty)
 3. Slugifies the topic input (lowercase, remove accents, replace spaces/special chars with hyphens)
-4. Creates `squads/{name}/output/{nextId}-{slug}/`
+4. Creates `cuadrillas/{name}/output/{nextId}-{slug}/`
 5. Sets `{run-dir}` variable for all subsequent step path resolution
 
 ### Path variable: `{run-dir}`
 
-All step files and squad.yaml use `{run-dir}` instead of hardcoded `./output/drafts/`. The runner resolves this variable before executing each step.
+All step files and cuadrilla.yaml use `{run-dir}` instead of hardcoded `./output/drafts/`. The runner resolves this variable before executing each step.
 
 ### Output structure
 
 ```
-squads/instagram-content/output/
+cuadrillas/instagram-content/output/
 ├── 1-mortedosaas/
 │   ├── research.md
 │   ├── ideas.md
@@ -57,7 +57,7 @@ squads/instagram-content/output/
 | File | Change |
 |------|--------|
 | `runner.pipeline.md` | Add "Run Folder Setup" section to Initialization |
-| `squad.yaml` | Replace `./output/drafts/` → `{run-dir}/` in all step output/input paths |
+| `cuadrilla.yaml` | Replace `./output/drafts/` → `{run-dir}/` in all step output/input paths |
 | `step-01-research.md` | `outputFile: "{run-dir}/research.md"` |
 | `step-02-ideation.md` | `outputFile: "{run-dir}/ideas.md"` |
 | `step-03-user-choice.md` | `outputFile: "{run-dir}/selected-idea.md"` |

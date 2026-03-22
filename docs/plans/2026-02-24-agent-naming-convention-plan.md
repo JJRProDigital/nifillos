@@ -4,20 +4,20 @@
 
 **Goal:** Make all agent names follow an alliterative "FirstName LastName" pattern where the last name is a humorous professional reference, in the user's language.
 
-**Architecture:** Add naming convention instructions to the Architect's Phase 4 (Design) workflow. Rename existing template agents to Portuguese alliterative names. Update squad-party.csv to match.
+**Architecture:** Add naming convention instructions to the Architect's Phase 4 (Design) workflow. Rename existing template agents to Portuguese alliterative names. Update cuadrilla-party.csv to match.
 
-**Tech Stack:** YAML (architect config), Markdown (agent files), CSV (squad manifest)
+**Tech Stack:** YAML (architect config), Markdown (agent files), CSV (crew manifest)
 
 ---
 
 ### Task 1: Rename Architect from "Atlas" to "Arquiteto"
 
 **Files:**
-- Modify: `templates/_opensquad/core/architect.agent.yaml:5`
+- Modify: `templates/_nifillos/core/architect.agent.yaml:5`
 
 **Step 1: Edit the name field**
 
-In `templates/_opensquad/core/architect.agent.yaml`, change line 5:
+In `templates/_nifillos/core/architect.agent.yaml`, change line 5:
 
 ```yaml
 # OLD
@@ -29,13 +29,13 @@ In `templates/_opensquad/core/architect.agent.yaml`, change line 5:
 
 **Step 2: Verify the change**
 
-Run: `grep -n "name:" templates/_opensquad/core/architect.agent.yaml | head -1`
+Run: `grep -n "name:" templates/_nifillos/core/architect.agent.yaml | head -1`
 Expected: `5:    name: Arquiteto`
 
 **Step 3: Commit**
 
 ```bash
-git add templates/_opensquad/core/architect.agent.yaml
+git add templates/_nifillos/core/architect.agent.yaml
 git commit -m "refactor: rename Architect agent from Atlas to Arquiteto"
 ```
 
@@ -44,41 +44,41 @@ git commit -m "refactor: rename Architect agent from Atlas to Arquiteto"
 ### Task 2: Add naming convention instructions to Architect Phase 4
 
 **Files:**
-- Modify: `templates/_opensquad/core/architect.agent.yaml:288-294`
+- Modify: `templates/_nifillos/core/architect.agent.yaml:288-294`
 
 **Step 1: Replace the agent naming instruction in Phase 4 item 1**
 
-In `templates/_opensquad/core/architect.agent.yaml`, find this block (lines 288-294):
+In `templates/_nifillos/core/architect.agent.yaml`, find this block (lines 288-294):
 
 ```yaml
-      1. Design the squad with appropriate agents:
+      1. Design the crew with appropriate agents:
          - Each agent needs: memorable name, icon, clear single role
          - Follow the deep .agent.md format with full sections: Persona (Role, Identity,
            Communication Style), Principles, Operational Framework, Voice Guidance,
            Output Examples, Anti-Patterns, Quality Criteria, Integration
-         - Reference prompt templates in _opensquad/core/prompts/ for each agent type
+         - Reference prompt templates in _nifillos/core/prompts/ for each agent type
            AND the extracted artifacts from Phase 3
 ```
 
 Replace with:
 
 ```yaml
-      1. Design the squad with appropriate agents:
+      1. Design the crew with appropriate agents:
          - Follow the deep .agent.md format with full sections: Persona (Role, Identity,
            Communication Style), Principles, Operational Framework, Voice Guidance,
            Output Examples, Anti-Patterns, Quality Criteria, Integration
-         - Reference prompt templates in _opensquad/core/prompts/ for each agent type
+         - Reference prompt templates in _nifillos/core/prompts/ for each agent type
            AND the extracted artifacts from Phase 3
 
          #### Agent Naming Convention
 
-         Read the user's preferred language from `_opensquad/_memory/preferences.md` → **Output Language**.
+         Read the user's preferred language from `_nifillos/_memory/preferences.md` → **Output Language**.
 
          Every agent MUST have a humorous, memorable two-word name following these rules:
          - **Format:** "FirstName LastName" — both words start with the SAME letter (alliteration)
          - **First name:** A common human name in the user's Output Language
          - **Last name:** A playful, witty reference to the agent's specialty or profession
-         - **Uniqueness:** Each agent in the squad MUST use a different initial letter
+         - **Uniqueness:** Each agent in the crew MUST use a different initial letter
          - **Icon:** Each agent also gets an emoji icon that represents their role
 
          Examples by language (DO NOT reuse these — generate original names every time):
@@ -113,13 +113,13 @@ Replace with:
 
 **Step 2: Verify the change**
 
-Run: `grep -n "Agent Naming Convention" templates/_opensquad/core/architect.agent.yaml`
+Run: `grep -n "Agent Naming Convention" templates/_nifillos/core/architect.agent.yaml`
 Expected: A match showing the new section header.
 
 **Step 3: Commit**
 
 ```bash
-git add templates/_opensquad/core/architect.agent.yaml
+git add templates/_nifillos/core/architect.agent.yaml
 git commit -m "feat: add alliterative agent naming convention to Architect Phase 4"
 ```
 
@@ -128,7 +128,7 @@ git commit -m "feat: add alliterative agent naming convention to Architect Phase
 ### Task 3: Rename researcher agent (Scout → Pedro Pesquisa)
 
 **Files:**
-- Modify: `templates/squads/instagram-content/agents/researcher.agent.md`
+- Modify: `templates/cuadrillas/instagram-content/agents/researcher.agent.md`
 
 **Step 1: Update front matter name field**
 
@@ -156,13 +156,13 @@ Replace with:
 
 **Step 3: Verify**
 
-Run: `grep -n "Pedro Pesquisa" templates/squads/instagram-content/agents/researcher.agent.md`
+Run: `grep -n "Pedro Pesquisa" templates/cuadrillas/instagram-content/agents/researcher.agent.md`
 Expected: Two matches — one in front matter (`name:`), one in heading (`#`).
 
 **Step 4: Commit**
 
 ```bash
-git add templates/squads/instagram-content/agents/researcher.agent.md
+git add templates/cuadrillas/instagram-content/agents/researcher.agent.md
 git commit -m "refactor: rename researcher agent Scout → Pedro Pesquisa"
 ```
 
@@ -171,7 +171,7 @@ git commit -m "refactor: rename researcher agent Scout → Pedro Pesquisa"
 ### Task 4: Rename ideator agent (Spark → Ivan Ideia)
 
 **Files:**
-- Modify: `templates/squads/instagram-content/agents/ideator.agent.md`
+- Modify: `templates/cuadrillas/instagram-content/agents/ideator.agent.md`
 
 **Step 1: Update front matter name field**
 
@@ -199,13 +199,13 @@ Replace with:
 
 **Step 3: Verify**
 
-Run: `grep -n "Ivan Ideia" templates/squads/instagram-content/agents/ideator.agent.md`
+Run: `grep -n "Ivan Ideia" templates/cuadrillas/instagram-content/agents/ideator.agent.md`
 Expected: Two matches — one in front matter, one in heading.
 
 **Step 4: Commit**
 
 ```bash
-git add templates/squads/instagram-content/agents/ideator.agent.md
+git add templates/cuadrillas/instagram-content/agents/ideator.agent.md
 git commit -m "refactor: rename ideator agent Spark → Ivan Ideia"
 ```
 
@@ -214,7 +214,7 @@ git commit -m "refactor: rename ideator agent Spark → Ivan Ideia"
 ### Task 5: Rename copywriter agent (Quill → Carlos Carrossel)
 
 **Files:**
-- Modify: `templates/squads/instagram-content/agents/copywriter.agent.md`
+- Modify: `templates/cuadrillas/instagram-content/agents/copywriter.agent.md`
 
 **Step 1: Update front matter name field**
 
@@ -242,13 +242,13 @@ Replace with:
 
 **Step 3: Verify**
 
-Run: `grep -n "Carlos Carrossel" templates/squads/instagram-content/agents/copywriter.agent.md`
+Run: `grep -n "Carlos Carrossel" templates/cuadrillas/instagram-content/agents/copywriter.agent.md`
 Expected: Two matches — one in front matter, one in heading.
 
 **Step 4: Commit**
 
 ```bash
-git add templates/squads/instagram-content/agents/copywriter.agent.md
+git add templates/cuadrillas/instagram-content/agents/copywriter.agent.md
 git commit -m "refactor: rename copywriter agent Quill → Carlos Carrossel"
 ```
 
@@ -257,7 +257,7 @@ git commit -m "refactor: rename copywriter agent Quill → Carlos Carrossel"
 ### Task 6: Rename reviewer agent (Eagle → Renata Revisão)
 
 **Files:**
-- Modify: `templates/squads/instagram-content/agents/reviewer.agent.md`
+- Modify: `templates/cuadrillas/instagram-content/agents/reviewer.agent.md`
 
 **Step 1: Update front matter name field**
 
@@ -285,22 +285,22 @@ Replace with:
 
 **Step 3: Verify**
 
-Run: `grep -n "Renata Revisão" templates/squads/instagram-content/agents/reviewer.agent.md`
+Run: `grep -n "Renata Revisão" templates/cuadrillas/instagram-content/agents/reviewer.agent.md`
 Expected: Two matches — one in front matter, one in heading.
 
 **Step 4: Commit**
 
 ```bash
-git add templates/squads/instagram-content/agents/reviewer.agent.md
+git add templates/cuadrillas/instagram-content/agents/reviewer.agent.md
 git commit -m "refactor: rename reviewer agent Eagle → Renata Revisão"
 ```
 
 ---
 
-### Task 7: Update squad-party.csv with new names
+### Task 7: Update cuadrilla-party.csv with new names
 
 **Files:**
-- Modify: `templates/squads/instagram-content/squad-party.csv`
+- Modify: `templates/cuadrillas/instagram-content/cuadrilla-party.csv`
 
 **Step 1: Replace all agent names in the CSV**
 
@@ -317,7 +317,7 @@ For each row, the `name` and `displayName` columns (columns 1 and 2) change. All
 
 **Step 2: Verify**
 
-Run: `cut -d',' -f1,2 templates/squads/instagram-content/squad-party.csv`
+Run: `cut -d',' -f1,2 templates/cuadrillas/instagram-content/cuadrilla-party.csv`
 Expected:
 ```
 name,displayName
@@ -330,8 +330,8 @@ Renata Revisão,Renata Revisão
 **Step 3: Commit**
 
 ```bash
-git add templates/squads/instagram-content/squad-party.csv
-git commit -m "refactor: update squad-party.csv with alliterative agent names"
+git add templates/cuadrillas/instagram-content/cuadrilla-party.csv
+git commit -m "refactor: update cuadrilla-party.csv with alliterative agent names"
 ```
 
 ---
@@ -340,18 +340,18 @@ git commit -m "refactor: update squad-party.csv with alliterative agent names"
 
 **Step 1: Verify no old names remain in template files**
 
-Run: `grep -rn "Scout\|Spark\|Quill\|Eagle\|Atlas" templates/squads/instagram-content/agents/ templates/squads/instagram-content/squad-party.csv templates/_opensquad/core/architect.agent.yaml | grep -v "^Binary"`
+Run: `grep -rn "Scout\|Spark\|Quill\|Eagle\|Atlas" templates/cuadrillas/instagram-content/agents/ templates/cuadrillas/instagram-content/cuadrilla-party.csv templates/_nifillos/core/architect.agent.yaml | grep -v "^Binary"`
 
 Expected: No matches for Scout, Spark, Quill, Eagle, or Atlas in those files. (Ignore any matches inside long-form text content that coincidentally contains these English words — only `name:` fields and CSV name columns matter.)
 
 **Step 2: Verify new names are present**
 
-Run: `grep -rn "Pedro Pesquisa\|Ivan Ideia\|Carlos Carrossel\|Renata Revisão\|Arquiteto" templates/squads/instagram-content/agents/ templates/squads/instagram-content/squad-party.csv templates/_opensquad/core/architect.agent.yaml`
+Run: `grep -rn "Pedro Pesquisa\|Ivan Ideia\|Carlos Carrossel\|Renata Revisão\|Arquiteto" templates/cuadrillas/instagram-content/agents/ templates/cuadrillas/instagram-content/cuadrilla-party.csv templates/_nifillos/core/architect.agent.yaml`
 
 Expected: At least 2 matches per agent name (front matter + heading) plus CSV entries, plus Arquiteto in architect.agent.yaml.
 
 **Step 3: Verify naming convention instructions exist**
 
-Run: `grep -n "Agent Naming Convention" templates/_opensquad/core/architect.agent.yaml`
+Run: `grep -n "Agent Naming Convention" templates/_nifillos/core/architect.agent.yaml`
 
 Expected: One match showing the new section in Phase 4.

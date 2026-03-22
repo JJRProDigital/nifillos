@@ -1,5 +1,5 @@
-# Output Examples — Instagram Carousel Squad
-**Squad:** instagram-carrossel
+# Output Examples — Instagram Carousel Crew
+**Crew:** instagram-carrossel
 **Updated:** 2026-03-03
 
 Exemplos completos de carrosséis que representam o nível de qualidade esperado.

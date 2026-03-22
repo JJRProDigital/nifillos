@@ -5,7 +5,7 @@
 
 ## Summary
 
-Replace the Figma MCP tool in the Opensquad registry with Canva Connect MCP. The Architect auto-suggests Canva when creating squads that need design/visual content. No structural changes to the tools engine.
+Replace the Figma MCP tool in the Nifillos registry with Canva Connect MCP. The Architect auto-suggests Canva when creating crews that need design/visual content. No structural changes to the tools engine.
 
 ## What Changes
 
@@ -53,19 +53,19 @@ useful_for: [content-design, brand-guidelines, visual-content, social-media-cont
 
 ### 2. Delete `figma.tool.yaml`
 
-Remove entirely from both `_opensquad/tools/registry/` and `templates/_opensquad/tools/registry/`.
+Remove entirely from both `_nifillos/tools/registry/` and `templates/_nifillos/tools/registry/`.
 
 ### 3. Update references
 
 Replace any mentions of "figma" in:
 - Architect agent (Phase 3.5 tool discovery)
 - Runner pipeline (if any hardcoded references)
-- Existing squad definitions (if any reference figma)
+- Existing crew definitions (if any reference figma)
 - Template files
 
 ### 4. No structural changes
 
-The Architect Phase 3.5 tool discovery works by matching `categories` and `useful_for` fields. Canva has the right categories (`design`, `ui`, `assets`) and use cases (`content-design`, `brand-guidelines`, `visual-content`) to be auto-suggested for content/design squads.
+The Architect Phase 3.5 tool discovery works by matching `categories` and `useful_for` fields. Canva has the right categories (`design`, `ui`, `assets`) and use cases (`content-design`, `brand-guidelines`, `visual-content`) to be auto-suggested for content/design crews.
 
 ## Technical Details
 

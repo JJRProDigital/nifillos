@@ -111,7 +111,7 @@ Placement: accessories go on desk surface in the left and right zones (avoiding 
 - **Pointer**: Downward-pointing triangle centered below card, same background color, connecting card to character head
 
 ### Content layout (left to right)
-1. **Agent emoji** — from squad YAML `icon` field (rendered as PixiJS Text)
+1. **Agent emoji** — from crew YAML `icon` field (rendered as PixiJS Text)
 2. **Agent name** — white, sans-serif (system font), 600 weight, 12px
 3. **Status dot** — 7px circle, colored by agent status:
    - `idle`: `#aaaacc` (gray-lavender)

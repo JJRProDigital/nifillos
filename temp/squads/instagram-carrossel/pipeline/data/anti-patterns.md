@@ -1,5 +1,5 @@
-# Anti-Patterns — Instagram Carousel Squad
-**Squad:** instagram-carrossel
+# Anti-Patterns — Instagram Carousel Crew
+**Crew:** instagram-carrossel
 **Updated:** 2026-03-03
 
 Este arquivo documenta os erros mais comuns na criação de carrosséis para audiência de tech/IA.

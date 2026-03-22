@@ -4,7 +4,7 @@
 
 **Goal:** Add a Formats system that injects platform+content-type-specific instructions into any agent's execution context, replacing the existing platform files.
 
-**Architecture:** Format files live in `_opensquad/core/formats/` with `{platform}-{type}.md` naming. Pipeline steps declare `format: {name}` in their frontmatter. The Pipeline Runner injects the format content between agent overlays and skill instructions. The Architect asks about formats during squad creation and configures steps accordingly.
+**Architecture:** Format files live in `_nifillos/core/formats/` with `{platform}-{type}.md` naming. Pipeline steps declare `format: {name}` in their frontmatter. The Pipeline Runner injects the format content between agent overlays and skill instructions. The Architect asks about formats during crew creation and configures steps accordingly.
 
 **Tech Stack:** Markdown prompt engineering (YAML frontmatter + markdown body). No code changes — all modifications are to `.md` and `.yaml` prompt files.
 
@@ -13,17 +13,17 @@
 ### Task 1: Create formats directory and instagram-feed.md
 
 **Files:**
-- Create: `_opensquad/core/formats/instagram-feed.md`
+- Create: `_nifillos/core/formats/instagram-feed.md`
 
 **Step 1: Create the directory**
 
 ```bash
-mkdir -p "_opensquad/core/formats"
+mkdir -p "_nifillos/core/formats"
 ```
 
 **Step 2: Create instagram-feed.md**
 
-Migrate content from `_opensquad/core/platforms/instagram.md` into the format schema. The format file must include YAML frontmatter with parseable constraints, plus 6 markdown sections. Use the existing instagram.md as the source — restructure it into the format schema:
+Migrate content from `_nifillos/core/platforms/instagram.md` into the format schema. The format file must include YAML frontmatter with parseable constraints, plus 6 markdown sections. Use the existing instagram.md as the source — restructure it into the format schema:
 
 ```yaml
 ---
@@ -55,7 +55,7 @@ Sections to include (sourced from instagram.md):
 **Step 3: Commit**
 
 ```bash
-git add _opensquad/core/formats/instagram-feed.md
+git add _nifillos/core/formats/instagram-feed.md
 git commit -m "feat(formats): add instagram-feed format file"
 ```
 
@@ -64,12 +64,12 @@ git commit -m "feat(formats): add instagram-feed format file"
 ### Task 2: Create instagram-reels.md and instagram-stories.md
 
 **Files:**
-- Create: `_opensquad/core/formats/instagram-reels.md`
-- Create: `_opensquad/core/formats/instagram-stories.md`
+- Create: `_nifillos/core/formats/instagram-reels.md`
+- Create: `_nifillos/core/formats/instagram-stories.md`
 
 **Step 1: Create instagram-reels.md**
 
-Source: Reels-specific content from `_opensquad/core/platforms/instagram.md`.
+Source: Reels-specific content from `_nifillos/core/platforms/instagram.md`.
 
 ```yaml
 ---
@@ -126,7 +126,7 @@ Sections:
 **Step 3: Commit**
 
 ```bash
-git add _opensquad/core/formats/instagram-reels.md _opensquad/core/formats/instagram-stories.md
+git add _nifillos/core/formats/instagram-reels.md _nifillos/core/formats/instagram-stories.md
 git commit -m "feat(formats): add instagram-reels and instagram-stories format files"
 ```
 
@@ -135,12 +135,12 @@ git commit -m "feat(formats): add instagram-reels and instagram-stories format f
 ### Task 3: Create linkedin-post.md and linkedin-article.md
 
 **Files:**
-- Create: `_opensquad/core/formats/linkedin-post.md`
-- Create: `_opensquad/core/formats/linkedin-article.md`
+- Create: `_nifillos/core/formats/linkedin-post.md`
+- Create: `_nifillos/core/formats/linkedin-article.md`
 
 **Step 1: Create linkedin-post.md**
 
-Source: `_opensquad/core/platforms/linkedin.md` — Text Posts and Document/Carousel sections.
+Source: `_nifillos/core/platforms/linkedin.md` — Text Posts and Document/Carousel sections.
 
 ```yaml
 ---
@@ -194,7 +194,7 @@ Sections:
 **Step 3: Commit**
 
 ```bash
-git add _opensquad/core/formats/linkedin-post.md _opensquad/core/formats/linkedin-article.md
+git add _nifillos/core/formats/linkedin-post.md _nifillos/core/formats/linkedin-article.md
 git commit -m "feat(formats): add linkedin-post and linkedin-article format files"
 ```
 
@@ -203,12 +203,12 @@ git commit -m "feat(formats): add linkedin-post and linkedin-article format file
 ### Task 4: Create twitter-post.md and twitter-thread.md
 
 **Files:**
-- Create: `_opensquad/core/formats/twitter-post.md`
-- Create: `_opensquad/core/formats/twitter-thread.md`
+- Create: `_nifillos/core/formats/twitter-post.md`
+- Create: `_nifillos/core/formats/twitter-thread.md`
 
 **Step 1: Create twitter-post.md**
 
-Source: `_opensquad/core/platforms/twitter.md` — Standalone Tweets section.
+Source: `_nifillos/core/platforms/twitter.md` — Standalone Tweets section.
 
 ```yaml
 ---
@@ -249,7 +249,7 @@ Sections from twitter.md: Thread structure pattern, thread best practices, algor
 **Step 3: Commit**
 
 ```bash
-git add _opensquad/core/formats/twitter-post.md _opensquad/core/formats/twitter-thread.md
+git add _nifillos/core/formats/twitter-post.md _nifillos/core/formats/twitter-thread.md
 git commit -m "feat(formats): add twitter-post and twitter-thread format files"
 ```
 
@@ -258,12 +258,12 @@ git commit -m "feat(formats): add twitter-post and twitter-thread format files"
 ### Task 5: Create youtube-script.md and youtube-shorts.md
 
 **Files:**
-- Create: `_opensquad/core/formats/youtube-script.md`
-- Create: `_opensquad/core/formats/youtube-shorts.md`
+- Create: `_nifillos/core/formats/youtube-script.md`
+- Create: `_nifillos/core/formats/youtube-shorts.md`
 
 **Step 1: Create youtube-script.md**
 
-Source: `_opensquad/core/platforms/youtube.md` — Long-form Video section.
+Source: `_nifillos/core/platforms/youtube.md` — Long-form Video section.
 
 ```yaml
 ---
@@ -306,7 +306,7 @@ Sections from youtube.md: Shorts structure, Shorts best practices, separate algo
 **Step 3: Commit**
 
 ```bash
-git add _opensquad/core/formats/youtube-script.md _opensquad/core/formats/youtube-shorts.md
+git add _nifillos/core/formats/youtube-script.md _nifillos/core/formats/youtube-shorts.md
 git commit -m "feat(formats): add youtube-script and youtube-shorts format files"
 ```
 
@@ -315,11 +315,11 @@ git commit -m "feat(formats): add youtube-script and youtube-shorts format files
 ### Task 6: Create new platform formats (WhatsApp, Email, Blog)
 
 **Files:**
-- Create: `_opensquad/core/formats/whatsapp-broadcast.md`
-- Create: `_opensquad/core/formats/email-newsletter.md`
-- Create: `_opensquad/core/formats/email-sales.md`
-- Create: `_opensquad/core/formats/blog-post.md`
-- Create: `_opensquad/core/formats/blog-seo.md`
+- Create: `_nifillos/core/formats/whatsapp-broadcast.md`
+- Create: `_nifillos/core/formats/email-newsletter.md`
+- Create: `_nifillos/core/formats/email-sales.md`
+- Create: `_nifillos/core/formats/blog-post.md`
+- Create: `_nifillos/core/formats/blog-seo.md`
 
 These are NEW formats without existing platform files. Research best practices for each and create format files following the same schema.
 
@@ -424,7 +424,7 @@ Key content: Keyword placement (title, H1, first 100 words, subheadings, meta de
 **Step 6: Commit**
 
 ```bash
-git add _opensquad/core/formats/whatsapp-broadcast.md _opensquad/core/formats/email-newsletter.md _opensquad/core/formats/email-sales.md _opensquad/core/formats/blog-post.md _opensquad/core/formats/blog-seo.md
+git add _nifillos/core/formats/whatsapp-broadcast.md _nifillos/core/formats/email-newsletter.md _nifillos/core/formats/email-sales.md _nifillos/core/formats/blog-post.md _nifillos/core/formats/blog-seo.md
 git commit -m "feat(formats): add whatsapp, email, and blog format files"
 ```
 
@@ -433,11 +433,11 @@ git commit -m "feat(formats): add whatsapp, email, and blog format files"
 ### Task 7: Update Pipeline Runner — add format injection
 
 **Files:**
-- Modify: `_opensquad/core/runner.pipeline.md` (lines 74-111, Agent Loading section)
+- Modify: `_nifillos/core/runner.pipeline.md` (lines 74-111, Agent Loading section)
 
 **Step 1: Add format injection logic**
 
-In `_opensquad/core/runner.pipeline.md`, after the overlay resolution section (line 94) and before the skill injection section (line 100), add a new subsection for format injection.
+In `_nifillos/core/runner.pipeline.md`, after the overlay resolution section (line 94) and before the skill injection section (line 100), add a new subsection for format injection.
 
 Find the current text at line 100:
 ```
@@ -449,8 +449,8 @@ Insert BEFORE that line (renumber 4 → 5):
 ```markdown
 4. **Inject format context**: Check if the current step's frontmatter contains a `format:` field.
    If present:
-   a. Read `_opensquad/core/formats/{format}.md` (e.g., `_opensquad/core/formats/instagram-feed.md`)
-      - If the file does not exist → **WARNING**: "Format '{format}' not found in _opensquad/core/formats/. Skipping format injection." Continue without format.
+   a. Read `_nifillos/core/formats/{format}.md` (e.g., `_nifillos/core/formats/instagram-feed.md`)
+      - If the file does not exist → **WARNING**: "Format '{format}' not found in _nifillos/core/formats/. Skipping format injection." Continue without format.
    b. Parse the YAML frontmatter to extract the `name` field
    c. Extract the Markdown body (everything after the YAML frontmatter closing `---`)
    d. Append to the agent's context, after overlay resolution and before skill instructions:
@@ -462,7 +462,7 @@ Insert BEFORE that line (renumber 4 → 5):
    e. The final agent context composition order is:
       ```
       {base agent content}
-      {squad overlay (.custom.md) if applicable}
+      {crew overlay (.custom.md) if applicable}
 
       --- FORMAT: {format name} ---
 
@@ -484,7 +484,7 @@ Find the Pipeline Step frontmatter reference in the Architect file. In the Runne
 **Step 3: Commit**
 
 ```bash
-git add _opensquad/core/runner.pipeline.md
+git add _nifillos/core/runner.pipeline.md
 git commit -m "feat(runner): add format injection in agent loading"
 ```
 
@@ -493,19 +493,19 @@ git commit -m "feat(runner): add format injection in agent loading"
 ### Task 8: Update Architect — Phase 1 Discovery
 
 **Files:**
-- Modify: `_opensquad/core/architect.agent.yaml` (Phase 1: Discovery section, lines 65-118)
+- Modify: `_nifillos/core/architect.agent.yaml` (Phase 1: Discovery section, lines 65-118)
 
 **Step 1: Add format awareness to Discovery**
 
 After the Performance Mode question (currently question 6, around line 99), add a new discovery question about target format:
 
 ```yaml
-      7. **Target Format** (for content squads only): After understanding the purpose,
-         if this is a content creation squad, ask about target formats.
+      7. **Target Format** (for content crews only): After understanding the purpose,
+         if this is a content creation crew, ask about target formats.
 
-         "Para quais formatos/plataformas esse squad vai produzir conteúdo?"
+         "Para quais formatos/plataformas esse crew vai produzir conteúdo?"
 
-         List available formats by scanning `_opensquad/core/formats/` directory.
+         List available formats by scanning `_nifillos/core/formats/` directory.
          Group by platform and present as multiSelect:
 
          Example options:
@@ -527,13 +527,13 @@ After the Performance Mode question (currently question 6, around line 99), add 
          Save the selected format IDs (e.g., ["instagram-feed", "twitter-thread"]).
          These will be used in Phase 5 to assign `format:` to pipeline steps.
 
-         For NON-content squads (data analysis, automation, etc.): skip this question.
+         For NON-content crews (data analysis, automation, etc.): skip this question.
 ```
 
 **Step 2: Commit**
 
 ```bash
-git add _opensquad/core/architect.agent.yaml
+git add _nifillos/core/architect.agent.yaml
 git commit -m "feat(architect): add format selection to Phase 1 Discovery"
 ```
 
@@ -542,14 +542,14 @@ git commit -m "feat(architect): add format selection to Phase 1 Discovery"
 ### Task 9: Update Architect — Phase 4 and Phase 5
 
 **Files:**
-- Modify: `_opensquad/core/architect.agent.yaml` (Phase 4: Design, Phase 5: Build)
+- Modify: `_nifillos/core/architect.agent.yaml` (Phase 4: Design, Phase 5: Build)
 
 **Step 1: Update Phase 4 — Design presentation**
 
 In the design presentation template (around line 528), add format information:
 
 ```
-I'll create a squad with N agents:
+I'll create a crew with N agents:
 
 1. [Icon] [Name] — [Role description]
    Tasks: [task 1] → [task 2] → [task 3]
@@ -573,21 +573,21 @@ In the Pipeline Step Format section (around line 817), add `format:` to the step
 execution: subagent
 agent: {agent-id}
 format: {format-id}    # OPTIONAL — only for content creation steps. E.g., "instagram-feed"
-inputFile: squads/{code}/...
-outputFile: squads/{code}/...
+inputFile: cuadrillas/{code}/...
+outputFile: cuadrillas/{code}/...
 model_tier: fast
 ---
 ```
 
-Add a comment explaining: "The `format:` field is optional. When present, the Pipeline Runner automatically injects the format file from `_opensquad/core/formats/{format}.md` into the agent's context. Use this for any step where platform-specific content rules should guide the agent."
+Add a comment explaining: "The `format:` field is optional. When present, the Pipeline Runner automatically injects the format file from `_nifillos/core/formats/{format}.md` into the agent's context. Use this for any step where platform-specific content rules should guide the agent."
 
-**Step 3: Update Content Squad Pattern**
+**Step 3: Update Content Crew Pattern**
 
-In the Content Squad Pattern section (around line 466), update the creator agent instructions:
+In the Content Crew Pattern section (around line 466), update the creator agent instructions:
 
-Replace the current reference to `_opensquad/core/platforms/{platform}.md`:
+Replace the current reference to `_nifillos/core/platforms/{platform}.md`:
 ```
-- Read `_opensquad/core/platforms/{platform}.md` for platform knowledge
+- Read `_nifillos/core/platforms/{platform}.md` for platform knowledge
 ```
 
 With:
@@ -595,12 +595,12 @@ With:
 - Use the format system: assign `format: {format-id}` to each creator step
   (e.g., `format: instagram-feed`). The Pipeline Runner injects the format
   automatically — do NOT manually embed platform knowledge in task files.
-  The format file replaces the old `_opensquad/core/platforms/` files.
+  The format file replaces the old `_nifillos/core/platforms/` files.
 ```
 
 Also update the line at ~924 that says:
 ```
-- Also load platform knowledge: `_opensquad/core/platforms/{platform}.md`
+- Also load platform knowledge: `_nifillos/core/platforms/{platform}.md`
 ```
 
 Replace with:
@@ -624,7 +624,7 @@ With:
 **Step 5: Commit**
 
 ```bash
-git add _opensquad/core/architect.agent.yaml
+git add _nifillos/core/architect.agent.yaml
 git commit -m "feat(architect): integrate format system in design and build phases"
 ```
 
@@ -633,17 +633,17 @@ git commit -m "feat(architect): integrate format system in design and build phas
 ### Task 10: Deprecate platform files
 
 **Files:**
-- Modify: `_opensquad/core/platforms/instagram.md`
-- Modify: `_opensquad/core/platforms/linkedin.md`
-- Modify: `_opensquad/core/platforms/twitter.md`
-- Modify: `_opensquad/core/platforms/youtube.md`
+- Modify: `_nifillos/core/platforms/instagram.md`
+- Modify: `_nifillos/core/platforms/linkedin.md`
+- Modify: `_nifillos/core/platforms/twitter.md`
+- Modify: `_nifillos/core/platforms/youtube.md`
 
 **Step 1: Add deprecation notice to each file**
 
 At the top of each file (before the `#` heading), add:
 
 ```markdown
-> ⚠️ **DEPRECATED**: This file is superseded by format files in `_opensquad/core/formats/`.
+> ⚠️ **DEPRECATED**: This file is superseded by format files in `_nifillos/core/formats/`.
 > Use format-specific files (e.g., `instagram-feed.md`, `instagram-reels.md`) instead.
 > This file will be removed in a future version.
 
@@ -652,7 +652,7 @@ At the top of each file (before the `#` heading), add:
 **Step 2: Commit**
 
 ```bash
-git add _opensquad/core/platforms/
+git add _nifillos/core/platforms/
 git commit -m "chore: deprecate platform files in favor of formats system"
 ```
 
@@ -663,7 +663,7 @@ git commit -m "chore: deprecate platform files in favor of formats system"
 **Step 1: Verify all format files exist**
 
 ```bash
-ls -la _opensquad/core/formats/
+ls -la _nifillos/core/formats/
 ```
 
 Expected: 14 files:
@@ -677,15 +677,15 @@ Expected: 14 files:
 
 **Step 2: Verify Runner has format injection**
 
-Read `_opensquad/core/runner.pipeline.md` and confirm:
+Read `_nifillos/core/runner.pipeline.md` and confirm:
 - Step 4 is "Inject format context"
 - Step 5 is "Inject skill instructions" (renumbered from 4)
 - Context order: Base Agent → Overlay → Format → Skills
 
 **Step 3: Verify Architect references**
 
-Search `_opensquad/core/architect.agent.yaml` for:
-- No remaining references to `_opensquad/core/platforms/` (should all be replaced)
+Search `_nifillos/core/architect.agent.yaml` for:
+- No remaining references to `_nifillos/core/platforms/` (should all be replaced)
 - `format:` appears in the Pipeline Step Format section
 - Discovery question about formats exists
 

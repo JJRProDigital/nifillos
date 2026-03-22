@@ -1,11 +1,11 @@
-# Design: Image Generation Tools for Opensquad
+# Design: Image Generation Tools for Nifillos
 
 **Date**: 2026-02-26
 **Status**: Approved
 
 ## Context
 
-Opensquad squads currently produce text-only output. The instagram-content squad generates carousel copy in markdown but cannot produce actual images. This design adds two new tools to the Opensquad registry that enable squads to generate production-ready social media images.
+Nifillos crews currently produce text-only output. The instagram-content crew generates carousel copy in markdown but cannot produce actual images. This design adds two new tools to the Nifillos registry that enable crews to generate production-ready social media images.
 
 **Inspiration**: [Instagram Carousel Generator with Claude Code](https://www.youtube.com/watch?v=59TQNbMi3J4) — a skill that uses Python/Pillow to render carousel slides from config.json. Our approach adapts this concept using HTML/CSS + Playwright (no Python dependency).
 
@@ -20,7 +20,7 @@ Image generation is split into two tools with distinct responsibilities:
 - Independent evolution (swap web_search for AI generation, add internal asset bank)
 - Squads that only need screenshots (asset-fetcher alone)
 - Squads that only need rendering from user-provided assets (visual-renderer alone)
-- Full pipeline squads that use both
+- Full pipeline crews that use both
 
 ## Tool A: asset-fetcher
 
@@ -38,7 +38,7 @@ type: hybrid
 description: >
   Acquires visual assets from multiple sources: web image search,
   live website screenshots via Playwright, and user-provided files.
-  Organizes assets in the squad's reference folder.
+  Organizes assets in the cuadrilla's reference folder.
 
 mcp:
   server_name: playwright
@@ -56,7 +56,7 @@ instructions: |
      set viewport dimensions, and capture a screenshot.
 
   3. **Asset Organization** — Save all acquired assets with descriptive
-     filenames in the squad's reference/ or output/ folder.
+     filenames in the cuadrilla's reference/ or output/ folder.
 
   ## Screenshot Modes
 
@@ -117,9 +117,9 @@ The Architect suggests `asset-fetcher` when:
 - Agent declares image dependencies and assets are NOT user-provided
 
 Does NOT suggest when:
-- Squad is purely textual
+- Crew is purely textual
 - All images are always provided by the user
-- Squad only uses Canva (which handles its own assets)
+- Crew only uses Canva (which handles its own assets)
 
 ---
 
@@ -156,7 +156,7 @@ instructions: |
      inline CSS. The HTML IS the design — all styling, layout, fonts,
      colors, and content must be embedded.
 
-  2. **Save HTML** — Write the HTML file to the squad's output folder
+  2. **Save HTML** — Write the HTML file to the cuadrilla's output folder
      (e.g., `output/slides/slide-01.html`)
 
   3. **Render** — Use Playwright to:
@@ -177,7 +177,7 @@ instructions: |
   - Twitter/X Post: 1200 x 675
   - LinkedIn Post: 1200 x 627
   - YouTube Thumbnail: 1280 x 720
-  - Custom: as specified by the squad
+  - Custom: as specified by the crew
 
   ## HTML Template Guidelines
 
@@ -232,11 +232,11 @@ useful_for: [content-design, social-media-content, visual-content, presentations
 ### Architect Suggestion Criteria
 
 The Architect suggests `visual-renderer` when:
-- Squad needs to **generate images** as pipeline output (not just text)
+- Crew needs to **generate images** as pipeline output (not just text)
 - Output format includes: carousel, visual post, banner, thumbnail, presentation
 - Pipeline has a step that produces formatted visual content
 
-Usually suggested **together with** `asset-fetcher` when the squad also needs to source images for embedding in templates.
+Usually suggested **together with** `asset-fetcher` when the crew also needs to source images for embedding in templates.
 
 ---
 
@@ -244,10 +244,10 @@ Usually suggested **together with** `asset-fetcher` when the squad also needs to
 
 ### Phase 3.5 — Tool Discovery
 
-When the Architect detects a squad needs visual output:
+When the Architect detects a crew needs visual output:
 
 1. Suggest `visual-renderer` for image generation
-2. Suggest `asset-fetcher` if the squad also needs to find/screenshot images
+2. Suggest `asset-fetcher` if the crew also needs to find/screenshot images
 3. Both tools share the Playwright MCP dependency — one installation covers both
 4. Architect adds a **designer** agent (or design capability to existing agent) that:
    - Receives text content from the writer agent
@@ -305,7 +305,7 @@ Both tools depend on:
 
 ### asset-fetcher roadmap
 - AI image generation (DALL-E, Midjourney API)
-- Internal asset bank (squad-level image library)
+- Internal asset bank (crew-level image library)
 - Brand asset management (logos, icons, color palettes)
 - Video frame extraction
 

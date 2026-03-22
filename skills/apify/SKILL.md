@@ -4,10 +4,6 @@ description: >
   Web scraping and automation platform. Extract data from any website,
   run pre-built scrapers (Actors), and automate web workflows using
   thousands of ready-made tools from the Apify Store.
-description_pt-BR: >
-  Plataforma de web scraping e automação. Extraia dados de qualquer site,
-  execute scrapers prontos (Actors) e automatize fluxos de trabalho web
-  com milhares de ferramentas da Apify Store.
 description_es: >
   Plataforma de web scraping y automatización. Extrae datos de cualquier sitio web,
   ejecuta scrapers prediseñados (Actors) y automatiza flujos de trabajo web

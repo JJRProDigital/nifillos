@@ -5,7 +5,7 @@
 
 ## Problem
 
-Pipelines currently require explicit checkpoint step files (e.g., `step-03-user-choice.md`) for user interaction. This is verbose, easy to forget, and pollutes the pipeline with non-agent steps. The instagram-content squad jumps from research straight to ideation without asking the user which news items to use.
+Pipelines currently require explicit checkpoint step files (e.g., `step-03-user-choice.md`) for user interaction. This is verbose, easy to forget, and pollutes the pipeline with non-agent steps. The instagram-content crew jumps from research straight to ideation without asking the user which news items to use.
 
 ## Solution
 
@@ -13,7 +13,7 @@ Move checkpoint logic into the Pipeline Runner. The runner automatically pauses 
 
 ## Data Model
 
-### squad.yaml — `autonomy` field
+### cuadrilla.yaml — `autonomy` field
 
 ```yaml
 pipeline:
@@ -130,12 +130,12 @@ User approves / gives feedback / aborts
 
 ## Impact on Architect
 
-### New rules for squad creation:
+### New rules for crew creation:
 
 1. **No separate checkpoint steps** — checkpoints are declared in agent step frontmatter
-2. **Ask about `autonomy`** during creation: "Should this squad ask for approval at each stage (interactive) or run autonomously (autonomous)?"
-3. **For `interactive` squads:** set `checkpoint.type` where a specific type makes sense. Unset steps default to `approve`.
-4. **For `autonomous` squads:** only declare checkpoints where human interaction is truly needed.
+2. **Ask about `autonomy`** during creation: "Should this crew ask for approval at each stage (interactive) or run autonomously (autonomous)?"
+3. **For `interactive` crews:** set `checkpoint.type` where a specific type makes sense. Unset steps default to `approve`.
+4. **For `autonomous` crews:** only declare checkpoints where human interaction is truly needed.
 5. **Format convention:** instruct agents with `checkpoint: select` to use `##` headers to separate items.
 
 ### Architect heuristics for checkpoint types:
@@ -151,4 +151,4 @@ User approves / gives feedback / aborts
 
 ### Guardrail:
 
-Interactive squads must have at least one `approve` checkpoint on the last step. The Architect validates this during squad creation.
+Interactive crews must have at least one `approve` checkpoint on the last step. The Architect validates this during crew creation.

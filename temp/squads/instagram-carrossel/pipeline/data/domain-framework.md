@@ -1,5 +1,5 @@
 # Domain Framework — Instagram Carousel Creation
-**Squad:** instagram-carrossel
+**Crew:** instagram-carrossel
 **Domain:** Instagram Carousel Educational Content for Tech/AI Audience
 **Last Updated:** 2026-03-03
 

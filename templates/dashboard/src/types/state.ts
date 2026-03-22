@@ -27,15 +27,15 @@ export interface Handoff {
   completedAt: string;
 }
 
-export type SquadStatus =
+export type CuadrillaStatus =
   | "idle"
   | "running"
   | "completed"
   | "checkpoint";
 
-export interface SquadState {
-  squad: string;
-  status: SquadStatus;
+export interface CuadrillaState {
+  cuadrilla: string;
+  status: CuadrillaStatus;
   step: {
     current: number;
     total: number;
@@ -47,18 +47,17 @@ export interface SquadState {
   updatedAt: string;
 }
 
-// Squad metadata from squad.yaml
-export interface SquadInfo {
+// Metadata from cuadrilla.yaml (root key `cuadrilla:`)
+export interface CuadrillaInfo {
   code: string;
   name: string;
   description: string;
   icon: string;
-  agents: string[]; // agent file paths
+  agents: string[];
 }
 
-// WebSocket messages
 export type WsMessage =
-  | { type: "SNAPSHOT"; squads: SquadInfo[]; activeStates: Record<string, SquadState> }
-  | { type: "SQUAD_ACTIVE"; squad: string; state: SquadState }
-  | { type: "SQUAD_UPDATE"; squad: string; state: SquadState }
-  | { type: "SQUAD_INACTIVE"; squad: string };
+  | { type: "SNAPSHOT"; cuadrillas: CuadrillaInfo[]; activeStates: Record<string, CuadrillaState> }
+  | { type: "CUADRILLA_ACTIVE"; cuadrilla: string; state: CuadrillaState }
+  | { type: "CUADRILLA_UPDATE"; cuadrilla: string; state: CuadrillaState }
+  | { type: "CUADRILLA_INACTIVE"; cuadrilla: string };

@@ -1,10 +1,10 @@
-# Update Command (`opensquad-terminal update`) Implementation Plan
+# Update Command (`Nifillos-terminal update`) Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Add `npx opensquad-terminal update` that re-applies the latest system templates to an initialized project while preserving all user data.
+**Goal:** Add `npx Nifillos-terminal update` that re-applies the latest system templates to an initialized project while preserving all user data.
 
-**Architecture:** A new `src/update.js` module with an exported `update()` function mirrors the structure of `src/init.js`. It re-copies all template files to the project, skipping three protected directories (`_opensquad/_memory/`, `_opensquad/_investigations/`, `squads/`). Version is tracked in `_opensquad/.opensquad-version`. Two shared utilities (`getTemplateEntries`, `loadSavedLocale`) are exported from `init.js` and reused.
+**Architecture:** A new `src/update.js` module with an exported `update()` function mirrors the structure of `src/init.js`. It re-copies all template files to the project, skipping three protected directories (`_nifillos/_memory/`, `_nifillos/_investigations/`, `cuadrillas/`). Version is tracked in `_nifillos/.nifillos-version`. Two shared utilities (`getTemplateEntries`, `loadSavedLocale`) are exported from `init.js` and reused.
 
 **Tech Stack:** Node.js 20+ ESM, `node:fs/promises`, `node:path`, `node:test` (built-in test runner)
 
@@ -13,12 +13,12 @@
 ### Task 1: Add version file to templates
 
 **Files:**
-- Create: `templates/_opensquad/.opensquad-version`
+- Create: `templates/_nifillos/.nifillos-version`
 - Modify: `tests/init.test.js`
 
 **Step 1: Create the version file**
 
-Create `templates/_opensquad/.opensquad-version` with exactly this content (single line, no trailing newline):
+Create `templates/_nifillos/.nifillos-version` with exactly this content (single line, no trailing newline):
 
 ```
 0.1.0
@@ -29,13 +29,13 @@ Create `templates/_opensquad/.opensquad-version` with exactly this content (sing
 Add to `tests/init.test.js`:
 
 ```js
-test('init creates .opensquad-version file', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+test('init creates .nifillos-version file', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true });
 
-    const version = await readFile(join(tempDir, '_opensquad', '.opensquad-version'), 'utf-8');
+    const version = await readFile(join(tempDir, '_nifillos', '.nifillos-version'), 'utf-8');
     assert.ok(version.trim().length > 0);
   } finally {
     await rm(tempDir, { recursive: true, force: true });
@@ -49,11 +49,11 @@ test('init creates .opensquad-version file', async () => {
 node --test tests/init.test.js
 ```
 
-Expected: FAIL — `ENOENT: no such file or directory ... .opensquad-version`
+Expected: FAIL — `ENOENT: no such file or directory ... .nifillos-version`
 
 **Step 4: Run test to verify it passes**
 
-Since `copyTemplates()` in `init.js` recursively copies all template files, adding the file to `templates/_opensquad/` is all that's needed. No code changes required.
+Since `copyTemplates()` in `init.js` recursively copies all template files, adding the file to `templates/_nifillos/` is all that's needed. No code changes required.
 
 ```bash
 node --test tests/init.test.js
@@ -64,8 +64,8 @@ Expected: all tests PASS
 **Step 5: Commit**
 
 ```bash
-git add templates/_opensquad/.opensquad-version tests/init.test.js
-git commit -m "feat: add .opensquad-version tracking file to templates"
+git add templates/_nifillos/.nifillos-version tests/init.test.js
+git commit -m "feat: add .nifillos-version tracking file to templates"
 ```
 
 ---
@@ -177,98 +177,98 @@ Add the following to each locale file (add at the end of the JSON object, before
 
 **`src/locales/en.json`** — add:
 ```json
-  "updateNotInitialized": "No Opensquad installation found. Run 'init' first.",
-  "updateStarting": "Updating Opensquad {old} → {new}...",
-  "updateStartingUnknown": "Updating Opensquad (unknown version) → {new}...",
+  "updateNotInitialized": "No Nifillos installation found. Run 'init' first.",
+  "updateStarting": "Updating Nifillos {old} → {new}...",
+  "updateStartingUnknown": "Updating Nifillos (unknown version) → {new}...",
   "updatedFile": "📄 Updated {path}",
-  "updateSuccess": "✅ Opensquad {version} installed successfully!",
-  "updatePreserved": "✓ Preserved: _memory/, _investigations/, squads/",
+  "updateSuccess": "✅ Nifillos {version} installed successfully!",
+  "updatePreserved": "✓ Preserved: _memory/, _investigations/, cuadrillas/",
   "updateFileCount": "✓ Updated: {count} system files",
-  "updateLatestHint": "💡 Tip: Use 'npx opensquad-terminal@latest update' to always get the newest version."
+  "updateLatestHint": "💡 Tip: Use 'npx Nifillos-terminal@latest update' to always get the newest version."
 ```
 
 **`src/locales/pt-BR.json`** — add:
 ```json
-  "updateNotInitialized": "Nenhuma instalação do Opensquad encontrada. Execute 'init' primeiro.",
-  "updateStarting": "Atualizando Opensquad {old} → {new}...",
-  "updateStartingUnknown": "Atualizando Opensquad (versão desconhecida) → {new}...",
+  "updateNotInitialized": "Nenhuma instalação do Nifillos encontrada. Execute 'init' primeiro.",
+  "updateStarting": "Atualizando Nifillos {old} → {new}...",
+  "updateStartingUnknown": "Atualizando Nifillos (versão desconhecida) → {new}...",
   "updatedFile": "📄 Atualizado {path}",
-  "updateSuccess": "✅ Opensquad {version} instalado com sucesso!",
-  "updatePreserved": "✓ Preservado: _memory/, _investigations/, squads/",
+  "updateSuccess": "✅ Nifillos {version} instalado com sucesso!",
+  "updatePreserved": "✓ Preservado: _memory/, _investigations/, cuadrillas/",
   "updateFileCount": "✓ Atualizados: {count} arquivos do sistema",
-  "updateLatestHint": "💡 Dica: Use 'npx opensquad-terminal@latest update' para sempre obter a versão mais recente."
+  "updateLatestHint": "💡 Dica: Use 'npx Nifillos-terminal@latest update' para sempre obter a versão mais recente."
 ```
 
 **`src/locales/es.json`** — add:
 ```json
-  "updateNotInitialized": "No se encontró ninguna instalación de Opensquad. Ejecute 'init' primero.",
-  "updateStarting": "Actualizando Opensquad {old} → {new}...",
-  "updateStartingUnknown": "Actualizando Opensquad (versión desconocida) → {new}...",
+  "updateNotInitialized": "No se encontró ninguna instalación de Nifillos. Ejecute 'init' primero.",
+  "updateStarting": "Actualizando Nifillos {old} → {new}...",
+  "updateStartingUnknown": "Actualizando Nifillos (versión desconocida) → {new}...",
   "updatedFile": "📄 Actualizado {path}",
-  "updateSuccess": "✅ ¡Opensquad {version} instalado correctamente!",
-  "updatePreserved": "✓ Preservado: _memory/, _investigations/, squads/",
+  "updateSuccess": "✅ ¡Nifillos {version} instalado correctamente!",
+  "updatePreserved": "✓ Preservado: _memory/, _investigations/, cuadrillas/",
   "updateFileCount": "✓ Actualizados: {count} archivos del sistema",
-  "updateLatestHint": "💡 Consejo: Use 'npx opensquad-terminal@latest update' para obtener siempre la versión más reciente."
+  "updateLatestHint": "💡 Consejo: Use 'npx Nifillos-terminal@latest update' para obtener siempre la versión más reciente."
 ```
 
 **`src/locales/fr.json`** — add:
 ```json
-  "updateNotInitialized": "Aucune installation Opensquad trouvée. Exécutez 'init' d'abord.",
-  "updateStarting": "Mise à jour de Opensquad {old} → {new}...",
-  "updateStartingUnknown": "Mise à jour de Opensquad (version inconnue) → {new}...",
+  "updateNotInitialized": "Aucune installation Nifillos trouvée. Exécutez 'init' d'abord.",
+  "updateStarting": "Mise à jour de Nifillos {old} → {new}...",
+  "updateStartingUnknown": "Mise à jour de Nifillos (version inconnue) → {new}...",
   "updatedFile": "📄 Mis à jour {path}",
-  "updateSuccess": "✅ Opensquad {version} installé avec succès !",
-  "updatePreserved": "✓ Préservé : _memory/, _investigations/, squads/",
+  "updateSuccess": "✅ Nifillos {version} installé avec succès !",
+  "updatePreserved": "✓ Préservé : _memory/, _investigations/, cuadrillas/",
   "updateFileCount": "✓ Mis à jour : {count} fichiers système",
-  "updateLatestHint": "💡 Conseil : Utilisez 'npx opensquad-terminal@latest update' pour toujours obtenir la dernière version."
+  "updateLatestHint": "💡 Conseil : Utilisez 'npx Nifillos-terminal@latest update' pour toujours obtenir la dernière version."
 ```
 
 **`src/locales/de.json`** — add:
 ```json
-  "updateNotInitialized": "Keine Opensquad-Installation gefunden. Führen Sie zuerst 'init' aus.",
-  "updateStarting": "Opensquad wird aktualisiert {old} → {new}...",
-  "updateStartingUnknown": "Opensquad wird aktualisiert (unbekannte Version) → {new}...",
+  "updateNotInitialized": "Keine Nifillos-Installation gefunden. Führen Sie zuerst 'init' aus.",
+  "updateStarting": "Nifillos wird aktualisiert {old} → {new}...",
+  "updateStartingUnknown": "Nifillos wird aktualisiert (unbekannte Version) → {new}...",
   "updatedFile": "📄 Aktualisiert {path}",
-  "updateSuccess": "✅ Opensquad {version} erfolgreich installiert!",
-  "updatePreserved": "✓ Erhalten: _memory/, _investigations/, squads/",
+  "updateSuccess": "✅ Nifillos {version} erfolgreich installiert!",
+  "updatePreserved": "✓ Erhalten: _memory/, _investigations/, cuadrillas/",
   "updateFileCount": "✓ Aktualisiert: {count} Systemdateien",
-  "updateLatestHint": "💡 Tipp: Verwenden Sie 'npx opensquad-terminal@latest update', um immer die neueste Version zu erhalten."
+  "updateLatestHint": "💡 Tipp: Verwenden Sie 'npx Nifillos-terminal@latest update', um immer die neueste Version zu erhalten."
 ```
 
 **`src/locales/it.json`** — add:
 ```json
-  "updateNotInitialized": "Nessuna installazione Opensquad trovata. Eseguire prima 'init'.",
-  "updateStarting": "Aggiornamento Opensquad {old} → {new}...",
-  "updateStartingUnknown": "Aggiornamento Opensquad (versione sconosciuta) → {new}...",
+  "updateNotInitialized": "Nessuna installazione Nifillos trovata. Eseguire prima 'init'.",
+  "updateStarting": "Aggiornamento Nifillos {old} → {new}...",
+  "updateStartingUnknown": "Aggiornamento Nifillos (versione sconosciuta) → {new}...",
   "updatedFile": "📄 Aggiornato {path}",
-  "updateSuccess": "✅ Opensquad {version} installato con successo!",
-  "updatePreserved": "✓ Preservato: _memory/, _investigations/, squads/",
+  "updateSuccess": "✅ Nifillos {version} installato con successo!",
+  "updatePreserved": "✓ Preservato: _memory/, _investigations/, cuadrillas/",
   "updateFileCount": "✓ Aggiornati: {count} file di sistema",
-  "updateLatestHint": "💡 Suggerimento: Usa 'npx opensquad-terminal@latest update' per ottenere sempre la versione più recente."
+  "updateLatestHint": "💡 Suggerimento: Usa 'npx Nifillos-terminal@latest update' per ottenere sempre la versione più recente."
 ```
 
 **`src/locales/ja.json`** — add:
 ```json
-  "updateNotInitialized": "Opensquadのインストールが見つかりません。まず'init'を実行してください。",
-  "updateStarting": "Opensquad {old} → {new} に更新中...",
-  "updateStartingUnknown": "Opensquad（バージョン不明）→ {new} に更新中...",
+  "updateNotInitialized": "Nifillosのインストールが見つかりません。まず'init'を実行してください。",
+  "updateStarting": "Nifillos {old} → {new} に更新中...",
+  "updateStartingUnknown": "Nifillos（バージョン不明）→ {new} に更新中...",
   "updatedFile": "📄 更新しました {path}",
-  "updateSuccess": "✅ Opensquad {version} のインストールが完了しました！",
-  "updatePreserved": "✓ 保持: _memory/, _investigations/, squads/",
+  "updateSuccess": "✅ Nifillos {version} のインストールが完了しました！",
+  "updatePreserved": "✓ 保持: _memory/, _investigations/, cuadrillas/",
   "updateFileCount": "✓ 更新済み: {count} 個のシステムファイル",
-  "updateLatestHint": "💡 ヒント: 常に最新バージョンを入手するには 'npx opensquad-terminal@latest update' を使用してください。"
+  "updateLatestHint": "💡 ヒント: 常に最新バージョンを入手するには 'npx Nifillos-terminal@latest update' を使用してください。"
 ```
 
 **`src/locales/zh.json`** — add:
 ```json
-  "updateNotInitialized": "未找到 Opensquad 安装。请先运行 'init'。",
-  "updateStarting": "正在更新 Opensquad {old} → {new}...",
-  "updateStartingUnknown": "正在更新 Opensquad（未知版本）→ {new}...",
+  "updateNotInitialized": "未找到 Nifillos 安装。请先运行 'init'。",
+  "updateStarting": "正在更新 Nifillos {old} → {new}...",
+  "updateStartingUnknown": "正在更新 Nifillos（未知版本）→ {new}...",
   "updatedFile": "📄 已更新 {path}",
-  "updateSuccess": "✅ Opensquad {version} 安装成功！",
-  "updatePreserved": "✓ 已保留：_memory/、_investigations/、squads/",
+  "updateSuccess": "✅ Nifillos {version} 安装成功！",
+  "updatePreserved": "✓ 已保留：_memory/、_investigations/、cuadrillas/",
   "updateFileCount": "✓ 已更新：{count} 个系统文件",
-  "updateLatestHint": "💡 提示：使用 'npx opensquad-terminal@latest update' 以始终获取最新版本。"
+  "updateLatestHint": "💡 提示：使用 'npx Nifillos-terminal@latest update' 以始终获取最新版本。"
 ```
 
 **Step 4: Run tests to verify they pass**
@@ -308,7 +308,7 @@ import { init } from '../src/init.js';
 import { update } from '../src/update.js';
 
 test('update returns failure when not initialized', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     const result = await update(tempDir);
@@ -319,7 +319,7 @@ test('update returns failure when not initialized', async () => {
 });
 
 test('update overwrites system files', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true });
@@ -328,7 +328,7 @@ test('update overwrites system files', async () => {
     await update(tempDir);
 
     const content = await readFile(join(tempDir, 'CLAUDE.md'), 'utf-8');
-    assert.ok(content.includes('Opensquad'));
+    assert.ok(content.includes('Nifillos'));
     assert.ok(!content.includes('garbage content'));
   } finally {
     await rm(tempDir, { recursive: true, force: true });
@@ -336,12 +336,12 @@ test('update overwrites system files', async () => {
 });
 
 test('update preserves _memory contents', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true });
     await writeFile(
-      join(tempDir, '_opensquad', '_memory', 'company.md'),
+      join(tempDir, '_nifillos', '_memory', 'company.md'),
       'My Company Info',
       'utf-8'
     );
@@ -349,7 +349,7 @@ test('update preserves _memory contents', async () => {
     await update(tempDir);
 
     const content = await readFile(
-      join(tempDir, '_opensquad', '_memory', 'company.md'),
+      join(tempDir, '_nifillos', '_memory', 'company.md'),
       'utf-8'
     );
     assert.equal(content, 'My Company Info');
@@ -359,12 +359,12 @@ test('update preserves _memory contents', async () => {
 });
 
 test('update preserves _investigations contents', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true });
     await writeFile(
-      join(tempDir, '_opensquad', '_investigations', 'profile-analysis.md'),
+      join(tempDir, '_nifillos', '_investigations', 'profile-analysis.md'),
       'investigation data',
       'utf-8'
     );
@@ -372,7 +372,7 @@ test('update preserves _investigations contents', async () => {
     await update(tempDir);
 
     const content = await readFile(
-      join(tempDir, '_opensquad', '_investigations', 'profile-analysis.md'),
+      join(tempDir, '_nifillos', '_investigations', 'profile-analysis.md'),
       'utf-8'
     );
     assert.equal(content, 'investigation data');
@@ -381,32 +381,32 @@ test('update preserves _investigations contents', async () => {
   }
 });
 
-test('update preserves squads contents', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+test('update preserves crews contents', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true });
-    await mkdir(join(tempDir, 'squads', 'my-squad'), { recursive: true });
+    await mkdir(join(tempDir, 'crews', 'my-crew'), { recursive: true });
     await writeFile(
-      join(tempDir, 'squads', 'my-squad', 'custom.md'),
-      'user squad content',
+      join(tempDir, 'crews', 'my-crew', 'custom.md'),
+      'user crew content',
       'utf-8'
     );
 
     await update(tempDir);
 
     const content = await readFile(
-      join(tempDir, 'squads', 'my-squad', 'custom.md'),
+      join(tempDir, 'crews', 'my-crew', 'custom.md'),
       'utf-8'
     );
-    assert.equal(content, 'user squad content');
+    assert.equal(content, 'user crew content');
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }
 });
 
-test('update writes new version to .opensquad-version', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+test('update writes new version to .nifillos-version', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true });
@@ -414,7 +414,7 @@ test('update writes new version to .opensquad-version', async () => {
     await update(tempDir);
 
     const version = await readFile(
-      join(tempDir, '_opensquad', '.opensquad-version'),
+      join(tempDir, '_nifillos', '.nifillos-version'),
       'utf-8'
     );
     assert.ok(version.trim().length > 0);
@@ -424,12 +424,12 @@ test('update writes new version to .opensquad-version', async () => {
   }
 });
 
-test('update succeeds without existing .opensquad-version (legacy install)', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+test('update succeeds without existing .nifillos-version (legacy install)', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true });
-    await rm(join(tempDir, '_opensquad', '.opensquad-version'), { force: true });
+    await rm(join(tempDir, '_nifillos', '.nifillos-version'), { force: true });
 
     const result = await update(tempDir);
     assert.equal(result.success, true);
@@ -439,7 +439,7 @@ test('update succeeds without existing .opensquad-version (legacy install)', asy
 });
 
 test('update returns success when initialized', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'opensquad-test-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 
   try {
     await init(tempDir, { _skipPrompts: true });
@@ -472,9 +472,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATES_DIR = join(__dirname, '..', 'templates');
 
 const PROTECTED_PATHS = [
-  '_opensquad/_memory',
-  '_opensquad/_investigations',
-  'squads',
+  '_nifillos/_memory',
+  '_nifillos/_investigations',
+  'crews',
 ];
 
 function isProtected(relativePath) {
@@ -485,11 +485,11 @@ function isProtected(relativePath) {
 }
 
 export async function update(targetDir) {
-  console.log('\n  🔄 Opensquad — Update\n');
+  console.log('\n  🔄 Nifillos — Update\n');
 
   // 1. Check initialized
   try {
-    await stat(join(targetDir, '_opensquad'));
+    await stat(join(targetDir, '_nifillos'));
   } catch {
     await loadLocale('English');
     console.log(`  ${t('updateNotInitialized')}`);
@@ -503,14 +503,14 @@ export async function update(targetDir) {
   let currentVersion = null;
   try {
     currentVersion = (
-      await readFile(join(targetDir, '_opensquad', '.opensquad-version'), 'utf-8')
+      await readFile(join(targetDir, '_nifillos', '.nifillos-version'), 'utf-8')
     ).trim();
   } catch {
     // Legacy install — no version file
   }
 
   const newVersion = (
-    await readFile(join(TEMPLATES_DIR, '_opensquad', '.opensquad-version'), 'utf-8')
+    await readFile(join(TEMPLATES_DIR, '_nifillos', '.nifillos-version'), 'utf-8')
   ).trim();
 
   // 4. Announce
@@ -564,14 +564,14 @@ git commit -m "feat: implement update() function with protected-path copy logic"
 
 ---
 
-### Task 5: Wire `update` command in `bin/opensquad.js`
+### Task 5: Wire `update` command in `bin/Nifillos.js`
 
 **Files:**
-- Modify: `bin/opensquad.js`
+- Modify: `bin/Nifillos.js`
 
 **Step 1: Update the CLI entry point**
 
-Replace the content of `bin/opensquad.js` with:
+Replace the content of `bin/Nifillos.js` with:
 
 ```js
 #!/usr/bin/env node
@@ -594,13 +594,13 @@ if (command === 'init') {
   if (!result.success) process.exit(1);
 } else {
   console.log(`
-  opensquad-terminal — Multi-agent orchestration for Claude Code
+  Nifillos-terminal — Multi-agent orchestration for Claude Code
 
   Usage:
-    npx opensquad-terminal init      Initialize Opensquad in current directory
-    npx opensquad-terminal update    Update Opensquad to the latest version
+    npx Nifillos-terminal init      Initialize Nifillos in current directory
+    npx Nifillos-terminal update    Update Nifillos to the latest version
 
-  Learn more: https://github.com/your-org/opensquad-terminal
+  Learn more: https://github.com/your-org/Nifillos-terminal
   `);
   process.exit(command ? 1 : 0);
 }
@@ -616,32 +616,32 @@ Expected: all tests PASS
 
 **Step 3: Smoke test the command manually**
 
-From the project root (which has an initialized `_opensquad/`):
+From the project root (which has an initialized `_nifillos/`):
 
 ```bash
-node bin/opensquad.js update
+node bin/Nifillos.js update
 ```
 
 Expected output:
 ```
-  🔄 Opensquad — Update
+  🔄 Nifillos — Update
 
-  Updating Opensquad v0.1.0 → v0.1.0...
-  📄 Updated _opensquad/.opensquad-version
-  📄 Updated _opensquad/core/...
+  Updating Nifillos v0.1.0 → v0.1.0...
+  📄 Updated _nifillos/.nifillos-version
+  📄 Updated _nifillos/core/...
   ...
 
   ✓ Updated: N system files
-  ✓ Preserved: _memory/, _investigations/, squads/
-  ✅ Opensquad v0.1.0 installed successfully!
+  ✓ Preserved: _memory/, _investigations/, cuadrillas/
+  ✅ Nifillos v0.1.0 installed successfully!
 
-  💡 Tip: Use 'npx opensquad-terminal@latest update' to always get the newest version.
+  💡 Tip: Use 'npx Nifillos-terminal@latest update' to always get the newest version.
 ```
 
 **Step 4: Test the "not initialized" error path**
 
 ```bash
-mkdir /tmp/opensquad-empty && cd /tmp/opensquad-empty && node /path/to/opensquad/bin/opensquad.js update
+mkdir /tmp/Nifillos-empty && cd /tmp/Nifillos-empty && node /path/to/Nifillos/bin/Nifillos.js update
 ```
 
 Expected: prints error message and exits with code 1.
@@ -649,6 +649,6 @@ Expected: prints error message and exits with code 1.
 **Step 5: Commit**
 
 ```bash
-git add bin/opensquad.js
+git add bin/Nifillos.js
 git commit -m "feat: wire update command in CLI entry point"
 ```

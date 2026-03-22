@@ -1,28 +1,41 @@
-// === Office Color Palette (Gather.town-inspired modern office) ===
+// === Office palette — estudio cálido + acento teal (Nifillos / productividad) ===
 export const COLORS = {
-  // Floor (wood planks)
-  woodLight: 0x9a7a56,
-  woodBase: 0x876a48,
-  woodDark: 0x755a3a,
-  woodGap: 0x4e3a28,
+  // Stage (fuera de la habitación)
+  sceneVoid: 0x121a22,
+  sceneVignette: 0x080c12,
 
-  // Walls (clean cream)
-  wallFace: 0xe4d8cc,
-  wallTrim: 0xa89888,
-  wallShadow: 0x887868,
+  // Fake 3D — caras a la derecha / abajo (luz arriba-izquierda)
+  extrudeDeep: 0x14181e,
+  extrudeSide: 0x242a34,
+  extrudeBottom: 0x1c222a,
+  extrudeHighlight: 0x4a5668,
 
-  // Desk / Workstation (light maple)
-  deskTop: 0xd4bf9c,
-  deskEdge: 0xb8a480,
-  deskShadow: 0x806844,
-  monitorFrame: 0x2a2a32,
-  monitorScreen: 0x1a2a3a,
-  monitorScreenOn: 0x4a9aff,
-  keyboard: 0x3a3a42,
+  // Floor (nogal satinado)
+  woodLight: 0xa3865c,
+  woodBase: 0x8b6e46,
+  woodDark: 0x6f5636,
+  woodGap: 0x3d2c18,
+  woodHighlight: 0xc4a878,
 
-  // Office chair (top-down)
-  chairSeat: 0x3a3a4a,
-  chairBase: 0x4a4a5a,
+  // Walls (yeso cálido, baseboards discretos)
+  wallFace: 0xede6dc,
+  wallTrim: 0xb8a898,
+  wallShadow: 0x7a6a5c,
+
+  // Desk / Workstation (roble claro + monitor “pro”)
+  deskTop: 0xd8c4a4,
+  deskEdge: 0xae9570,
+  deskShadow: 0x6a5240,
+  deskGrainLight: 0xe8d4bc,
+  deskGrainDark: 0xbea58a,
+  monitorFrame: 0x242830,
+  monitorScreen: 0x121c24,
+  monitorScreenOn: 0x3cb0b0,
+  keyboard: 0x343840,
+
+  // Office chair (mesh ergonómico)
+  chairSeat: 0x3d4250,
+  chairBase: 0x525a68,
 
   // Furniture / Decor
   bookshelfWood: 0xc4a070,
@@ -95,9 +108,10 @@ export const COLORS = {
   waterBottle: 0x88bbdd,
   waterCap: 0x4488aa,
 
-  // Name card
-  nameCardBg: 0x14141c,
-  nameCardText: 0xffffff,
+  // Name card (slate + acento)
+  nameCardBg: 0x1a222c,
+  nameCardBorder: 0x2a9090,
+  nameCardText: 0xf2f4f7,
 
   // Belt
   beltBuckle: 0x8a8a6a,

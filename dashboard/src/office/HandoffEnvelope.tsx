@@ -2,7 +2,7 @@ import { extend } from "@pixi/react";
 import { Container, Graphics } from "pixi.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Graphics as PixiGraphics } from "pixi.js";
-import { CELL_W, CELL_H, GRID_OFFSET_X, GRID_OFFSET_Y } from "./AgentDesk";
+import { deskCenter } from "./officeProjection";
 import { COLORS } from "./palette";
 import type { Agent, Handoff } from "@/types/state";
 
@@ -12,19 +12,21 @@ interface HandoffEnvelopeProps {
   handoff: Handoff;
   fromAgent: Agent;
   toAgent: Agent;
+  gridOx: number;
+  gridOy: number;
 }
 
-export function HandoffEnvelope({ handoff, fromAgent, toAgent }: HandoffEnvelopeProps) {
+export function HandoffEnvelope({ handoff, fromAgent, toAgent, gridOx, gridOy }: HandoffEnvelopeProps) {
   const [pos, setPos] = useState<{ x: number; y: number; scale: number; rotation: number } | null>(null);
   const animatingRef = useRef(false);
   const lastHandoffRef = useRef<string | null>(null);
 
-  const deskCenterX = CELL_W / 2;
-  const deskCenterY = CELL_H / 2;
-  const fromX = GRID_OFFSET_X + (fromAgent.desk.col - 1) * CELL_W + deskCenterX;
-  const fromY = GRID_OFFSET_Y + (fromAgent.desk.row - 1) * CELL_H + deskCenterY;
-  const toX = GRID_OFFSET_X + (toAgent.desk.col - 1) * CELL_W + deskCenterX;
-  const toY = GRID_OFFSET_Y + (toAgent.desk.row - 1) * CELL_H + deskCenterY;
+  const fromC = deskCenter(fromAgent.desk.col, fromAgent.desk.row, gridOx, gridOy);
+  const toC = deskCenter(toAgent.desk.col, toAgent.desk.row, gridOx, gridOy);
+  const fromX = fromC.x;
+  const fromY = fromC.y;
+  const toX = toC.x;
+  const toY = toC.y;
 
   useEffect(() => {
     const key = `${handoff.from}-${handoff.to}-${handoff.completedAt}`;

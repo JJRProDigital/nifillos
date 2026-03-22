@@ -42,3 +42,8 @@ Nifillos uses a persistent Playwright browser profile to keep you logged into so
 - First time accessing a platform, you'll log in manually once
 - Subsequent runs will reuse your saved session
 - **Important:** The native Claude Code Playwright plugin must be disabled. Nifillos uses its own `@playwright/mcp` server configured in `.mcp.json`.
+
+## MCP (bundled in `.mcp.json`)
+
+- **Playwright** — stdio via `npx @playwright/mcp` (Sherlock / browser automation).
+- **Excalidraw** — remote HTTP MCP at `https://mcp.excalidraw.com/mcp` for diagrams; no local install.

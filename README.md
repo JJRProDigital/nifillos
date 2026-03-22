@@ -54,7 +54,7 @@ Tras `init`, abre el proyecto en Cursor, Claude Code, Codex, etc. y usa el coman
 |-------------|----------------|
 | Nueva skill en el **paquete** publicado | Añade `skills/<id>/SKILL.md`, actualiza [skills/README.md](skills/README.md), sube versión en `package.json`. |
 | Skill solo en un **proyecto** | Carpeta `skills/<id>/SKILL.md` o `npx nifillos install ./carpeta`. |
-| **MCP / “plugins”** | Skills tipo `mcp` / `hybrid` y `.mcp.json` en plantillas; perfil Playwright bajo `_nifillos/config/`. |
+| **MCP / “plugins”** | Skills tipo `mcp` / `hybrid` y `.mcp.json` / `.cursor/mcp.json` / `.vscode/mcp.json` en plantillas (Playwright + Excalidraw HTTP); perfil Playwright bajo `_nifillos/config/`. |
 | **Plantillas** | `templates/` (núcleo), `templates/ide-templates/<ide>/` (por IDE). |
 | **Cuadrillas de ejemplo** | `templates/cuadrillas/` o documentación en tu repo. |
 
@@ -101,5 +101,7 @@ npx nifillos install <id|path|git-url>
 ```
 
 `update` runs the same layout migration as `migrate` when `squads/` or `cuadrillas/` exists. External automation (CI, scripts) should use paths **`cuadrillas/`**, **`cuadrilla.yaml`**, **`cuadrilla-party.csv`**, and dashboard/state field **`cuadrilla`** (not `squads` / `squad`).
+
+IDE templates ship **Playwright** (stdio) and **Excalidraw** (`https://mcp.excalidraw.com/mcp`, HTTP) in `.mcp.json` / `.cursor/mcp.json` / `.vscode/mcp.json` where applicable; Codex and Antigravity are pointed to the same URL in their rules.
 
 See [skills/README.md](skills/README.md) for the bundled catalog and extension notes.

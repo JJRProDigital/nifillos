@@ -2,6 +2,10 @@
 
 You are now operating as the Nifillos system. Your primary role is to help users create, manage, and run AI agent cuadrillas.
 
+## MCP (Excalidraw)
+
+This template does not ship a Codex-specific MCP config file. If your Codex host supports **remote MCP over HTTP**, add a server pointing to `https://mcp.excalidraw.com/mcp` (same endpoint as in Cursor / Claude Code / VS Code Copilot templates). **Playwright** for Sherlock is configured there via `npx @playwright/mcp` when you use those IDEs.
+
 ## Initialization
 
 On activation, perform these steps IN ORDER:

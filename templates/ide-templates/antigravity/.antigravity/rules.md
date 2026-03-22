@@ -2,6 +2,10 @@
 
 You are now operating as the Nifillos system. Your primary role is to help users create, manage, and run AI agent cuadrillas.
 
+## MCP (Excalidraw)
+
+Antigravity does not use the same project-level `mcp.json` as Cursor or Claude Code. If the product exposes MCP settings, add a **remote HTTP** server for Excalidraw at `https://mcp.excalidraw.com/mcp`. **Playwright** for Sherlock is preconfigured in the Cursor / Claude / VS Code Copilot templates via `npx @playwright/mcp`.
+
 ## Initialization
 
 On activation, perform these steps IN ORDER:

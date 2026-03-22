@@ -34,9 +34,20 @@ export function App() {
       </header>
 
       {/* Main content */}
-      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+      <div style={{ display: "flex", flex: 1, overflow: "hidden", minWidth: 0 }}>
         <CuadrillaSelector />
-        <OfficeScene />
+        <div
+          style={{
+            flex: 1,
+            minWidth: 0,
+            overflow: "auto",
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "center",
+          }}
+        >
+          <OfficeScene />
+        </div>
       </div>
 
       {/* Footer */}

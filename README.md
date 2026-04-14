@@ -20,13 +20,13 @@ Actualizar archivos del framework desde la versión instalada del paquete (respe
 npx nifillos update
 ```
 
-`update` también comprueba y migra el diseño antiguo: renombra `squads/` → `cuadrillas/`, `squad.yaml` → `cuadrilla.yaml`, `squad-party.csv` → `cuadrilla-party.csv` y la clave `squad` → `cuadrilla` en `state.json` bajo `cuadrillas/`. Si solo quieres esa migración sin copiar plantillas del paquete:
+`update` también comprueba y migra el diseño antiguo. Si solo quieres esa migración sin copiar plantillas del paquete:
 
 ```bash
 npx nifillos migrate
 ```
 
-Si coexisten `squads/` y `cuadrillas/`, el CLI no fusiona carpetas: hay que unir o borrar `squads/` a mano; los arreglos por archivo se aplican solo bajo `cuadrillas/`.
+
 
 Skills:
 
@@ -96,11 +96,11 @@ MIT. Ver [LICENSE](LICENSE) y [NOTICE](NOTICE).
 ```bash
 npx nifillos init
 npx nifillos update
-npx nifillos migrate   # optional: squads/ → cuadrillas/ and legacy keys only
+npx nifillos migrate   
 npx nifillos install <id|path|git-url>
 ```
 
-`update` runs the same layout migration as `migrate` when `squads/` or `cuadrillas/` exists. External automation (CI, scripts) should use paths **`cuadrillas/`**, **`cuadrilla.yaml`**, **`cuadrilla-party.csv`**, and dashboard/state field **`cuadrilla`** (not `squads` / `squad`).
+`update` runs the same layout migration as `migrate` when  `cuadrillas/` exists. External automation (CI, scripts) should use paths **`cuadrillas/`**, **`cuadrilla.yaml`**, **`cuadrilla-party.csv`**, and dashboard/state field **`cuadrilla`** (not `squads` / `squad`).
 
 IDE templates ship **Playwright** (stdio) and **Excalidraw** (`https://mcp.excalidraw.com/mcp`, HTTP) in `.mcp.json` / `.cursor/mcp.json` / `.vscode/mcp.json` where applicable; Codex and Antigravity are pointed to the same URL in their rules.
 

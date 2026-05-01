@@ -36,6 +36,9 @@ Los metadatos de skills instaladas solo en el proyecto (sin copia en el paquete)
 | [pdf-export](./pdf-export/) | script | PDF desde URL/HTML (Playwright); flujo o Canvas directo sin archivo fuente (.txt/.doc). | _(none)_ | `npx nifillos install pdf-export` |
 | [nifillos-skill-creator](./nifillos-skill-creator/) | prompt | Crea nuevas skills (formato SKILL.md). | _(none)_ | `npx nifillos install nifillos-skill-creator` |
 | [nifillos-agent-creator](./nifillos-agent-creator/) | prompt | Crea guías de best practices / agentes. | _(none)_ | `npx nifillos install nifillos-agent-creator` |
+| [market-audit](./market-audit/) | prompt | Auditoría de marketing integral (`/market audit <url>`); informe MARKETING-AUDIT.md. | _(none)_ | `npx nifillos install market-audit` |
+| [market-social](./market-social/) | prompt | Calendario y contenido social 30 días (`/market social <topic/url>`); SOCIAL-CALENDAR.md. | _(none)_ | `npx nifillos install market-social` |
+| [market-landing](./market-landing/) | prompt | Análisis CRO de landing (`/market landing <url>` / `/market cro <url>`). | _(none)_ | `npx nifillos install market-landing` |
 
 ## Tipos de skill
 

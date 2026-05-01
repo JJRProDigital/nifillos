@@ -642,6 +642,9 @@ agent:
            skills:
              - web_search
              - web_fetch
+             - market-audit
+             - market-social
+             - market-landing
              # Add any skills installed in Phase 3.5:
              # - apify
              # - canva

@@ -1,0 +1,50 @@
+CARRUSEL STUDIO — Skill de Claude
+Creado por Ruva IA (https://www.youtube.com/@RuvaIA)
+
+================================================================
+LICENCIA DE USO
+================================================================
+
+Este skill se distribuye gratuitamente para uso personal,
+educativo y comunitario.
+
+✅ PERMITIDO:
+- Uso personal para tus propios carruseles
+- Uso comercial dentro de tu propia marca/agencia
+- Compartir el skill tal cual con tu comunidad
+- Modificar el skill para uso personal
+- Mencionar el skill en cursos, tutoriales y videos
+
+❌ NO PERMITIDO:
+- Vender este skill como producto propio
+- Republicar el skill bajo otra autoría
+- Quitar los créditos a Ruva IA en redistribuciones públicas
+
+📌 ATRIBUCIÓN REQUERIDA:
+Al compartir, mencionar o redistribuir, incluir:
+"Skill creado por Ruva IA — https://www.youtube.com/@RuvaIA"
+
+================================================================
+DESCARGO DE RESPONSABILIDAD
+================================================================
+
+Este skill se proporciona "TAL CUAL", sin garantías de ningún
+tipo. Los autores no son responsables del rendimiento de los
+carruseles producidos ni de los resultados en redes sociales.
+
+Las fuentes tipográficas usadas vienen de Google Fonts y están
+sujetas a la SIL Open Font License (OFL):
+https://scripts.sil.org/OFL
+
+================================================================
+CONTACTO
+================================================================
+
+Canal: Ruva IA
+YouTube: https://www.youtube.com/@RuvaIA
+
+Para feedback, mejoras o reportar bugs, comenta en el video
+del canal donde se compartió este skill.
+
+© 2026 Ruva IA. Todos los derechos reservados sobre el contenido
+original (workflows, prompts, frameworks, knowledge base).

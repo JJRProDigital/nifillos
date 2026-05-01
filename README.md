@@ -6,6 +6,13 @@ CLI de orquestación multi-agente para tu IDE (licencia MIT). Incluye comando `/
 
 - Node.js **20+**
 
+## Documentación
+
+- **Guía paso a paso (~10 min, español):** [docs/guia-inicio-rapido.md](docs/guia-inicio-rapido.md) — init, IDE, primera cuadrilla, ejecución, dashboard, skills, MCP y migración `squads` → `cuadrillas`, con apartado de **seguridad** (secretos y Git).
+- **Quick start (English):** [docs/quick-start.md](docs/quick-start.md)
+- **CLI y catálogo de skills (español):** [docs/nifillos-comandos-y-skills.md](docs/nifillos-comandos-y-skills.md)
+- **Copia en proyectos `init`:** [templates/GUIA.md](templates/GUIA.md) y [templates/GUIDE.md](templates/GUIDE.md) se copian a la raíz del proyecto del usuario; `npx nifillos update` las sobrescribe con la versión del paquete.
+
 ## Uso rápido
 
 Inicializar un proyecto (copia plantillas, skills empaquetadas, configuración por IDE):
@@ -92,6 +99,8 @@ MIT. Ver [LICENSE](LICENSE) y [NOTICE](NOTICE).
 # Nifillos (English)
 
 **nifillos** npm CLI for multi-agent cuadrillas in your IDE (MIT). Slash command **`/nifillos`**, skill install by **bundled id**, **local path**, or **git URL**, and `getSkillMeta` fallback to the project’s `skills/` folder.
+
+**Walkthrough:** [docs/quick-start.md](docs/quick-start.md) (init → IDE → first cuadrilla → run → dashboard, skills, MCP, migration, **secrets/Git**). Spanish: [docs/guia-inicio-rapido.md](docs/guia-inicio-rapido.md).
 
 ```bash
 npx nifillos init

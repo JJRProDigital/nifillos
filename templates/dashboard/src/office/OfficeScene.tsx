@@ -94,6 +94,7 @@ function drawOfficeBackground(g: PixiGraphics, layout: OfficeLayout, stageW: num
 
   const shelfW = TILE * 2;
   const decorY = 4;
+  // Librerías más hacia el centro (no pegadas a las esquinas del canvas)
   const shelfInsetRatio = 0.2;
   const leftShelfX = Math.round(stageW * shelfInsetRatio);
   const rightShelfX = Math.round(stageW * (1 - shelfInsetRatio)) - shelfW;
@@ -139,12 +140,15 @@ function drawOfficeBackground(g: PixiGraphics, layout: OfficeLayout, stageW: num
 
   const lerpX = (lo: number, hi: number, t: number) => px(lo + t * Math.max(8, hi - lo));
 
+  /** Acentos pegados al zócalo cuando el hueco es estrecho pero existe. */
   const canPinLeft = bb.minX > floorLeft + 34;
 
   if (hasLeftStrip && hasRightStrip) {
+    // Izquierda: archivo + planta + papelera (zona “almacén / pasillo” más creíble).
     drawFilingCabinet(g, lerpX(leftXLo, leftXHi - TILE - 6, 0.15), yBand(0.14));
     drawPlant(g, lerpX(leftXLo, leftXHi - 30, 0.48), yBand(0.4));
     drawWasteBin(g, lerpX(leftXLo, leftXHi - 14, 0.82), yBand(0.76));
+    // Derecha: café + impresora + planta (rincón de copistería).
     drawCoffeeMachine(g, lerpX(rightXLo, rightXHi - 28, 0.22), yBand(0.32));
     drawOfficePrinter(g, lerpX(rightXLo + 2, rightXHi - 26, 0.52), yBand(0.5));
     drawPlant(g, lerpX(rightXLo + 6, rightXHi - 34, 0.78), yBand(0.66));

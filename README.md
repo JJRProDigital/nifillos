@@ -12,6 +12,7 @@ CLI de orquestación multi-agente para tu IDE (licencia MIT). Incluye comando `/
 - **Quick start (English):** [docs/quick-start.md](docs/quick-start.md)
 - **CLI y catálogo de skills (español):** [docs/nifillos-comandos-y-skills.md](docs/nifillos-comandos-y-skills.md)
 - **Copia en proyectos `init`:** [templates/GUIA.md](templates/GUIA.md) y [templates/GUIDE.md](templates/GUIDE.md) se copian a la raíz del proyecto del usuario; `npx nifillos update` las sobrescribe con la versión del paquete.
+- **Dashboard — API de métricas:** [docs/dashboard-metrics.md](docs/dashboard-metrics.md)
 
 ## Uso rápido
 
@@ -77,6 +78,25 @@ npm test
 npm run lint
 ```
 
+### Dashboard (Vite + React)
+
+En la carpeta `dashboard/` hay una UI con la pestaña **Oficina** (escena Pixi + WebSocket `/__cuadrillas_ws`) y la pestaña **Métricas** (runs, artefactos, diffs, auditoría). Desde la raíz del repo:
+
+```bash
+cd dashboard
+npm install
+npm run dev
+```
+
+La API **`/__cuadrillas_api/*`** la sirve el middleware de Vite en desarrollo. Si defines **`NIFILLOS_METRICS_API`** (URL de un backend remoto), el dashboard solo **proxifica** ese prefijo y no monta el handler local. Para un servidor HTTP autónomo de métricas:
+
+```bash
+cd dashboard
+npm run metrics:serve
+```
+
+(puerto **`NIFILLOS_METRICS_PORT`** o **8787**). Detalle de rutas, `usage.json` y precios: [docs/dashboard-metrics.md](docs/dashboard-metrics.md).
+
 Publicar en npm (ajusta `repository` y `bugs` en [package.json](package.json)):
 
 ```bash
@@ -110,6 +130,8 @@ npx nifillos install <id|path|git-url>
 ```
 
 `update` runs the same layout migration as `migrate` when  `cuadrillas/` exists. External automation (CI, scripts) should use paths **`cuadrillas/`**, **`cuadrilla.yaml`**, **`cuadrilla-party.csv`**, and dashboard/state field **`cuadrilla`** (not `squads` / `squad`).
+
+**Web dashboard:** under `dashboard/`, run `npm install` and `npm run dev` for the **Office** (Pixi) + **Metrics** UI. Metrics API: `/__cuadrillas_api/*` (dev middleware), or set **`NIFILLOS_METRICS_API`** to proxy; optional **`npm run metrics:serve`** (see [docs/dashboard-metrics.md](docs/dashboard-metrics.md)).
 
 IDE templates ship **Playwright** (stdio) and **Excalidraw** (`https://mcp.excalidraw.com/mcp`, HTTP) in `.mcp.json` / `.cursor/mcp.json` / `.vscode/mcp.json` where applicable; Codex and Antigravity are pointed to the same URL in their rules.
 

@@ -56,6 +56,8 @@ export interface CuadrillaInfo {
   agents: string[];
 }
 
+export type TabId = "office" | "metrics";
+
 export type WsMessage =
   | { type: "SNAPSHOT"; cuadrillas: CuadrillaInfo[]; activeStates: Record<string, CuadrillaState> }
   | { type: "CUADRILLA_ACTIVE"; cuadrilla: string; state: CuadrillaState }

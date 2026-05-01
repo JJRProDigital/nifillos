@@ -1,0 +1,35 @@
+{
+  "cuadrilla": "propuestas-b2b",
+  "status": "completed",
+  "step": { "current": 4, "total": 4, "label": "step-04-revision" },
+  "agents": [
+    {
+      "id": "estratega-propuestas",
+      "name": "Esteban Estructura",
+      "icon": "📊",
+      "status": "done",
+      "deliverTo": null,
+      "desk": { "col": 1, "row": 1 }
+    },
+    {
+      "id": "redactor-propuestas",
+      "name": "Raúl Redactor",
+      "icon": "✍️",
+      "status": "done",
+      "deliverTo": null,
+      "desk": { "col": 2, "row": 1 }
+    },
+    {
+      "id": "revisor-propuestas",
+      "name": "Rita Review",
+      "icon": "🔍",
+      "status": "done",
+      "deliverTo": null,
+      "desk": { "col": 3, "row": 1 }
+    }
+  ],
+  "handoff": null,
+  "startedAt": "2026-05-01T21:48:08.000Z",
+  "completedAt": "2026-05-01T21:50:00.000Z",
+  "updatedAt": "2026-05-01T21:50:00.000Z"
+}

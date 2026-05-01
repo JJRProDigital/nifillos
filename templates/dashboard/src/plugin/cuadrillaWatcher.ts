@@ -84,6 +84,57 @@ function isValidState(data: unknown): data is CuadrillaState {
   );
 }
 
+/**
+ * `cuadrilla.yaml` can set `code` different from the folder name — the UI keys by `code`
+ * (see discoverCuadrillas). Active state keys must match.
+ */
+function resolveCuadrillaCode(cuadrillasDir: string, folderName: string): string {
+  const yamlPath = path.join(cuadrillasDir, folderName, "cuadrilla.yaml");
+  if (!fs.existsSync(yamlPath)) return folderName;
+  try {
+    const raw = fs.readFileSync(yamlPath, "utf-8");
+    const parsed = parseYaml(raw) as Record<string, unknown> | null;
+    const c = parsed?.cuadrilla as Record<string, unknown> | undefined;
+    if (c && typeof c.code === "string") return c.code;
+    if (parsed && typeof parsed === "object" && typeof (parsed as { code?: unknown }).code === "string") {
+      return (parsed as { code: string }).code;
+    }
+  } catch {
+    // ignore
+  }
+  return folderName;
+}
+
+/**
+ * After a successful run, the Pipeline Runner copies `state.json` to
+ * `output/{run_id}/state.json` and removes the working `cuadrillas/{name}/state.json`.
+ * Without this fallback, the Office tab always shows "Sin ejecución" for completed runs.
+ */
+function readLatestOutputState(cuadrillaDir: string): CuadrillaState | null {
+  const outDir = path.join(cuadrillaDir, "output");
+  if (!fs.existsSync(outDir)) return null;
+  let dirents: fs.Dirent[];
+  try {
+    dirents = fs.readdirSync(outDir, { withFileTypes: true });
+  } catch {
+    return null;
+  }
+  const runIds = dirents.filter((e) => e.isDirectory()).map((e) => e.name);
+  runIds.sort((a, b) => b.localeCompare(a));
+  for (const runId of runIds) {
+    const p = path.join(outDir, runId, "state.json");
+    if (!fs.existsSync(p)) continue;
+    try {
+      const raw = fs.readFileSync(p, "utf-8");
+      const parsed: unknown = JSON.parse(raw);
+      if (isValidState(parsed)) return parsed;
+    } catch {
+      // skip
+    }
+  }
+  return null;
+}
+
 function readActiveStates(cuadrillasDir: string): Record<string, CuadrillaState> {
   const states: Record<string, CuadrillaState> = {};
   if (!fs.existsSync(cuadrillasDir)) return states;
@@ -91,17 +142,29 @@ function readActiveStates(cuadrillasDir: string): Record<string, CuadrillaState>
   const entries = fs.readdirSync(cuadrillasDir, { withFileTypes: true });
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
-    const statePath = path.join(cuadrillasDir, entry.name, "state.json");
-    if (!fs.existsSync(statePath)) continue;
+    if (entry.name.startsWith(".") || entry.name.startsWith("_")) continue;
 
-    try {
-      const raw = fs.readFileSync(statePath, "utf-8");
-      const parsed = JSON.parse(raw);
-      if (isValidState(parsed)) {
-        states[entry.name] = parsed;
+    const cuadrillaPath = path.join(cuadrillasDir, entry.name);
+    const code = resolveCuadrillaCode(cuadrillasDir, entry.name);
+    const rootStatePath = path.join(cuadrillaPath, "state.json");
+
+    let parsed: CuadrillaState | null = null;
+    if (fs.existsSync(rootStatePath)) {
+      try {
+        const raw = fs.readFileSync(rootStatePath, "utf-8");
+        const j: unknown = JSON.parse(raw);
+        if (isValidState(j)) parsed = j;
+      } catch {
+        // Skip invalid JSON
       }
-    } catch {
-      // Skip invalid JSON
+    }
+
+    if (!parsed) {
+      parsed = readLatestOutputState(cuadrillaPath);
+    }
+
+    if (parsed) {
+      states[code] = parsed;
     }
   }
 
@@ -202,7 +265,7 @@ export function cuadrillaWatcherPlugin(): Plugin {
             debouncedSnapshot();
             return;
           }
-          const code = extractCuadrillaCode(filePath, cuadrillasDir);
+          const code = broadcastCodeFromRootStatePath(filePath, cuadrillasDir);
           if (!code) return;
           clearTimeout(changeTimers.get(code));
           changeTimers.set(code, setTimeout(() => {
@@ -223,7 +286,7 @@ export function cuadrillaWatcherPlugin(): Plugin {
             debouncedSnapshot();
             return;
           }
-          const code = extractCuadrillaCode(filePath, cuadrillasDir);
+          const code = broadcastCodeFromRootStatePath(filePath, cuadrillasDir);
           if (!code) return;
           clearTimeout(changeTimers.get(code));
           changeTimers.set(code, setTimeout(() => {
@@ -244,11 +307,11 @@ export function cuadrillaWatcherPlugin(): Plugin {
             debouncedSnapshot();
             return;
           }
-          const code = extractCuadrillaCode(filePath, cuadrillasDir);
+          const code = broadcastCodeFromRootStatePath(filePath, cuadrillasDir);
           if (!code) return;
           clearTimeout(changeTimers.get(code));
           changeTimers.delete(code);
-          broadcast(wss, { type: "CUADRILLA_INACTIVE", cuadrilla: code });
+          debouncedSnapshot();
         } else if (filePath.endsWith("cuadrilla.yaml")) {
           broadcast(wss, buildSnapshot(cuadrillasDir));
         }
@@ -257,10 +320,18 @@ export function cuadrillaWatcherPlugin(): Plugin {
   };
 }
 
-function extractCuadrillaCode(filePath: string, cuadrillasDir: string): string | null {
+/** Folder name under cuadrillas/ for a root-level state.json path. */
+function extractCuadrillaFolderFromStatePath(filePath: string, cuadrillasDir: string): string | null {
   const normalized = filePath.replace(/\\/g, "/");
   const normalizedBase = cuadrillasDir.replace(/\\/g, "/");
   const relative = normalized.replace(normalizedBase + "/", "");
   const parts = relative.split("/");
   return parts.length >= 2 ? parts[0] : null;
+}
+
+/** YAML `code` for WebSocket messages — must match keys in readActiveStates / cuadrillas Map. */
+function broadcastCodeFromRootStatePath(filePath: string, cuadrillasDir: string): string | null {
+  const folder = extractCuadrillaFolderFromStatePath(filePath, cuadrillasDir);
+  if (!folder) return null;
+  return resolveCuadrillaCode(cuadrillasDir, folder);
 }

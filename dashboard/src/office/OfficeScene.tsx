@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useCuadrillaStore } from "@/store/useCuadrillaStore";
 import { AgentDesk } from "./AgentDesk";
 import { HandoffEnvelope } from "./HandoffEnvelope";
-import { findAgent } from "@/lib/normalizeState";
+import { agentsForOfficeDisplay } from "@/lib/normalizeState";
 import { assignSpreadDesks, layoutExtentsForAgentCount } from "./spreadLayout";
 import { COLORS } from "./palette";
 import { computeOfficeLayout, isoDeskSortKey } from "./officeProjection";
@@ -23,10 +23,11 @@ export function OfficeScene() {
     s.selectedCuadrilla ? s.cuadrillas.get(s.selectedCuadrilla) : undefined
   );
 
-  const agentsStableOrder = useMemo(
-    () => (state?.agents ? [...state.agents].sort((a, b) => a.id.localeCompare(b.id)) : []),
-    [state?.agents]
-  );
+  const agentsStableOrder = useMemo(() => {
+    if (!state) return [];
+    const resolved = agentsForOfficeDisplay(state, cuadrillaInfo);
+    return [...resolved].sort((a, b) => a.id.localeCompare(b.id));
+  }, [state, cuadrillaInfo]);
 
   const spreadAgents = useMemo(() => assignSpreadDesks(agentsStableOrder), [agentsStableOrder]);
 
@@ -132,8 +133,8 @@ export function OfficeScene() {
           })}
           {state.handoff &&
             (() => {
-              const from = findAgent(state, state.handoff!.from);
-              const to = findAgent(state, state.handoff!.to);
+              const from = agentsStableOrder.find((a) => a.id === state.handoff!.from);
+              const to = agentsStableOrder.find((a) => a.id === state.handoff!.to);
               if (!from || !to) return null;
               const fromSp = spreadAgents.find((a) => a.id === from.id) ?? from;
               const toSp = spreadAgents.find((a) => a.id === to.id) ?? to;

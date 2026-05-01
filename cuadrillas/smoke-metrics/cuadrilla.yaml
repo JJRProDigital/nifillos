@@ -1,0 +1,6 @@
+cuadrilla:
+  code: smoke-metrics
+  name: Smoke métricas
+  description: Run de prueba para el dashboard (tokens en usage.json). Solo CI/local smoke.
+  icon: "📊"
+  agents: []

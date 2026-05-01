@@ -2,6 +2,8 @@
 
 Referencia en español del CLI `nifillos` y de las skills empaquetadas en el paquete. Requisito: **Node.js 20+**.
 
+¿Primera vez con el framework? Sigue antes la **[guía de inicio rápido](guia-inicio-rapido.md)** (init, IDE, cuadrilla, MCP, migración y seguridad).
+
 Tras `npx nifillos init`, el proyecto tiene `_nifillos/`, plantillas por IDE y (según plantilla) skills copiadas bajo `skills/<id>/`. Las rutas de scripts en esta guía asumen **raíz del proyecto** y carpeta `skills/<id>/`.
 
 ---
@@ -80,6 +82,9 @@ Tabla resumen. Para detalle operativo, abre `skills/<id>/SKILL.md` en el repo de
 | `pdf-export` | script | _(ninguna)_ | PDF desde URL/HTML (Playwright) o ReportLab (`html`, `doc`, `direct`). |
 | `nifillos-skill-creator` | prompt | _(ninguna)_ | Crear/mejorar skills y evaluaciones. |
 | `nifillos-agent-creator` | prompt | _(ninguna)_ | Best practices / biblioteca `_nifillos/core/best-practices/`. |
+| `market-audit` | prompt | _(ninguna)_ | Auditoría de marketing (`/market audit <url>`); informe MARKETING-AUDIT.md. |
+| `market-social` | prompt | _(ninguna)_ | Calendario social 30 días (`/market social <topic/url>`); SOCIAL-CALENDAR.md. |
+| `market-landing` | prompt | _(ninguna)_ | Análisis CRO de landing (`/market landing <url>` / `/market cro <url>`). |
 
 ### Tipos de skill
 

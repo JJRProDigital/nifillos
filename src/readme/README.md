@@ -2,6 +2,10 @@
 
 Crea cuadrillas de agentes de IA que trabajan juntos, directamente desde tu IDE.
 
+## Guía ampliada (~10 min)
+
+Pasos ordenados: `npx nifillos update`, MCP, migración desde `squads`, skills y **secretos/Git** → **[GUIA.md](GUIA.md)** · **[GUIDE.md](GUIDE.md)** (EN).
+
 ## Cómo usar
 
 Abre esta carpeta en tu IDE y escribe:
@@ -62,6 +66,10 @@ npx serve cuadrillas/<nombre-de-la-cuadrilla>/dashboard
 # Nifillos (English)
 
 Create AI agent **cuadrillas** (teams) that work together — right from your IDE.
+
+## Extended walkthrough (~10 min)
+
+Framework updates, MCP, migration from `squads`, skills, and **secrets/Git** → **[GUIDE.md](GUIDE.md)** · **[GUIA.md](GUIA.md)** (ES).
 
 ## How to Use
 

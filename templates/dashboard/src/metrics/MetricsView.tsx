@@ -60,6 +60,11 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
   const pendingFocusRun = useRef<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
+  const chartRunsForCuadrilla = useMemo(
+    () => (cuadrilla ? chartRuns.filter((r) => r.cuadrilla === cuadrilla) : chartRuns),
+    [chartRuns, cuadrilla],
+  );
+
   const syncUrl = useCallback(
     (c: string, r: string) => {
       writeMetricsUrl({ cuadrilla: c, run: r, lang });
@@ -267,7 +272,7 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
       )}
 
       {!summaryError ? (
-        <MetricsCharts runs={chartRuns} lang={lang} loading={summaryLoading} />
+        <MetricsCharts runs={chartRunsForCuadrilla} lang={lang} loading={summaryLoading} />
       ) : null}
 
       <div className="metrics-controls">
@@ -488,10 +493,10 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
             </div>
           </div>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: 0 }}>
-          <h3 style={{ fontWeight: 600, fontSize: "0.8125rem" }}>{t(lang, "preview")}</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: 0, minHeight: 0 }}>
+          <h3 style={{ fontWeight: 600, fontSize: "0.8125rem", flexShrink: 0 }}>{t(lang, "preview")}</h3>
           {selectedRel ? (
-            <div className="preview-path-bar">
+            <div className="preview-path-bar" style={{ flexShrink: 0 }}>
               <span style={{ color: "var(--text-secondary)" }}>{t(lang, "previewPath")}:</span>
               <code style={{ flex: 1, minWidth: 0 }}>{selectedRel}</code>
               <button type="button" className="metrics-btn" onClick={copySelectedPath}>
@@ -504,32 +509,66 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
               ) : null}
             </div>
           ) : null}
-          <div style={{ flex: 1, border: "1px solid var(--border)", borderRadius: 8, minHeight: 240, background: "var(--bg-primary)" }}>
+          <div
+            style={{
+              flex: 1,
+              minHeight: 200,
+              minWidth: 0,
+              display: "flex",
+              flexDirection: "column",
+              border: "1px solid var(--border)",
+              borderRadius: 8,
+              background: "var(--bg-primary)",
+              overflow: "hidden",
+            }}
+          >
             {previewKind === "none" && (
-              <div style={{ padding: 12, color: "var(--text-secondary)" }}>{t(lang, "noArtifact")}</div>
+              <div style={{ padding: 12, color: "var(--text-secondary)", flex: 1 }}>{t(lang, "noArtifact")}</div>
             )}
             {previewKind === "iframe" && selectedRel && (
-              <iframe
-                title={lang === "es" ? `Vista previa: ${selectedRel}` : `Preview: ${selectedRel}`}
-                src={previewUrl(cuadrilla, runId, selectedRel)}
-                style={{ width: "100%", height: 320, border: "none", borderRadius: 8 }}
-                sandbox="allow-same-origin allow-scripts"
-              />
+              <div style={{ flex: 1, minHeight: 0, position: "relative", minWidth: 0 }}>
+                <iframe
+                  title={lang === "es" ? `Vista previa: ${selectedRel}` : `Preview: ${selectedRel}`}
+                  src={previewUrl(cuadrilla, runId, selectedRel)}
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    border: "none",
+                    borderRadius: 8,
+                  }}
+                  sandbox="allow-same-origin allow-scripts"
+                />
+              </div>
             )}
             {previewKind === "img" && selectedRel && (
-              <img
-                src={previewUrl(cuadrilla, runId, selectedRel)}
-                alt={selectedRel.split("/").pop() ?? "preview"}
-                style={{ maxWidth: "100%", maxHeight: 320, objectFit: "contain", display: "block", margin: "0 auto" }}
-              />
+              <div
+                style={{
+                  flex: 1,
+                  minHeight: 0,
+                  overflow: "auto",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 8,
+                }}
+              >
+                <img
+                  src={previewUrl(cuadrilla, runId, selectedRel)}
+                  alt={selectedRel.split("/").pop() ?? "preview"}
+                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }}
+                />
+              </div>
             )}
             {previewKind === "text" && (
               <pre
                 style={{
+                  flex: 1,
+                  minHeight: 0,
                   margin: 0,
                   padding: 12,
                   fontSize: "0.75rem",
-                  maxHeight: 320,
                   overflow: "auto",
                   whiteSpace: "pre-wrap",
                   wordBreak: "break-word",
@@ -540,7 +579,16 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
             )}
           </div>
           {selectedRel && (
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: 8,
+                flexWrap: "wrap",
+                flexShrink: 0,
+                position: "relative",
+                zIndex: 2,
+              }}
+            >
               <a
                 href={previewUrl(cuadrilla, runId, selectedRel)}
                 target="_blank"

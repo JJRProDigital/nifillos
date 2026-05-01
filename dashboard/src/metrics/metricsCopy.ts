@@ -27,7 +27,7 @@ const common = {
   inOutPct: { es: "% in / sal", en: "% in / out" },
   alertCost: { es: "Umbral coste", en: "Cost alert" },
   alertTok: { es: "Umbral tokens", en: "Token alert" },
-  chartsTitle: { es: "Tendencias (runs cargados)", en: "Trends (loaded runs)" },
+  chartsTitle: { es: "Tendencias (cuadrilla seleccionada)", en: "Trends (selected cuadrilla)" },
   costByDay: { es: "Coste por día", en: "Cost by day" },
   tokensByDay: { es: "Tokens por día", en: "Tokens by day" },
   artifacts: { es: "Artefactos", en: "Artifacts" },

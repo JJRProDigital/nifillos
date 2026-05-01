@@ -34,6 +34,28 @@ test('update overwrites system files', async () => {
   }
 });
 
+test('update rewrites dashboard metricsApiHandler imports to user repo depth', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-update-dashpaths-'));
+
+  try {
+    await init(tempDir, { _skipPrompts: true });
+    const handlerPath = join(tempDir, 'dashboard', 'src', 'server', 'metricsApiHandler.ts');
+    await writeFile(
+      handlerPath,
+      'import { x } from "../../../../src/runs.js";\n',
+      'utf-8',
+    );
+
+    await update(tempDir);
+
+    const content = await readFile(handlerPath, 'utf-8');
+    assert.ok(content.includes('../../../src/runs.js'), 'handler must import project-root src');
+    assert.ok(!content.includes('../../../../src/runs.js'), 'template-only depth must not remain');
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+});
+
 test('update preserves _memory contents', async () => {
   const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 

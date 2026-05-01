@@ -28,6 +28,13 @@ Actualizar archivos del framework desde la versión instalada del paquete (respe
 npx nifillos update
 ```
 
+Para instalar o **actualizar el paquete desde GitHub** (rama por defecto del repo) y luego volcar plantillas y núcleo con la versión que acabas de instalar:
+
+```bash
+npm install -D git+https://github.com/JJRProDigital/nifillos.git
+npx nifillos update
+```
+
 `update` también comprueba y migra el diseño antiguo. Si solo quieres esa migración sin copiar plantillas del paquete:
 
 ```bash
@@ -127,6 +134,13 @@ npx nifillos init
 npx nifillos update
 npx nifillos migrate   
 npx nifillos install <id|path|git-url>
+```
+
+To **pull the latest package from GitHub** and refresh templates/core:
+
+```bash
+npm install -D git+https://github.com/JJRProDigital/nifillos.git
+npx nifillos update
 ```
 
 `update` runs the same layout migration as `migrate` when  `cuadrillas/` exists. External automation (CI, scripts) should use paths **`cuadrillas/`**, **`cuadrilla.yaml`**, **`cuadrilla-party.csv`**, and dashboard/state field **`cuadrilla`** (not `squads` / `squad`).

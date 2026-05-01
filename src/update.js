@@ -2,7 +2,7 @@ import { cp, mkdir, readFile, stat } from 'node:fs/promises';
 import { join, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadLocale, t } from './i18n.js';
-import { getTemplateEntries, loadSavedLocale } from './init.js';
+import { getTemplateEntries, loadSavedLocale, rewriteDashboardPathsAfterTemplateCopy } from './init.js';
 import { listAvailable as listAvailableSkills, listInstalled as listInstalledSkills, installSkill, getSkillMeta } from './skills.js';
 import { logEvent } from './logger.js';
 import { migrateLegacyLayout } from './migrate-legacy-layout.js';
@@ -113,6 +113,10 @@ export async function update(targetDir) {
     const destPath = join(targetDir, relativePath);
     await mkdir(dirname(destPath), { recursive: true });
     await cp(entry, destPath);
+    await rewriteDashboardPathsAfterTemplateCopy(
+      destPath,
+      relativePath.replaceAll('\\', '/'),
+    );
     console.log(`  ${t('updatedFile', { path: relativePath.replaceAll('\\', '/') })}`);
     count++;
   }

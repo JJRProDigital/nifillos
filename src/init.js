@@ -170,7 +170,7 @@ async function copyCommonTemplates(targetDir) {
 }
 
 /** Rutas ../../src en tsconfig e imports profundos en métricas: válidas bajo templates/dashboard; tras init quedan junto a src/ del usuario. */
-async function rewriteDashboardPathsAfterTemplateCopy(destPath, relativePath) {
+export async function rewriteDashboardPathsAfterTemplateCopy(destPath, relativePath) {
   const norm = relativePath.replace(/\\/g, '/');
   let text = await readFile(destPath, 'utf-8');
   let next = text;

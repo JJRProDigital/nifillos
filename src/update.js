@@ -161,7 +161,8 @@ export async function update(targetDir) {
   console.log(`\n  ${t('updateFileCount', { count })}`);
   console.log(`  ${t('updatePreserved')}`);
   console.log(`  ${t('updateSuccess', { version: `v${newVersion}` })}`);
-  console.log(`\n  ${t('updateLatestHint')}\n`);
+  console.log(`\n  ${t('updateLatestHint')}`);
+  console.log(`  ${t('updateDashboardNpmInstallHint')}\n`);
 
   await logEvent('update', { from: currentVersion || 'unknown', to: newVersion }, targetDir);
 

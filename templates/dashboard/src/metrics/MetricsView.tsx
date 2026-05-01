@@ -59,6 +59,10 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
   const [copyHint, setCopyHint] = useState<string | null>(null);
   const pendingFocusRun = useRef<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const cuadrillaRef = useRef(cuadrilla);
+  const pageRef = useRef(page);
+  cuadrillaRef.current = cuadrilla;
+  pageRef.current = page;
 
   const chartRunsForCuadrilla = useMemo(
     () => (cuadrilla ? chartRuns.filter((r) => r.cuadrilla === cuadrilla) : chartRuns),
@@ -98,6 +102,47 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
       cancelled = true;
     };
   }, [lang]);
+
+  /** Refresco periódico cada 15s de gráficos y tabla de runs (sin depender de F5). */
+  useEffect(() => {
+    let cancelled = false;
+    const refresh = async () => {
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
+      try {
+        const summary = await fetchRunsSummary();
+        if (cancelled) return;
+        setChartRuns(summary.runs);
+        const codes = summary.byCuadrilla.map((b) => b.code).sort();
+        setCuadrillas(codes);
+
+        const c = cuadrillaRef.current;
+        const p = pageRef.current;
+        if (!c || !codes.includes(c)) return;
+
+        const data = await fetchRunsPage(c, p.offset, p.limit);
+        if (cancelled) return;
+        if (data.error) return;
+        setRuns(data.runs);
+        setPage((prev) => ({ ...prev, total: data.total, offset: data.offset }));
+        setRunId((current) => {
+          if (current && data.runs.some((r) => r.runId === current)) return current;
+          const next = data.runs[0]?.runId ?? "";
+          if (next) syncUrl(c, next);
+          return next;
+        });
+        setPageError(null);
+      } catch {
+        /* no pisar summaryError */
+      }
+    };
+    const id = window.setInterval(refresh, 15000);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, [syncUrl]);
 
   useEffect(() => {
     if (!cuadrilla) {

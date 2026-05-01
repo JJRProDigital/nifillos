@@ -1,9 +1,12 @@
 import { useEffect, useRef } from "react";
 import { useCuadrillaStore } from "@/store/useCuadrillaStore";
 import type { WsMessage } from "@/types/state";
+import { fetchCuadrillaSnapshot } from "@/metrics/metricsApi";
 
 const RECONNECT_BASE_MS = 1000;
 const RECONNECT_MAX_MS = 30000;
+/** Refresco HTTP del mismo snapshot que el WS (Vite watcher a veces no dispara en otro volumen/OS). */
+const POLL_SNAPSHOT_MS = 15000;
 
 export function useCuadrillaSocket() {
   const wsRef = useRef<WebSocket | null>(null);
@@ -81,4 +84,29 @@ export function useCuadrillaSocket() {
       wsRef.current?.close();
     };
   }, [setConnected, setSnapshot, setCuadrillaActive, updateCuadrillaState, setCuadrillaInactive]);
+
+  useEffect(() => {
+    let disposed = false;
+    const poll = async () => {
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
+      try {
+        const snap = await fetchCuadrillaSnapshot();
+        if (disposed) return;
+        setSnapshot(snap.cuadrillas, snap.activeStates);
+      } catch {
+        /* El WebSocket sigue actualizando si falla el GET */
+      }
+    };
+    void poll();
+    const id = window.setInterval(poll, POLL_SNAPSHOT_MS);
+    const onVis = () => {
+      void poll();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      disposed = true;
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", onVis);
+    };
+  }, [setSnapshot]);
 }

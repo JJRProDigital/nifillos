@@ -6,6 +6,7 @@ La pestaña **Métricas** del dashboard consume una API HTTP bajo el prefijo **`
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
+| GET | `/__cuadrillas_api/snapshot` | Lista de cuadrillas + `activeStates` (mismo contenido que el mensaje WebSocket `SNAPSHOT`). `Cache-Control: no-store`. Para refrescar la pestaña Oficina sin depender solo del watcher de archivos. |
 | GET | `/__cuadrillas_api/runs` | Resumen global: `listRunSummaries` (runs, `byCuadrilla`, `pricing`, `limits`). ETag + 304. |
 | GET | `/__cuadrillas_api/runs-page?cuadrilla=&offset=&limit=` | Página de runs de una cuadrilla (orden `runId` descendente). Ver **`focusRunId`** abajo. |
 | GET | `/__cuadrillas_api/artifacts?cuadrilla=&runId=` | Lista de archivos del run, `manifest` opcional, límites y `truncated`. |

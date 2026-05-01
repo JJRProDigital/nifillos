@@ -16,6 +16,13 @@ Para **actualizar** plantillas y el núcleo `_nifillos/` desde el paquete npm qu
 npx nifillos update
 ```
 
+Después de un `update`, si usas el **dashboard** (`dashboard/`), instala de nuevo las dependencias de Node allí (el `package.json` del dashboard puede haber añadido librerías como Pixi):
+
+```bash
+cd dashboard
+npm install
+```
+
 Para **solo** migrar nombres antiguos (`squads/` → `cuadrillas/`, etc.) sin refrescar todo el framework desde el paquete:
 
 ```bash

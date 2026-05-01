@@ -25,6 +25,7 @@
   "updatePreserved": "✓ Preservado: _memory/, _investigations/, cuadrillas/",
   "updateFileCount": "✓ Actualizados: {count} archivos del sistema",
   "updateLatestHint": "💡 Consejo: Use 'npx nifillos@latest update' para obtener siempre la versión más reciente.",
+  "updateDashboardNpmInstallHint": "📦 Dashboard: ejecuta \"cd dashboard && npm install\" para instalar dependencias nuevas (p. ej. Pixi) tras un update.",
   "skillsNotInitialized": "Instalación de Nifillos no encontrada. Ejecuta 'init' primero.",
   "skillsFetching": "Obteniendo registro de skills...",
   "skillsInstalledHeader": "Instaladas:",

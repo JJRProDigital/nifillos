@@ -352,6 +352,18 @@ export async function tryHandleMetricsApi(
           res.end(html);
           return true;
         }
+        if (ext === ".html" || ext === ".htm") {
+          const htmlOut = truncated ? `${text}\n<!-- … [truncated] -->` : text;
+          const tag = weakEtag(htmlOut);
+          if (checkIfNoneMatch(req, tag)) {
+            sendJson304(res, tag);
+            return true;
+          }
+          res.setHeader("Content-Type", "text/html; charset=utf-8");
+          res.setHeader("ETag", tag);
+          res.end(htmlOut);
+          return true;
+        }
         const tag = weakEtag(text);
         if (checkIfNoneMatch(req, tag)) {
           sendJson304(res, tag);

@@ -1,0 +1,4 @@
+name,displayName,icon,path
+estratega-propuestas,Esteban Estructura,📊,./agents/estratega-propuestas.agent.md
+redactor-propuestas,Raúl Redactor,✍️,./agents/redactor-propuestas.agent.md
+revisor-propuestas,Rita Review,🔍,./agents/revisor-propuestas.agent.md

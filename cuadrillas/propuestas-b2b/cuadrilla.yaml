@@ -1,0 +1,24 @@
+cuadrilla:
+  code: propuestas-b2b
+  name: Propuestas B2B
+  description: >-
+    Pipeline para propuestas comerciales B2B: captura del brief, marco de solución,
+    redacción ejecutiva (MD + HTML) y revisión con bucle de mejora opcional.
+  icon: "📋"
+  autonomy: interactive
+  max_review_cycles: 2
+  agents:
+    - estratega-propuestas
+    - redactor-propuestas
+    - revisor-propuestas
+  skills:
+    - web_search
+    - web_fetch
+  data: []
+
+pipeline:
+  steps:
+    - file: ./pipeline/steps/step-01-brief-checkpoint.md
+    - file: ./pipeline/steps/step-02-estrategia.md
+    - file: ./pipeline/steps/step-03-redaccion.md
+    - file: ./pipeline/steps/step-04-revision.md

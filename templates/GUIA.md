@@ -64,16 +64,29 @@ El **Pipeline Runner** ejecuta el pipeline. Los **checkpoints** pausan el flujo 
 
 ---
 
-## 5. (Opcional) Dashboard «oficina virtual»
+## 5. (Opcional) Dashboard
 
-1. En el IDE: pide el dashboard (p. ej. desde **`/nifillos`**).
-2. En la terminal, en la raíz del proyecto:
+Hay **dos** contextos habituales:
 
-   ```bash
-   npx serve cuadrillas/<nombre-de-la-cuadrilla>/dashboard
-   ```
+### A. Dashboard del proyecto (oficina 2D + métricas)
 
-3. Abre la URL que muestre la consola (suele ser `http://localhost:3000`).
+En la raíz hay una carpeta `dashboard/` (Vite + React). Para ver la **Oficina** (estado en vivo) y **Métricas** (runs, artefactos, vista previa, diff):
+
+```bash
+cd dashboard
+npm install    # solo la primera vez
+npm run dev
+```
+
+Abre la URL que indique Vite (suele ser `http://localhost:5173`). Si la API de métricas va aparte: en `dashboard/`, `npm run metrics:serve`; opcionalmente define **`NIFILLOS_METRICS_API`** si usas otro host/puerto. Resumen técnico: `dashboard/README.md` en tu proyecto; en el repo del paquete también existe `docs/dashboard-metrics.md`.
+
+### B. Sitio estático dentro de una cuadrilla
+
+Si una cuadrilla trae su propia carpeta `cuadrillas/<nombre>/dashboard/` (HTML estático), puedes servirla así:
+
+```bash
+npx serve cuadrillas/<nombre-de-la-cuadrilla>/dashboard
+```
 
 ---
 
@@ -93,12 +106,12 @@ npx nifillos skills
 
 ## 7. MCP (Playwright, Excalidraw, etc.)
 
-Revisa `.mcp.json`, `.cursor/mcp.json` o `.vscode/mcp.json` (según lo que te haya copiado `init`).
+Las skills **mcp** o **hybrid** suelen necesitar servidores MCP. Tras `init`, revisa los JSON del proyecto (p. ej. `.mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json`, según IDE) **y** la configuración local del IDE si añadiste plugins MCP.
 
-- **Playwright:** navegador (Sherlock, capturas, algunas skills).
-- **Excalidraw:** diagramas por MCP HTTP.
+- **Playwright:** navegador (Sherlock, capturas, varias skills).
+- **Excalidraw:** diagramas vía MCP HTTP.
 
-Si falla la conexión, comprueba `npx` y el firewall.
+Listado de skills y tipo: `npx nifillos skills` y [skills/README.md](skills/README.md). Si algo no conecta, comprueba `npx`, firewall y variables de entorno que pida cada skill (véase frontmatter en `skills/<id>/SKILL.md`).
 
 ---
 
@@ -123,8 +136,10 @@ Norma actual: **`cuadrillas/`**, **`cuadrilla.yaml`**, **`cuadrilla-party.csv`**
 ## Seguridad: secretos y Git
 
 - **No subas** API keys, tokens ni contraseñas en archivos del repo (p. ej. `.mcp.json` con `Authorization` o tokens embebidos).
-- Usa **`.env`** (suele estar en `.gitignore`) para variables que pidan las skills.
-- Para MCP, preferible **variables de entorno** o ajustes **solo en tu máquina**. Revisa `git status` antes de hacer commit.
+- Usa **`.env`** (suele estar en `.gitignore`) para variables que pidan las skills (`APIFY_TOKEN`, claves de OpenRouter, Instagram, etc.).
+- Para MCP, preferible **variables de entorno** o ajustes **solo en tu máquina** / ajustes locales del IDE. Revisa `git status` antes de hacer commit.
+- No commitees perfiles de navegador automatizado (p. ej. carpeta **`_nifillos/_browser_profile/`**, suele ignorarse en `.gitignore`).
+- Las **plantillas del paquete** deben llevar placeholders, no secretos reales.
 
 Si filtraste un secreto, **revócalo en el proveedor** y, si hace falta, limpia el historial de Git.
 

@@ -1,8 +1,8 @@
-// === Office palette — estudio cálido + acento teal (Nifillos / productividad) ===
+// === Office palette — estudio cálido + marca Obsessive (oro #d5b06d / bosque #1e312f) ===
 export const COLORS = {
   // Stage (fuera de la habitación)
-  sceneVoid: 0x121a22,
-  sceneVignette: 0x080c12,
+  sceneVoid: 0x1a2523,
+  sceneVignette: 0x0c1210,
 
   // Fake 3D — caras a la derecha / abajo (luz arriba-izquierda)
   extrudeDeep: 0x14181e,
@@ -30,7 +30,7 @@ export const COLORS = {
   deskGrainDark: 0xbea58a,
   monitorFrame: 0x242830,
   monitorScreen: 0x121c24,
-  monitorScreenOn: 0x3cb0b0,
+  monitorScreenOn: 0xc9a060,
   keyboard: 0x343840,
 
   // Office chair (mesh ergonómico)
@@ -109,8 +109,8 @@ export const COLORS = {
   waterCap: 0x4488aa,
 
   // Name card (slate + acento)
-  nameCardBg: 0x1a222c,
-  nameCardBorder: 0x2a9090,
+  nameCardBg: 0x1e312f,
+  nameCardBorder: 0xd5b06d,
   nameCardText: 0xf2f4f7,
 
   // Belt
@@ -121,7 +121,7 @@ export const COLORS = {
 
   // Status effects (high contrast)
   statusIdle: 0xaaaacc,
-  statusWorking: 0x60b0ff,
+  statusWorking: 0xd5b06d,
   statusDone: 0x60f080,
   statusCheckpoint: 0xffbb22,
   bubbleBg: 0xffffff,

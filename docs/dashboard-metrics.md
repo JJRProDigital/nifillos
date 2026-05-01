@@ -7,7 +7,7 @@ La pestaña **Métricas** del dashboard consume una API HTTP bajo el prefijo **`
 | Método | Ruta | Descripción |
 |--------|------|-------------|
 | GET | `/__cuadrillas_api/runs` | Resumen global: `listRunSummaries` (runs, `byCuadrilla`, `pricing`, `limits`). ETag + 304. |
-| GET | `/__cuadrillas_api/runs-page?cuadrilla=&offset=&limit=` | Página de runs de una cuadrilla (orden `runId` descendente). |
+| GET | `/__cuadrillas_api/runs-page?cuadrilla=&offset=&limit=` | Página de runs de una cuadrilla (orden `runId` descendente). Ver **`focusRunId`** abajo. |
 | GET | `/__cuadrillas_api/artifacts?cuadrilla=&runId=` | Lista de archivos del run, `manifest` opcional, límites y `truncated`. |
 | GET | `/__cuadrillas_api/limits` | Objeto `DASHBOARD_LIMITS` (`src/dashboardLimits.js`). |
 | GET | `/__cuadrillas_api/audit?lines=` | Cola de `_nifillos/logs/dashboard-audit.log`. |
@@ -17,6 +17,24 @@ La pestaña **Métricas** del dashboard consume una API HTTP bajo el prefijo **`
 | POST | `/__cuadrillas_api/diff-runs` | Cuerpo `{ cuadrilla, leftRunId, rightRunId, relPath? }`. |
 
 Las respuestas JSON pertinentes llevan **ETag** débil y responden **304** si `If-None-Match` coincide.
+
+### Paginación y `focusRunId` (`runs-page`)
+
+Query estándar:
+
+- **`cuadrilla`** (obligatorio): código de cuadrilla seguro (mismo criterio que en el resto de rutas).
+- **`offset`**: índice base en la lista ordenada de `runId` descendente (entero ≥ 0).
+- **`limit`**: tamaño de página (acotado por `DASHBOARD_LIMITS.maxRunsPerCuadrillaDefault`).
+
+Query opcional:
+
+- **`focusRunId`**: si el valor es un `runId` válido que **existe** en esa cuadrilla, el servidor **ignora** el `offset` solicitado y sustituye internamente el offset por  
+  `floor(indexDelRun / limit) * limit`,  
+  de modo que la página devuelta **contiene** ese run. La respuesta incluye el **`offset` efectivo** aplicado (campo `offset` del JSON) para que el cliente sincronice su estado de paginación.
+
+Uso típico: enlaces compartidos o query string de la pestaña Métricas (`run=...`) donde el run puede estar fuera de la primera página. El dashboard envía `focusRunId` solo en la primera petición relevante tras cargar la URL; las páginas siguientes (`Anterior` / `Siguiente`) **no** envían `focusRunId` para no forzar la realineación.
+
+Si `focusRunId` no existe en la cuadrilla o el segmento no pasa la validación, se descarta y se usa `offset`/`limit` normales.
 
 Las acciones `preview`, `download`, `diff` y `diff-runs` añaden una línea JSON a **`_nifillos/logs/dashboard-audit.log`** (el directorio se crea si no existe).
 

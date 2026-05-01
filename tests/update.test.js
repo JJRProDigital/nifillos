@@ -201,3 +201,36 @@ test('update auto-imports bundled skills with env requirements', async () => {
     await rm(tempDir, { recursive: true, force: true });
   }
 });
+
+test('update runs migrate squads → cuadrillas when only squads/ exists', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-upd-migrate-'));
+  try {
+    await init(tempDir, { _skipPrompts: true });
+    await rm(join(tempDir, 'cuadrillas'), { recursive: true, force: true });
+
+    const demo = join(tempDir, 'squads', 'legacy');
+    await mkdir(join(demo, 'output', 'run1'), { recursive: true });
+    await writeFile(join(demo, 'squad.yaml'), 'squad:\n  name: legacy\n', 'utf-8');
+    await writeFile(join(demo, 'squad-party.csv'), 'path,displayName,icon\n', 'utf-8');
+    await writeFile(
+      join(demo, 'output', 'run1', 'state.json'),
+      JSON.stringify({ squad: 'legacy', status: 'completed' }),
+      'utf-8'
+    );
+
+    const result = await update(tempDir);
+    assert.equal(result.success, true);
+
+    const yml = await readFile(join(tempDir, 'cuadrillas', 'legacy', 'cuadrilla.yaml'), 'utf-8');
+    assert.match(yml, /^cuadrilla:/m);
+
+    const state = JSON.parse(
+      await readFile(join(tempDir, 'cuadrillas', 'legacy', 'output', 'run1', 'state.json'), 'utf-8')
+    );
+    assert.equal(state.cuadrilla, 'legacy');
+    assert.equal(state.status, 'completed');
+    assert.ok(!Object.hasOwn(state, 'squad'));
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+});

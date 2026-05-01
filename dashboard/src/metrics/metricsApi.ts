@@ -6,10 +6,36 @@ import type {
   DashboardLimits,
 } from "@/types/metrics";
 
+export class MetricsApiError extends Error {
+  readonly status: number;
+  readonly path: string;
+
+  constructor(message: string, status: number, path: string) {
+    super(message);
+    this.name = "MetricsApiError";
+    this.status = status;
+    this.path = path;
+  }
+}
+
+function networkMessage(err: unknown): string {
+  if (err instanceof TypeError && /fetch|network|failed/i.test(String(err.message))) {
+    return "network";
+  }
+  return "unknown";
+}
+
 async function apiFetch<T>(path: string): Promise<T> {
-  const res = await fetch(path, { cache: "no-store" });
-  if (!res.ok) throw new Error(`${res.status} ${path}`);
-  return res.json() as Promise<T>;
+  try {
+    const res = await fetch(path, { cache: "no-store" });
+    if (!res.ok) {
+      throw new MetricsApiError(`${res.status} ${path}`, res.status, path);
+    }
+    return res.json() as Promise<T>;
+  } catch (e) {
+    if (e instanceof MetricsApiError) throw e;
+    throw new MetricsApiError(networkMessage(e), 0, path);
+  }
 }
 
 export async function fetchRunsSummary(): Promise<RunsListResponse> {
@@ -20,8 +46,10 @@ export async function fetchRunsPage(
   cuadrilla: string,
   offset: number,
   limit: number,
+  options?: { focusRunId?: string },
 ): Promise<RunsPageResponse> {
   const q = new URLSearchParams({ cuadrilla, offset: String(offset), limit: String(limit) });
+  if (options?.focusRunId) q.set("focusRunId", options.focusRunId);
   return apiFetch<RunsPageResponse>(`/__cuadrillas_api/runs-page?${q}`);
 }
 
@@ -55,14 +83,19 @@ export async function postDiff(body: {
   left: string;
   right: string;
 }): Promise<string> {
-  const res = await fetch("/__cuadrillas_api/diff", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error(String(res.status));
-  return res.text();
+  try {
+    const res = await fetch("/__cuadrillas_api/diff", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      cache: "no-store",
+    });
+    if (!res.ok) throw new MetricsApiError(String(res.status), res.status, "/diff");
+    return res.text();
+  } catch (e) {
+    if (e instanceof MetricsApiError) throw e;
+    throw new MetricsApiError(networkMessage(e), 0, "/diff");
+  }
 }
 
 export async function postDiffRuns(body: {
@@ -71,12 +104,17 @@ export async function postDiffRuns(body: {
   rightRunId: string;
   relPath?: string;
 }): Promise<string> {
-  const res = await fetch("/__cuadrillas_api/diff-runs", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error(String(res.status));
-  return res.text();
+  try {
+    const res = await fetch("/__cuadrillas_api/diff-runs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      cache: "no-store",
+    });
+    if (!res.ok) throw new MetricsApiError(String(res.status), res.status, "/diff-runs");
+    return res.text();
+  } catch (e) {
+    if (e instanceof MetricsApiError) throw e;
+    throw new MetricsApiError(networkMessage(e), 0, "/diff-runs");
+  }
 }

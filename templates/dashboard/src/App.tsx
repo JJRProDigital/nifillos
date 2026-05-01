@@ -1,13 +1,20 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useCuadrillaSocket } from "@/hooks/useCuadrillaSocket";
 import { CuadrillaSelector } from "@/components/CuadrillaSelector";
+import { OfficeEmptyState } from "@/components/OfficeEmptyState";
 import { OfficeScene } from "@/office/OfficeScene";
 import { StatusBar } from "@/components/StatusBar";
-import { MetricsView } from "@/metrics/MetricsView";
 import type { MetricsLang } from "@/metrics/metricsCopy";
 import { t } from "@/metrics/metricsCopy";
 import { readMetricsUrl, writeMetricsUrl } from "@/metrics/metricsUrlSync";
 import type { TabId } from "@/types/state";
+
+const MetricsView = lazy(() =>
+  import("@/metrics/MetricsView").then((m) => ({ default: m.MetricsView })),
+);
+
+/** Ruta empaquetada vía `public/brand/logo.png` (Vite) */
+const BRAND_LOGO_SRC = `${import.meta.env.BASE_URL}brand/logo.png`;
 
 type Tab = TabId;
 
@@ -35,50 +42,53 @@ export function App() {
     }
   }, []);
 
-  return (    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        width: "100%",
-      }}
-    >
-      <header
-        style={{
-          display: "flex",
-          alignItems: "center",
-          padding: "0 16px",
-          height: 44,
-          minHeight: 44,
-          borderBottom: "1px solid var(--border)",
-          background: "var(--bg-sidebar)",
-          fontSize: 13,
-          fontWeight: 600,
-          letterSpacing: 0.5,
-          gap: 16,
-        }}
-      >
-        <span style={{ flexShrink: 0 }}>Nifillos Dashboard</span>
-        <nav style={{ display: "flex", gap: 4 }}>
+  return (
+    <div className="app-shell">
+      <a href="#main-content" className="skip-link">
+        {t(lang, "skipToContent")}
+      </a>
+      <header className="app-header">
+        <a
+          className="brand-lockup"
+          href="https://obsessivesolutions.es/"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Obsessive Solutions"
+        >
+          <img className="brand-logo" src={BRAND_LOGO_SRC} alt="Obsessive Solutions" width={72} height={34} decoding="async" />
+          <div className="brand-text">
+            <span className="brand-name">Nifillos</span>
+            <span className="brand-tagline">Dashboard</span>
+          </div>
+        </a>
+        <nav className="app-nav" role="tablist" aria-label={lang === "es" ? "Secciones del dashboard" : "Dashboard sections"}>
           <button
             type="button"
+            role="tab"
+            aria-selected={tab === "office"}
+            aria-controls="main-content"
+            id="tab-office"
+            className={"app-nav-btn" + (tab === "office" ? " app-nav-btn-active" : "")}
             onClick={() => setTab("office")}
-            style={tabBtn(tab === "office")}
           >
             {t(lang, "office")}
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={tab === "metrics"}
+            aria-controls="main-content"
+            id="tab-metrics"
+            className={"app-nav-btn" + (tab === "metrics" ? " app-nav-btn-active" : "")}
             onClick={() => setTab("metrics")}
-            style={tabBtn(tab === "metrics")}
           >
             {t(lang, "metrics")}
           </button>
         </nav>
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+        <div className="header-actions">
           <button
             type="button"
-            style={smallBtn}
+            className="header-icon-btn"
             onClick={() => {
               const next = lang === "es" ? "en" : "es";
               setLang(next);
@@ -90,7 +100,7 @@ export function App() {
           </button>
           <button
             type="button"
-            style={smallBtn}
+            className="header-icon-btn"
             onClick={() => setTheme((x) => (x === "dark" ? "light" : "dark"))}
             title="Theme"
           >
@@ -99,50 +109,40 @@ export function App() {
         </div>
       </header>
 
-      {tab === "office" ? (
-        <div style={{ display: "flex", flex: 1, overflow: "hidden", minWidth: 0 }}>
-          <CuadrillaSelector />
-          <div
-            style={{
-              flex: 1,
-              minWidth: 0,
-              overflow: "auto",
-              display: "flex",
-              alignItems: "flex-start",
-              justifyContent: "center",
-            }}
-          >
-            <OfficeScene />
+      <main id="main-content" className="app-main" tabIndex={-1} aria-labelledby={tab === "office" ? "tab-office" : "tab-metrics"}>
+        <h1 className="sr-only">Nifillos Dashboard</h1>
+        {tab === "office" ? (
+          <div style={{ display: "flex", flex: 1, overflow: "hidden", minWidth: 0, minHeight: 0 }}>
+            <CuadrillaSelector lang={lang} />
+            <div
+              style={{
+                position: "relative",
+                flex: 1,
+                minWidth: 0,
+                overflow: "auto",
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "center",
+              }}
+            >
+              <OfficeEmptyState lang={lang} />
+              <OfficeScene />
+            </div>
           </div>
-        </div>
-      ) : (
-        <MetricsView lang={lang} />
-      )}
+        ) : (
+          <Suspense
+            fallback={
+              <div className="metrics-suspense-fallback" role="status" aria-live="polite">
+                {t(lang, "loading")}
+              </div>
+            }
+          >
+            <MetricsView lang={lang} />
+          </Suspense>
+        )}
+      </main>
 
       <StatusBar tab={tab} />
     </div>
   );
 }
-
-function tabBtn(active: boolean): React.CSSProperties {
-  return {
-    background: active ? "rgba(0,212,255,0.15)" : "transparent",
-    color: "var(--text-primary)",
-    border: "1px solid " + (active ? "var(--accent-cyan)" : "transparent"),
-    borderRadius: 6,
-    padding: "6px 12px",
-    fontSize: 12,
-    fontWeight: 600,
-    cursor: "pointer",
-  };
-}
-
-const smallBtn: React.CSSProperties = {
-  background: "var(--bg-secondary)",
-  color: "var(--text-secondary)",
-  border: "1px solid var(--border)",
-  borderRadius: 6,
-  padding: "4px 8px",
-  fontSize: 11,
-  cursor: "pointer",
-};

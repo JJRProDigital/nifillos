@@ -527,3 +527,27 @@ test('init with cursor IDE creates .cursorignore with browser profile exclusion'
     await rm(tempDir, { recursive: true, force: true });
   }
 });
+
+test('init rewrites dashboard tsconfig and metrics handler paths for user repo layout', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-dashpaths-'));
+  try {
+    await init(tempDir, { _skipPrompts: true });
+
+    const appRaw = await readFile(join(tempDir, 'dashboard', 'tsconfig.app.json'), 'utf-8');
+    const app = JSON.parse(appRaw);
+    assert.ok(
+      app.include.some((x) => typeof x === 'string' && x.includes('../src/runs.js')),
+      'user dashboard expects ../src, not ../../src',
+    );
+    assert.ok(!appRaw.includes('"../../src/'), 'template ../../src must be rewritten after copy');
+
+    const nodeRaw = await readFile(join(tempDir, 'dashboard', 'tsconfig.node.json'), 'utf-8');
+    assert.ok(!nodeRaw.includes('"../../src/'), 'tsconfig.node include paths must be user-relative');
+
+    const handler = await readFile(join(tempDir, 'dashboard', 'src', 'server', 'metricsApiHandler.ts'), 'utf-8');
+    assert.ok(handler.includes('../../../src/runs.js'), 'handler imports repo src/runs.js');
+    assert.ok(!handler.includes('../../../../src/runs.js'), 'template-only depth must be rewritten');
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+});

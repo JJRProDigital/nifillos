@@ -20,9 +20,9 @@
     "src/server/metricsApiHandler.ts",
     "src/types/state.ts",
     "src/vite-env.d.ts",
-    "../src/runs.js",
-    "../src/dashboardLimits.js",
-    "../src/runs.d.ts",
-    "../src/dashboardLimits.d.ts"
+    "../../src/runs.js",
+    "../../src/dashboardLimits.js",
+    "../../src/runs.d.ts",
+    "../../src/dashboardLimits.d.ts"
   ]
 }

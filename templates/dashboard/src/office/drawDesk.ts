@@ -347,13 +347,20 @@ const ACCESSORY_POOL = [
 const LEFT_SLOT = { dx: 14, dy: 38 };
 const RIGHT_SLOT = { dx: 100, dy: 38 };
 
-export function drawDeskAccessories(g: PixiGraphics, x: number, y: number, agentIndex: number) {
+export function drawDeskAccessories(
+  g: PixiGraphics,
+  x: number,
+  y: number,
+  agentIndex: number,
+  /** Desplazamiento Y extra cuando el tablero pixel ocupa más bajo que el escritorio vectorial. */
+  extraY = 0,
+) {
   const seed = agentIndex * 7 + 3; // deterministic pseudo-random
   const idx1 = seed % ACCESSORY_POOL.length;
   const idx2 = (seed + 2) % ACCESSORY_POOL.length;
 
-  ACCESSORY_POOL[idx1](g, x + LEFT_SLOT.dx, y + LEFT_SLOT.dy);
+  ACCESSORY_POOL[idx1](g, x + LEFT_SLOT.dx, y + LEFT_SLOT.dy + extraY);
   if (idx2 !== idx1) {
-    ACCESSORY_POOL[idx2](g, x + RIGHT_SLOT.dx, y + RIGHT_SLOT.dy);
+    ACCESSORY_POOL[idx2](g, x + RIGHT_SLOT.dx, y + RIGHT_SLOT.dy + extraY);
   }
 }

@@ -1,1 +1,3 @@
 Nifillos is released under the MIT License. See LICENSE for copyright notices.
+
+Character sprites under dashboard/public/pixel-agents/assets/characters/ (char_0.png … char_5.png) and desk/monitor sprites under dashboard/public/pixel-agents/assets/furniture/ (DESK/DESK_FRONT.png, PC/PC_FRONT_*.png) are taken from the Pixel Agents project (https://github.com/pablodelucca/pixel-agents), MIT License; the underlying character artwork is credited in that project to the Metro City pack by JIK-A-4 (https://jik-a-4.itch.io/metrocity-free-topdown-character-pack).

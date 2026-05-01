@@ -3,6 +3,8 @@ node_modules/
 .env
 *.log
 cuadrillas/*/output/
+# Demo local del dashboard (no versionar)
+cuadrillas/ejemplo-dashboard/
 _nifillos/_memory/company.md
 _nifillos/_memory/preferences.md
 _nifillos/_browser_profile/

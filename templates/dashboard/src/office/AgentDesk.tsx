@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { extend } from "@pixi/react";
 import { Container, Graphics, Text, Sprite } from "pixi.js";
 import type { Agent } from "@/types/state";
@@ -7,13 +7,22 @@ import { COLORS, CELL_W, CELL_H, CHARACTER_VARIANTS } from "./palette";
 import { deskTopLeft } from "./officeProjection";
 import { drawDeskArea, drawWorkstationBack, drawWorkstationFront, drawScreenGlow, drawDeskAccessories } from "./drawDesk";
 import { getCharacterTextures } from "./textures";
+import { ensurePixelAgentSheetsLoaded, getPixelAgentTexture } from "./pixelAgentSprites";
+import {
+  ensurePixelWorkstationLoaded,
+  getPixelDeskTexture,
+  getPixelPcTexture,
+  PIXEL_WS,
+} from "./pixelWorkstationSprites";
+import { computePixelDeskAccessoryPlacements } from "./pixelDeskAccessories";
+import { ensurePixelFurnitureTexturesLoaded, getFurnitureTexture } from "./pixelFurnitureTextures";
 
 extend({ Container, Graphics, Text, Sprite });
 
 export { CELL_W, CELL_H };
 
-/** Altura fija del globo respecto al tile (misma para todos; el escalonado por fila bajaba las tarjetas y tapaban el monitor). */
-const LABEL_CARD_Y = -30;
+/** Altura del globo de nombre: más bajo, más cerca del personaje (antes -30). */
+const LABEL_CARD_Y = -16;
 const LABEL_COL_NUDGE = 7;
 const LABEL_ROW_NUDGE = 5;
 
@@ -23,6 +32,10 @@ interface AgentDeskProps {
   gridOx: number;
   gridOy: number;
 }
+
+/** Pixel vs vector: distinto ancla; tras subir mesa/PC bajamos el avatar ~8px para enseñar el ordenador. */
+const CHARACTER_Y_PIXEL = 58;
+const CHARACTER_Y_VECTOR = 66;
 
 export function AgentDesk({ agent, agentIndex, gridOx, gridOy }: AgentDeskProps) {
   const { x, y } = deskTopLeft(agent.desk.col, agent.desk.row, gridOx, gridOy);
@@ -36,9 +49,35 @@ export function AgentDesk({ agent, agentIndex, gridOx, gridOy }: AgentDeskProps)
 
   const [frame, setFrame] = useState(0);
   const frameRef = useRef<number>(0);
+  const [pixelSheetsReady, setPixelSheetsReady] = useState(false);
+  const [pixelWsReady, setPixelWsReady] = useState(false);
+  const [pixelFurnitureReady, setPixelFurnitureReady] = useState(false);
+  const [pcOnFrame, setPcOnFrame] = useState(0);
+  const pcOnRef = useRef(0);
+
+  const monitorActive = agent.status === "working" || agent.status === "delivering";
 
   useEffect(() => {
-    if (agent.status !== "working") {
+    let cancelled = false;
+    (async () => {
+      const [chars, ws, furn] = await Promise.all([
+        ensurePixelAgentSheetsLoaded(),
+        ensurePixelWorkstationLoaded(),
+        ensurePixelFurnitureTexturesLoaded(),
+      ]);
+      if (!cancelled) {
+        setPixelSheetsReady(chars);
+        setPixelWsReady(ws);
+        setPixelFurnitureReady(furn);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (agent.status !== "working" && agent.status !== "delivering" && agent.status !== "checkpoint") {
       setFrame(0);
       return;
     }
@@ -49,49 +88,85 @@ export function AgentDesk({ agent, agentIndex, gridOx, gridOy }: AgentDeskProps)
     return () => clearInterval(interval);
   }, [agent.status]);
 
+  useEffect(() => {
+    if (!monitorActive) {
+      pcOnRef.current = 0;
+      setPcOnFrame(0);
+      return;
+    }
+    const interval = setInterval(() => {
+      pcOnRef.current = (pcOnRef.current + 1) % 3;
+      setPcOnFrame(pcOnRef.current);
+    }, 380);
+    return () => clearInterval(interval);
+  }, [monitorActive]);
+
   const variant = CHARACTER_VARIANTS[agentIndex % CHARACTER_VARIANTS.length];
   const textures = getCharacterTextures(agentIndex, variant);
 
+  const pixelTex = pixelSheetsReady ? getPixelAgentTexture(agentIndex, agent.status, frame) : undefined;
+
   let currentTexture: Texture;
-  switch (agent.status) {
-    case "working":
-    case "delivering":
-      currentTexture = textures.working[frame % 2];
-      break;
-    case "done":
-      currentTexture = textures.done;
-      break;
-    case "checkpoint":
-      currentTexture = textures.checkpoint;
-      break;
-    default:
-      currentTexture = textures.idle;
+  if (pixelTex) {
+    currentTexture = pixelTex;
+  } else {
+    switch (agent.status) {
+      case "working":
+      case "delivering":
+        currentTexture = textures.working[frame % 2];
+        break;
+      case "done":
+        currentTexture = textures.done;
+        break;
+      case "checkpoint":
+        currentTexture = textures.checkpoint;
+        break;
+      default:
+        currentTexture = textures.idle;
+    }
   }
 
   const drawStationBack = useCallback(
     (g: PixiGraphics) => {
       g.clear();
       drawDeskArea(g, 0, 0);
-      drawWorkstationBack(g, 0, 0);
-      if (agent.status === "working" || agent.status === "delivering") {
-        drawScreenGlow(g, 0, 0);
+      if (!pixelWsReady) {
+        drawWorkstationBack(g, 0, 0);
+        if (monitorActive) {
+          drawScreenGlow(g, 0, 0);
+        }
       }
     },
-    [agent.status]
+    [pixelWsReady, monitorActive]
+  );
+
+  const pixelAccessoryPlacements = useMemo(
+    () => computePixelDeskAccessoryPlacements(agentIndex),
+    [agentIndex],
   );
 
   const drawStationFront = useCallback(
     (g: PixiGraphics) => {
       g.clear();
-      drawWorkstationFront(g, 0, 0);
-      drawDeskAccessories(g, 0, 0, agentIndex);
+      if (!pixelWsReady) {
+        drawWorkstationFront(g, 0, 0);
+      }
+      const usePixelProps = pixelWsReady && pixelFurnitureReady;
+      if (!usePixelProps) {
+        drawDeskAccessories(g, 0, 0, agentIndex, pixelWsReady ? 26 : 0);
+      }
     },
-    [agentIndex]
+    [agentIndex, pixelFurnitureReady, pixelWsReady],
   );
+
+  const usePixelChar = !!pixelTex;
+
+  const deskTex = pixelWsReady ? getPixelDeskTexture() : undefined;
+  const pcTex = pixelWsReady ? getPixelPcTexture(monitorActive, pcOnFrame) : undefined;
 
   const drawCharacterShadow = useCallback((g: PixiGraphics) => {
     g.clear();
-    g.ellipse(64, 103, 22, 7);
+    g.ellipse(64, 111, 22, 7);
     g.fill({ color: 0x1a1410, alpha: 0.32 });
   }, []);
 
@@ -138,19 +213,55 @@ export function AgentDesk({ agent, agentIndex, gridOx, gridOy }: AgentDeskProps)
 
   return (
     <pixiContainer x={x} y={y}>
-      {/* Layer 1: chair + monitor (behind character) */}
       <pixiGraphics draw={drawStationBack} />
+      {deskTex ? (
+        <pixiSprite
+          texture={deskTex}
+          x={PIXEL_WS.desk.x}
+          y={PIXEL_WS.desk.y}
+          width={PIXEL_WS.desk.w}
+          height={PIXEL_WS.desk.h}
+        />
+      ) : null}
+      {pcTex ? (
+        <pixiSprite
+          texture={pcTex}
+          x={PIXEL_WS.pc.x}
+          y={PIXEL_WS.pc.y}
+          width={PIXEL_WS.pc.w}
+          height={PIXEL_WS.pc.h}
+        />
+      ) : null}
 
-      {/* Layer 2: sombra bajo el personaje */}
       <pixiGraphics draw={drawCharacterShadow} />
 
-      {/* Layer 3: character sprite (pixel art hi-res + filtro lineal en 48×48) */}
-      <pixiSprite texture={currentTexture} x={40} y={58} width={48} height={48} />
+      <pixiSprite
+        texture={currentTexture}
+        x={usePixelChar ? 44 : 40}
+        y={usePixelChar ? CHARACTER_Y_PIXEL : CHARACTER_Y_VECTOR}
+        width={usePixelChar ? 40 : 48}
+        height={usePixelChar ? 80 : 48}
+      />
 
-      {/* Layer 4: desk surface + keyboard + accessories (in front of character) */}
+      {pixelWsReady && pixelFurnitureReady
+        ? pixelAccessoryPlacements.map((p, i) => {
+            const tex = getFurnitureTexture(p.rel);
+            if (!tex) return null;
+            return (
+              <pixiSprite
+                key={`${agent.id}-acc-${i}-${p.rel}`}
+                texture={tex}
+                x={p.x}
+                y={p.y}
+                width={p.w}
+                height={p.h}
+              />
+            );
+          })
+        : null}
+
       <pixiGraphics draw={drawStationFront} />
 
-      {/* Layer 5: name card (floating above cell) */}
       <pixiGraphics draw={drawNameCard} />
       <pixiText
         text={agent.icon || "🤖"}

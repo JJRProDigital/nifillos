@@ -6,7 +6,8 @@
   box-sizing: border-box;
 }
 
-:root {
+:root,
+[data-theme="dark"] {
   --bg-primary: #1a1410;
   --bg-secondary: #1a1a2e;
   --bg-sidebar: #141422;
@@ -17,6 +18,19 @@
   --accent-green: #00e676;
   --accent-amber: #ffab00;
   --accent-red: #ff5252;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f4f1ea;
+  --bg-secondary: #ffffff;
+  --bg-sidebar: #ece8df;
+  --border: #c9c2b5;
+  --text-primary: #1a1410;
+  --text-secondary: #5c564c;
+  --accent-cyan: #0078a3;
+  --accent-green: #0d7a4f;
+  --accent-amber: #b36b00;
+  --accent-red: #c62828;
 }
 
 html,

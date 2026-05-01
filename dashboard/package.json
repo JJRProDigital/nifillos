@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "metrics:serve": "tsx scripts/metrics-server.ts"
   },
   "dependencies": {
     "react": "^19.1.0",
@@ -14,7 +15,11 @@
     "pixi.js": "^8.9.2",
     "@pixi/react": "^8.0.2",
     "zustand": "^5.0.3",
-    "yaml": "^2.7.1"
+    "yaml": "^2.7.1",
+    "marked": "^15.0.12",
+    "diff": "^7.0.0",
+    "recharts": "^2.15.3",
+    "@tanstack/react-virtual": "^3.13.0"
   },
   "devDependencies": {
     "@types/react": "^19.1.2",
@@ -23,6 +28,8 @@
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "ws": "^8.18.1",
-    "@types/ws": "^8.18.1"
+    "@types/ws": "^8.18.1",
+    "@types/node": "^22.14.0",
+    "tsx": "^4.19.3"
   }
 }

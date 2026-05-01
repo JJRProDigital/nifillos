@@ -17,7 +17,7 @@ type DayRow = { day: string; cost: number; tokens: number };
 function aggregateByDay(runs: RunSummary[]): DayRow[] {
   const map = new Map<string, { cost: number; tokens: number }>();
   for (const r of runs) {
-    const raw = r.completedAt || r.startedAt;
+    const raw = r.completedAt || r.startedAt || r.metricsChartAt;
     if (!raw) continue;
     const day = raw.slice(0, 10);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) continue;

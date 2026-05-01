@@ -1,0 +1,57 @@
+export type MetricsLang = "es" | "en";
+
+const common = {
+  office: { es: "Oficina", en: "Office" },
+  metrics: { es: "Métricas", en: "Metrics" },
+  themeLight: { es: "Claro", en: "Light" },
+  themeDark: { es: "Oscuro", en: "Dark" },
+  langEs: { es: "ES", en: "ES" },
+  langEn: { es: "EN", en: "EN" },
+  cuadrilla: { es: "Cuadrilla", en: "Cuadrilla" },
+  run: { es: "Run", en: "Run" },
+  runsPage: { es: "Runs (página)", en: "Runs (page)" },
+  prev: { es: "Anterior", en: "Prev" },
+  next: { es: "Siguiente", en: "Next" },
+  searchPlaceholder: {
+    es: "Filtrar por run id…",
+    en: "Filter by run id…",
+  },
+  status: { es: "Estado", en: "Status" },
+  steps: { es: "Pasos", en: "Steps" },
+  duration: { es: "Duración", en: "Duration" },
+  tokens: { es: "Tokens", en: "Tokens" },
+  tokenReg: { es: "reg.", en: "act." },
+  tokenEst: { es: "est.", en: "est." },
+  cost: { es: "Coste ~€", en: "Cost ~€" },
+  inOutPct: { es: "% in / sal", en: "% in / out" },
+  alertCost: { es: "Umbral coste", en: "Cost alert" },
+  alertTok: { es: "Umbral tokens", en: "Token alert" },
+  chartsTitle: { es: "Tendencias (runs cargados)", en: "Trends (loaded runs)" },
+  costByDay: { es: "Coste por día", en: "Cost by day" },
+  tokensByDay: { es: "Tokens por día", en: "Tokens by day" },
+  artifacts: { es: "Artefactos", en: "Artifacts" },
+  preview: { es: "Vista previa", en: "Preview" },
+  openTab: { es: "Abrir en pestaña nueva", en: "Open in new tab" },
+  download: { es: "Descargar", en: "Download" },
+  diffIntra: { es: "Diff (dos archivos del run)", en: "Diff (two files in run)" },
+  diffRuns: { es: "Diff entre runs", en: "Diff across runs" },
+  left: { es: "Izquierda", en: "Left" },
+  right: { es: "Derecha", en: "Right" },
+  applyDiff: { es: "Generar diff", en: "Run diff" },
+  relPath: { es: "Ruta relativa", en: "Relative path" },
+  auditTitle: { es: "Auditoría", en: "Audit log" },
+  refreshAudit: { es: "Actualizar", en: "Refresh" },
+  exportCsvPage: { es: "Exportar CSV (página)", en: "Export CSV (page)" },
+  exportCsvAll: { es: "Exportar CSV (resumen /runs)", en: "Export CSV (/runs summary)" },
+  loading: { es: "Cargando…", en: "Loading…" },
+  error: { es: "Error", en: "Error" },
+  noRuns: { es: "Sin runs", en: "No runs" },
+  noArtifact: { es: "Selecciona un archivo", en: "Pick a file" },
+  pageSize: { es: "Por página", en: "Per page" },
+  total: { es: "Total", en: "Total" },
+} as const;
+
+export function t(lang: MetricsLang, key: keyof typeof common): string {
+  const row = common[key];
+  return row[lang];
+}

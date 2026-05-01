@@ -1,0 +1,10 @@
+{
+  "description": "Valores orientativos para coste en el dashboard (no facturación real). Ajusta a tus precios de API.",
+  "eurPerMillionInputTokens": 3.0,
+  "eurPerMillionOutputTokens": 15.0,
+  "tokensPerStepEstimate": 2500,
+  "estimateInputShare": 0.35,
+  "monthlyBudgetEur": null,
+  "alertCostEur": 2.0,
+  "alertTotalTokens": 500000
+}

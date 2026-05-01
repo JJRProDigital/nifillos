@@ -2,18 +2,19 @@ import { useEffect, useState } from "react";
 import { useCuadrillaStore } from "@/store/useCuadrillaStore";
 import { formatElapsed } from "@/lib/formatTime";
 
-export function StatusBar() {
+import type { TabId } from "@/types/state";
+
+export function StatusBar({ tab }: { tab: TabId }) {
   const selectedCuadrilla = useCuadrillaStore((s) => s.selectedCuadrilla);
   const state = useCuadrillaStore((s) =>
     s.selectedCuadrilla ? s.activeStates.get(s.selectedCuadrilla) : undefined
   );
   const isConnected = useCuadrillaStore((s) => s.isConnected);
 
-  // Elapsed timer
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
-    if (!state?.startedAt) {
+    if (tab !== "office" || !state?.startedAt) {
       setElapsed(0);
       return;
     }
@@ -23,7 +24,16 @@ export function StatusBar() {
     tick();
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [state?.startedAt]);
+  }, [tab, state?.startedAt]);
+
+  if (tab === "metrics") {
+    return (
+      <footer style={footerStyle}>
+        <span style={{ color: "var(--text-secondary)", fontSize: 12 }}>Métricas · API /__cuadrillas_api</span>
+        <ConnectionDot connected={isConnected} />
+      </footer>
+    );
+  }
 
   if (!selectedCuadrilla || !state) {
     return (

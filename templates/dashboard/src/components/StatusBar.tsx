@@ -2,7 +2,29 @@ import { useEffect, useState } from "react";
 import { useCuadrillaStore } from "@/store/useCuadrillaStore";
 import { formatElapsed } from "@/lib/formatTime";
 
-import type { TabId } from "@/types/state";
+import type { CuadrillaState, TabId } from "@/types/state";
+
+function elapsedMsForState(state: CuadrillaState): number {
+  if (!state.startedAt) return 0;
+  const start = new Date(state.startedAt).getTime();
+  const endIso = state.completedAt ?? state.failedAt;
+  if (endIso) {
+    return Math.max(0, new Date(endIso).getTime() - start);
+  }
+  if (state.status === "completed" || state.status === "failed") {
+    const end = new Date(state.updatedAt).getTime();
+    return Math.max(0, end - start);
+  }
+  return Math.max(0, Date.now() - start);
+}
+
+function isRunTerminal(state: CuadrillaState): boolean {
+  return (
+    state.status === "completed" ||
+    state.status === "failed" ||
+    !!(state.completedAt || state.failedAt)
+  );
+}
 
 export function StatusBar({ tab }: { tab: TabId }) {
   const selectedCuadrilla = useCuadrillaStore((s) => s.selectedCuadrilla);
@@ -19,42 +41,44 @@ export function StatusBar({ tab }: { tab: TabId }) {
       return;
     }
 
-    const startTime = new Date(state.startedAt).getTime();
-    const tick = () => setElapsed(Date.now() - startTime);
-    tick();
-    const interval = setInterval(tick, 1000);
+    setElapsed(elapsedMsForState(state));
+    if (isRunTerminal(state)) return;
+
+    const interval = setInterval(() => {
+      setElapsed((prev) => (state ? elapsedMsForState(state) : prev));
+    }, 1000);
     return () => clearInterval(interval);
-  }, [tab, state?.startedAt]);
+  }, [tab, state, state?.startedAt, state?.status, state?.updatedAt, state?.completedAt, state?.failedAt]);
 
   if (tab === "metrics") {
     return (
-      <footer style={footerStyle}>
-        <span style={{ color: "var(--text-secondary)", fontSize: 12 }}>Métricas · API /__cuadrillas_api</span>
-        <ConnectionDot connected={isConnected} />
+      <footer className="app-footer" role="contentinfo">
+        <span style={{ color: "var(--text-secondary)", fontSize: "0.8125rem" }}>
+          Métricas · API /__cuadrillas_api
+        </span>
+        <ConnectionStatus connected={isConnected} />
       </footer>
     );
   }
 
   if (!selectedCuadrilla || !state) {
     return (
-      <footer style={footerStyle}>
-        <span style={{ color: "var(--text-secondary)" }}>
-          Selecciona una cuadrilla activa
-        </span>
-        <ConnectionDot connected={isConnected} />
+      <footer className="app-footer" role="contentinfo">
+        <span style={{ color: "var(--text-secondary)" }}>Selecciona una cuadrilla activa</span>
+        <ConnectionStatus connected={isConnected} />
       </footer>
     );
   }
 
   return (
-    <footer style={footerStyle}>
+    <footer className="app-footer" role="contentinfo">
       <div style={{ display: "flex", alignItems: "center", gap: 16, flex: 1, minWidth: 0 }}>
         <span>
           Step {state.step.current}/{state.step.total}
           {state.step.label ? ` — ${state.step.label}` : ""}
         </span>
         {state.startedAt && (
-          <span style={{ color: "var(--text-secondary)" }}>
+          <span style={{ color: "var(--text-secondary)" }} className="metrics-tabular">
             {formatElapsed(elapsed)}
           </span>
         )}
@@ -74,34 +98,25 @@ export function StatusBar({ tab }: { tab: TabId }) {
           </span>
         )}
       </div>
-      <ConnectionDot connected={isConnected} />
+      <ConnectionStatus connected={isConnected} />
     </footer>
   );
 }
 
-function ConnectionDot({ connected }: { connected: boolean }) {
+function ConnectionStatus({ connected }: { connected: boolean }) {
   return (
-    <span
-      title={connected ? "Connected" : "Disconnected"}
-      style={{
-        width: 8,
-        height: 8,
-        borderRadius: "50%",
-        backgroundColor: connected ? "var(--accent-green)" : "var(--accent-red)",
-        flexShrink: 0,
-      }}
-    />
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }} title={connected ? "WebSocket conectado" : "WebSocket desconectado"}>
+      <span
+        aria-hidden
+        style={{
+          width: 10,
+          height: 10,
+          borderRadius: "50%",
+          backgroundColor: connected ? "var(--accent-green)" : "var(--accent-red)",
+          flexShrink: 0,
+        }}
+      />
+      <span className="sr-only">{connected ? "Conexión en tiempo real activa" : "Sin conexión en tiempo real"}</span>
+    </span>
   );
 }
-
-const footerStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  padding: "8px 16px",
-  borderTop: "1px solid var(--border)",
-  background: "var(--bg-sidebar)",
-  fontSize: 13,
-  height: 40,
-  minHeight: 40,
-};

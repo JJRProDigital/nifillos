@@ -17,9 +17,13 @@ Objetivo: pasar de visualización en vivo a **herramienta de revisión** sin un 
 - **Frontmatter mínimo** en skills tipo prompt empaquetadas (p. ej. `market-*`) para catálogo y listados.
 - Valorar una **cuadrilla ejemplo** pequeña y mantenida en plantillas si falta un “hola mundo” claro.
 
+**Estado (revisión):** Guías del proyecto (`templates/GUIA.md`, `templates/GUIDE.md`) y `docs/guia-inicio-rapido.md`, `docs/quick-start.md` actualizadas: dashboard Vite en `dashboard/`, MCP (IDE + proyecto), secretos (incl. perfiles de navegador), migración. Skills `market-audit`, `market-social`, `market-landing` con YAML `name`, `description`, `description_es`, `type`, `version`, `categories`. `templates/cuadrillas/README.md` orienta la primera cuadrilla vía `/nifillos` sin duplicar un ejemplo ejecutable mínimo en el paquete.
+
 ## Prioridad 3 — Robustez
 
 - **Tests** de `migrate` / flujo `update` con fixtures legacy (`squads/` → `cuadrillas/`, claves en `state.json`).
+
+**Estado (revisión):** `tests/migrate.test.js` cubre renombrado de raíz, `squad.yaml` / `squad-party.csv`, parche YAML y `state.json` (incl. raíz de cuadrilla y bajo `output/`), idempotencia, convivencia `squads/` + `cuadrillas/`, conflictos de archivos duplicados, `state.json` con `cuadrilla` ya presente (no pisa). `tests/update.test.js` incluye **`update runs migrate squads → cuadrillas when only squads/ exists`** (integración tras `init`). Migración en tests de advertencias: `loadLocale('English')` para mensajes i18n estables.
 
 ## Explícitamente después (o no sin replantear producto)
 

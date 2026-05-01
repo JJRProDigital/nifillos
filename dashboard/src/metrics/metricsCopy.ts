@@ -5,6 +5,7 @@ const common = {
   metrics: { es: "Métricas", en: "Metrics" },
   themeLight: { es: "Claro", en: "Light" },
   themeDark: { es: "Oscuro", en: "Dark" },
+  skipToContent: { es: "Saltar al contenido", en: "Skip to content" },
   langEs: { es: "ES", en: "ES" },
   langEn: { es: "EN", en: "EN" },
   cuadrilla: { es: "Cuadrilla", en: "Cuadrilla" },
@@ -49,9 +50,54 @@ const common = {
   noArtifact: { es: "Selecciona un archivo", en: "Pick a file" },
   pageSize: { es: "Por página", en: "Per page" },
   total: { es: "Total", en: "Total" },
+  alertsCol: { es: "Alertas", en: "Alerts" },
+  alertCostHint: { es: "Supera el umbral de coste configurado", en: "Exceeds configured cost threshold" },
+  alertTokensHint: { es: "Supera el umbral de tokens configurado", en: "Exceeds configured token threshold" },
+  sidebarCuadrillas: { es: "Cuadrillas", en: "Cuadrillas" },
+  officeEmptyTitle: {
+    es: "Aún no hay cuadrillas cargadas en el escritorio",
+    en: "No squads loaded on the office view yet",
+  },
+  errorNetwork: {
+    es: "No se pudo conectar con la API de métricas. Comprueba que el servidor está en marcha y el proxy de Vite.",
+    en: "Could not reach the metrics API. Ensure the server is running and Vite proxy is configured.",
+  },
+  errorUnknown: { es: "Fallo desconocido al cargar datos.", en: "Unknown error while loading data." },
+  errorClient: {
+    es: "La API respondió con un error de cliente (4xx). Revisa la URL y los parámetros.",
+    en: "The API returned a client error (4xx). Check the URL and parameters.",
+  },
+  errorServer: {
+    es: "La API respondió con error de servidor (5xx). Revisa logs del proceso metrics.",
+    en: "The API returned a server error (5xx). Check the metrics process logs.",
+  },
+  errorNotFound: { es: "Recurso no encontrado (404).", en: "Resource not found (404)." },
+  copyPath: { es: "Copiar ruta", en: "Copy path" },
+  copiedPath: { es: "Copiado", en: "Copied" },
+  copyFailed: { es: "No se pudo copiar", en: "Copy failed" },
+  previewPath: { es: "Ruta del archivo", en: "File path" },
+  chartsLoading: { es: "Cargando gráficos…", en: "Loading charts…" },
+  chartsNoSummary: {
+    es: "No se pudieron cargar los resúmenes de runs.",
+    en: "Could not load run summaries.",
+  },
+  diffOutputLabel: { es: "Salida del diff", en: "Diff output" },
+  diffRunA: { es: "Run A", en: "Run A" },
+  diffRunB: { es: "Run B", en: "Run B" },
+  statusIdle: { es: "Cuadrilla en espera", en: "Squad idle" },
+  statusRunning: { es: "Cuadrilla en ejecución", en: "Squad running" },
+  statusCompleted: { es: "Cuadrilla completada", en: "Squad completed" },
+  statusFailed: { es: "Cuadrilla con error", en: "Squad failed" },
+  statusCheckpoint: { es: "Cuadrilla en punto de control", en: "Squad at checkpoint" },
+  statusInactive: { es: "Cuadrilla inactiva", en: "Squad inactive" },
+  navCuadrillaList: { es: "Lista de cuadrillas", en: "Cuadrilla list" },
 } as const;
 
 export function t(lang: MetricsLang, key: keyof typeof common): string {
   const row = common[key];
   return row[lang];
+}
+
+export function runRowLabel(lang: MetricsLang, runId: string): string {
+  return lang === "es" ? `Seleccionar run ${runId}` : `Select run ${runId}`;
 }

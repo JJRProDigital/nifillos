@@ -62,14 +62,25 @@ Deliverables usually land in `cuadrillas/<name>/output/…`.
 
 ## 5. (Optional) Dashboard
 
-1. In the IDE, request the dashboard (e.g. from **`/nifillos`** if your template supports it).
-2. In a terminal at the project root:
+### Project dashboard (`dashboard/`)
 
-   ```bash
-   npx serve cuadrillas/<cuadrilla-name>/dashboard
-   ```
+For the **2D office** (WebSocket) and **Metrics** (runs, artifacts, diff):
 
-3. Open the URL shown (often `http://localhost:3000`).
+```bash
+cd dashboard
+npm install   # first time only
+npm run dev
+```
+
+Open Vite’s URL (e.g. `http://localhost:5173`). Metrics API: from `dashboard/`, `npm run metrics:serve`; optional **`NIFILLOS_METRICS_API`**. See [dashboard-metrics.md](./dashboard-metrics.md).
+
+### Per-cuadrilla static dashboard
+
+If `cuadrillas/<name>/dashboard/` exists as static files:
+
+```bash
+npx serve cuadrillas/<cuadrilla-name>/dashboard
+```
 
 ---
 
@@ -88,10 +99,12 @@ Full CLI reference (Spanish): [nifillos-comandos-y-skills.md](./nifillos-comando
 
 ## 7. MCP (Playwright, Excalidraw, …)
 
-Many skills need **MCP servers** in the project or IDE. After `init`, check `.mcp.json`, `.cursor/mcp.json`, or `.vscode/mcp.json` as applicable.
+**mcp** and **hybrid** skills need MCP servers. After `init`, check `.mcp.json`, `.cursor/mcp.json`, or `.vscode/mcp.json` as applicable, plus any **IDE-local** MCP/plugin config.
 
 - **Playwright:** browser automation (Sherlock, screenshots, some skills).
 - **Excalidraw:** diagrams via HTTP MCP.
+
+Catalog and skill types: [nifillos-comandos-y-skills.md](./nifillos-comandos-y-skills.md) and [skills/README.md](../skills/README.md). Env vars: YAML frontmatter in `skills/<id>/SKILL.md`.
 
 If something fails to connect, verify `npx` works and the firewall allows it.
 
@@ -115,6 +128,7 @@ Current layout: **`cuadrillas/`**, **`cuadrilla.yaml`**, **`cuadrilla-party.csv`
 - **Do not commit** API keys, tokens, or passwords in tracked files (e.g. `.mcp.json` with `Authorization` headers or embedded tokens).
 - Projects usually **gitignore `.env`**: put secrets there (`APIFY_TOKEN`, OpenRouter keys, Instagram tokens, …).
 - Prefer **environment variables** or **IDE-only local MCP config** when possible; run `git status` before committing.
+- Do not commit browser automation profiles (e.g. **`_nifillos/_browser_profile/`**, usually gitignored).
 - **Package templates** in this repo must use **placeholders**, not real secrets.
 
 If you leaked a secret, **rotate it at the provider** and remove it from history if needed.

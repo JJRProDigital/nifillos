@@ -7,8 +7,8 @@ import {
   listRunSummaries,
   listCuadrillaRunsPage,
   weakEtag,
-} from "../../../src/runs.js";
-import { DASHBOARD_LIMITS } from "../../../src/dashboardLimits.js";
+} from "../../../../src/runs.js";
+import { DASHBOARD_LIMITS } from "../../../../src/dashboardLimits.js";
 
 const SEG = /^[a-zA-Z0-9._-]+$/;
 
@@ -176,12 +176,15 @@ export async function tryHandleMetricsApi(
       const cuadrilla = url.searchParams.get("cuadrilla") || "";
       const offset = Number(url.searchParams.get("offset") || 0) || 0;
       const limit = Number(url.searchParams.get("limit") || 20) || 20;
+      const focusRunId = url.searchParams.get("focusRunId") || "";
       if (!validSegment(cuadrilla)) {
         res.statusCode = 400;
         res.end(JSON.stringify({ error: "invalid_cuadrilla" }));
         return true;
       }
-      const data = await listCuadrillaRunsPage(repoRoot, cuadrilla, offset, limit);
+      const focusOpts =
+        focusRunId && validSegment(focusRunId) ? { focusRunId } : {};
+      const data = await listCuadrillaRunsPage(repoRoot, cuadrilla, offset, limit, focusOpts);
       if ("error" in data && data.error) {
         res.statusCode = 400;
         res.setHeader("Content-Type", "application/json; charset=utf-8");

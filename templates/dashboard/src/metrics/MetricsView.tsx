@@ -2,10 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import type { RunSummary } from "@/types/metrics";
 import { MetricsCharts } from "./MetricsCharts";
-import { t, type MetricsLang } from "./metricsCopy";
+import { DiffView } from "./DiffView";
+import { t, runRowLabel, type MetricsLang } from "./metricsCopy";
 import { readMetricsUrl, writeMetricsUrl } from "./metricsUrlSync";
 import { exportRunsCsv } from "./metricsExport";
 import {
+  MetricsApiError,
   fetchArtifacts,
   fetchAudit,
   fetchRunsPage,
@@ -17,6 +19,19 @@ import {
 } from "./metricsApi";
 
 const IMG_EXT = /\.(png|jpe?g|gif|webp|svg|ico)$/i;
+
+function formatLoadError(lang: MetricsLang, e: unknown): string {
+  if (e instanceof MetricsApiError) {
+    if (e.status === 0) {
+      return e.message === "network" ? t(lang, "errorNetwork") : t(lang, "errorUnknown");
+    }
+    if (e.status === 404) return t(lang, "errorNotFound");
+    if (e.status >= 400 && e.status < 500) return `${t(lang, "errorClient")} (${e.status})`;
+    if (e.status >= 500) return `${t(lang, "errorServer")} (${e.status})`;
+  }
+  if (e instanceof Error && e.message) return e.message;
+  return t(lang, "errorUnknown");
+}
 
 export function MetricsView({ lang }: { lang: MetricsLang }) {
   const [cuadrillas, setCuadrillas] = useState<string[]>([]);
@@ -37,8 +52,12 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
   const [diffRunLeft, setDiffRunLeft] = useState("");
   const [diffRunRight, setDiffRunRight] = useState("");
   const [diffRunRel, setDiffRunRel] = useState("state.json");
-  const [error, setError] = useState<string | null>(null);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [pageError, setPageError] = useState<string | null>(null);
+  const [summaryLoading, setSummaryLoading] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [copyHint, setCopyHint] = useState<string | null>(null);
+  const pendingFocusRun = useRef<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   const syncUrl = useCallback(
@@ -50,8 +69,10 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
 
   useEffect(() => {
     const u = readMetricsUrl();
+    if (u.run?.length) pendingFocusRun.current = u.run;
     let cancelled = false;
     void (async () => {
+      setSummaryLoading(true);
       try {
         const summary = await fetchRunsSummary();
         if (cancelled) return;
@@ -61,34 +82,46 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
         const c0 = u.cuadrilla && codes.includes(u.cuadrilla) ? u.cuadrilla : codes[0] || "";
         setCuadrilla(c0);
         setRunId(u.run && u.run.length ? u.run : "");
+        setSummaryError(null);
       } catch (e) {
-        if (!cancelled) setError(String(e));
+        if (!cancelled) setSummaryError(formatLoadError(lang, e));
+      } finally {
+        if (!cancelled) setSummaryLoading(false);
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [lang]);
 
   useEffect(() => {
     if (!cuadrilla) {
       setRuns([]);
       setPage((p) => ({ ...p, total: 0 }));
+      setLoading(false);
       return;
     }
     let cancelled = false;
     setLoading(true);
     void (async () => {
       try {
-        const data = await fetchRunsPage(cuadrilla, page.offset, page.limit);
+        const focus = pendingFocusRun.current;
+        const data = await fetchRunsPage(
+          cuadrilla,
+          page.offset,
+          page.limit,
+          focus ? { focusRunId: focus } : undefined,
+        );
+        if (focus) pendingFocusRun.current = null;
         if (cancelled) return;
         if (data.error) {
-          setError(data.error);
+          setPageError(data.error);
+          setLoading(false);
           return;
         }
         setRuns(data.runs);
-        setPage((p) => ({ ...p, total: data.total }));
-        setError(null);
+        setPage((p) => ({ ...p, total: data.total, offset: data.offset }));
+        setPageError(null);
         setRunId((current) => {
           if (current && data.runs.some((r) => r.runId === current)) return current;
           const next = data.runs[0]?.runId ?? "";
@@ -96,7 +129,7 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
           return next;
         });
       } catch (e) {
-        if (!cancelled) setError(String(e));
+        if (!cancelled) setPageError(formatLoadError(lang, e));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -104,7 +137,7 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
     return () => {
       cancelled = true;
     };
-  }, [cuadrilla, page.offset, page.limit, syncUrl]);
+  }, [cuadrilla, page.offset, page.limit, syncUrl, lang]);
 
   useEffect(() => {
     if (!cuadrilla || !runId) {
@@ -135,8 +168,8 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
   const rowVirtual = useVirtualizer({
     count: artifacts.length,
     getScrollElement: () => listRef.current,
-    estimateSize: () => 28,
-    overscan: 12,
+    estimateSize: () => 44,
+    overscan: 10,
   });
 
   const selectRun = (r: string) => {
@@ -145,6 +178,7 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
   };
 
   const onPickCuadrilla = (c: string) => {
+    pendingFocusRun.current = null;
     setCuadrilla(c);
     setPage((p) => ({ ...p, offset: 0 }));
     setRunId("");
@@ -192,7 +226,7 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
   const runIntraDiff = () => {
     void postDiff({ cuadrilla, runId, left: diffLeft, right: diffRight })
       .then(setDiffOut)
-      .catch((e) => setDiffOut(String(e)));
+      .catch((e) => setDiffOut(formatLoadError(lang, e)));
   };
 
   const runCrossDiff = () => {
@@ -203,123 +237,175 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
       relPath: diffRunRel || "state.json",
     })
       .then(setDiffOut)
-      .catch((e) => setDiffOut(String(e)));
+      .catch((e) => setDiffOut(formatLoadError(lang, e)));
+  };
+
+  const copySelectedPath = () => {
+    if (!selectedRel) return;
+    void navigator.clipboard.writeText(selectedRel).then(
+      () => {
+        setCopyHint(t(lang, "copiedPath"));
+        window.setTimeout(() => setCopyHint(null), 1800);
+      },
+      () => setCopyHint(t(lang, "copyFailed")),
+    );
   };
 
   const maxOffset = Math.max(0, page.total - page.limit);
 
   return (
-    <div
-      style={{
-        flex: 1,
-        overflow: "auto",
-        padding: 16,
-        display: "flex",
-        flexDirection: "column",
-        gap: 12,
-        minHeight: 0,
-      }}
-    >
-      {error && (
-        <div style={{ color: "var(--accent-red)", fontSize: 13 }}>
-          {t(lang, "error")}: {error}
+    <div className="metrics-main">
+      {summaryError && (
+        <div role="alert" style={{ color: "var(--accent-red)", fontSize: "0.8125rem", marginBottom: 8 }}>
+          {t(lang, "chartsNoSummary")}: {summaryError}
+        </div>
+      )}
+      {pageError && (
+        <div role="alert" style={{ color: "var(--accent-red)", fontSize: "0.8125rem", marginBottom: 8 }}>
+          {t(lang, "error")}: {pageError}
         </div>
       )}
 
-      <MetricsCharts runs={chartRuns} lang={lang} />
+      {!summaryError ? (
+        <MetricsCharts runs={chartRuns} lang={lang} loading={summaryLoading} />
+      ) : null}
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-        <label style={{ fontSize: 12, color: "var(--text-secondary)" }}>
-          {t(lang, "cuadrilla")}
-          <select
-            value={cuadrilla}
-            onChange={(e) => onPickCuadrilla(e.target.value)}
-            style={selectStyle}
-          >
-            {cuadrillas.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label style={{ fontSize: 12, color: "var(--text-secondary)" }}>
-          {t(lang, "pageSize")}
-          <select
-            value={page.limit}
-            onChange={(e) =>
-              setPage((p) => ({ ...p, limit: Number(e.target.value), offset: 0 }))
-            }
-            style={selectStyle}
-          >
-            {[10, 20, 50, 100].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="metrics-controls">
+        <div className="metrics-field">
+          <span id="metrics-cuadrilla-lbl">{t(lang, "cuadrilla")}</span>
+          <div className="metrics-field-row">
+            <select
+              id="metrics-cuadrilla"
+              aria-labelledby="metrics-cuadrilla-lbl"
+              className="metrics-select"
+              value={cuadrilla}
+              onChange={(e) => onPickCuadrilla(e.target.value)}
+            >
+              {cuadrillas.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="metrics-field">
+          <span id="metrics-pagesize-lbl">{t(lang, "pageSize")}</span>
+          <div className="metrics-field-row">
+            <select
+              id="metrics-pagesize"
+              aria-labelledby="metrics-pagesize-lbl"
+              className="metrics-select"
+              value={page.limit}
+              onChange={(e) =>
+                setPage((p) => ({ ...p, limit: Number(e.target.value), offset: 0 }))
+              }
+            >
+              {[10, 20, 50, 100].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
         <input
+          className="metrics-input"
           placeholder={t(lang, "searchPlaceholder")}
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          style={{ ...inputStyle, minWidth: 200 }}
+          aria-label={t(lang, "searchPlaceholder")}
         />
-        <button type="button" style={btn} onClick={() => exportRunsCsv(filteredRuns, "nifillos-runs-page.csv")}>
+        <button type="button" className="metrics-btn" onClick={() => exportRunsCsv(filteredRuns, "nifillos-runs-page.csv")}>
           {t(lang, "exportCsvPage")}
         </button>
         <button
           type="button"
-          style={btn}
+          className="metrics-btn"
           onClick={() => fetchRunsSummary().then((s) => exportRunsCsv(s.runs, "nifillos-runs-summary.csv"))}
         >
           {t(lang, "exportCsvAll")}
         </button>
-        <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
-          {t(lang, "total")}: {page.total} · {loading ? t(lang, "loading") : ""}
+        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }} aria-live="polite">
+          {t(lang, "total")}: {page.total}
+          {loading ? ` · ${t(lang, "loading")}` : ""}
         </span>
       </div>
 
-      <div style={{ overflowX: "auto", border: "1px solid var(--border)", borderRadius: 8 }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+      <div className="metrics-table-wrap">
+        <table className="metrics-table">
+          <caption>
+            {lang === "es" ? "Runs de la cuadrilla seleccionada" : "Runs for the selected cuadrilla"}
+          </caption>
           <thead>
             <tr style={{ background: "var(--bg-sidebar)", textAlign: "left" }}>
-              <th style={th}>{t(lang, "run")}</th>
-              <th style={th}>{t(lang, "status")}</th>
-              <th style={th}>{t(lang, "steps")}</th>
-              <th style={th}>{t(lang, "duration")}</th>
-              <th style={th}>{t(lang, "tokens")}</th>
-              <th style={th}>{t(lang, "inOutPct")}</th>
-              <th style={th}>{t(lang, "cost")}</th>
-              <th style={th}>⚠</th>
+              <th scope="col" className="metrics-th">
+                {t(lang, "run")}
+              </th>
+              <th scope="col" className="metrics-th">
+                {t(lang, "status")}
+              </th>
+              <th scope="col" className="metrics-th">
+                {t(lang, "steps")}
+              </th>
+              <th scope="col" className="metrics-th">
+                {t(lang, "duration")}
+              </th>
+              <th scope="col" className="metrics-th">
+                {t(lang, "tokens")}
+              </th>
+              <th scope="col" className="metrics-th">
+                {t(lang, "inOutPct")}
+              </th>
+              <th scope="col" className="metrics-th">
+                {t(lang, "cost")}
+              </th>
+              <th scope="col" className="metrics-th">
+                {t(lang, "alertsCol")}
+              </th>
             </tr>
           </thead>
           <tbody>
             {filteredRuns.map((r) => (
               <tr
                 key={r.runId}
+                tabIndex={0}
+                className={
+                  "metrics-tr-interactive" + (r.runId === runId ? " metrics-tr-selected" : "")
+                }
+                aria-label={runRowLabel(lang, r.runId)}
                 onClick={() => selectRun(r.runId)}
-                style={{
-                  cursor: "pointer",
-                  background: r.runId === runId ? "rgba(0,212,255,0.08)" : undefined,
-                  borderTop: "1px solid var(--border)",
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    selectRun(r.runId);
+                  }
                 }}
               >
-                <td style={td}>{r.runId}</td>
-                <td style={td}>{r.status}</td>
-                <td style={td}>{r.steps ?? "—"}</td>
-                <td style={td}>{r.duration ?? "—"}</td>
-                <td style={td}>
+                <td className="metrics-td">{r.runId}</td>
+                <td className="metrics-td">{r.status}</td>
+                <td className="metrics-td">{r.steps ?? "—"}</td>
+                <td className="metrics-td">{r.duration ?? "—"}</td>
+                <td className="metrics-td metrics-tabular">
                   {r.totalTokens.toLocaleString()}{" "}
                   <span style={{ color: "var(--text-secondary)" }}>
                     ({r.tokensRegistered ? t(lang, "tokenReg") : t(lang, "tokenEst")})
                   </span>
                 </td>
-                <td style={td}>{r.inputPct}%</td>
-                <td style={td}>€{r.costEurApprox.toFixed(4)}</td>
-                <td style={td}>
-                  {r.alertCost ? "💶" : ""}
-                  {r.alertTokens ? "🔢" : ""}
+                <td className="metrics-td metrics-tabular">{r.inputPct}%</td>
+                <td className="metrics-td metrics-tabular">€{r.costEurApprox.toFixed(4)}</td>
+                <td className="metrics-td">
+                  {r.alertCost ? (
+                    <abbr title={t(lang, "alertCostHint")} className="alert-badge alert-badge--cost">
+                      €
+                    </abbr>
+                  ) : null}
+                  {r.alertTokens ? (
+                    <abbr title={t(lang, "alertTokensHint")} className="alert-badge alert-badge--tokens">
+                      T
+                    </abbr>
+                  ) : null}
+                  {!r.alertCost && !r.alertTokens ? "—" : null}
                 </td>
               </tr>
             ))}
@@ -330,10 +416,10 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
         )}
       </div>
 
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+      <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
         <button
           type="button"
-          style={btn}
+          className="metrics-btn"
           disabled={page.offset <= 0}
           onClick={() => setPage((p) => ({ ...p, offset: Math.max(0, p.offset - p.limit) }))}
         >
@@ -341,20 +427,20 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
         </button>
         <button
           type="button"
-          style={btn}
+          className="metrics-btn"
           disabled={page.offset >= maxOffset}
           onClick={() => setPage((p) => ({ ...p, offset: Math.min(maxOffset, p.offset + p.limit) }))}
         >
           {t(lang, "next")}
         </button>
-        <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+        <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
           {t(lang, "runsPage")}: {page.offset + 1}–{Math.min(page.offset + page.limit, page.total)} / {page.total}
         </span>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(240px, 320px) 1fr", gap: 12, minHeight: 360 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 260px), 1fr))", gap: 12, minHeight: 360 }}>
         <div>
-          <div style={{ fontWeight: 600, marginBottom: 8, fontSize: 13 }}>{t(lang, "artifacts")}</div>
+          <h3 style={{ fontWeight: 600, marginBottom: 8, fontSize: "0.8125rem" }}>{t(lang, "artifacts")}</h3>
           <div
             ref={listRef}
             style={{
@@ -372,6 +458,7 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
                   <button
                     key={vRow.key}
                     type="button"
+                    className={"metrics-artifact-row" + (selectedRel === rel ? " metrics-tr-selected" : "")}
                     onClick={() => void openPreview(rel)}
                     style={{
                       position: "absolute",
@@ -381,12 +468,12 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
                       height: vRow.size,
                       transform: `translateY(${vRow.start}px)`,
                       textAlign: "left",
-                      padding: "4px 8px",
-                      fontSize: 11,
+                      padding: "8px 12px",
+                      fontSize: "0.75rem",
                       fontFamily: "inherit",
                       border: "none",
                       borderBottom: "1px solid var(--border)",
-                      background: selectedRel === rel ? "rgba(0,212,255,0.12)" : "transparent",
+                      background: selectedRel === rel ? "var(--row-selected)" : "transparent",
                       color: "var(--text-primary)",
                       cursor: "pointer",
                       overflow: "hidden",
@@ -402,14 +489,28 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: 0 }}>
-          <div style={{ fontWeight: 600, fontSize: 13 }}>{t(lang, "preview")}</div>
-          <div style={{ flex: 1, border: "1px solid var(--border)", borderRadius: 8, minHeight: 240, background: "#0a0810" }}>
+          <h3 style={{ fontWeight: 600, fontSize: "0.8125rem" }}>{t(lang, "preview")}</h3>
+          {selectedRel ? (
+            <div className="preview-path-bar">
+              <span style={{ color: "var(--text-secondary)" }}>{t(lang, "previewPath")}:</span>
+              <code style={{ flex: 1, minWidth: 0 }}>{selectedRel}</code>
+              <button type="button" className="metrics-btn" onClick={copySelectedPath}>
+                {t(lang, "copyPath")}
+              </button>
+              {copyHint ? (
+                <span style={{ color: "var(--text-secondary)" }} aria-live="polite">
+                  {copyHint}
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+          <div style={{ flex: 1, border: "1px solid var(--border)", borderRadius: 8, minHeight: 240, background: "var(--bg-primary)" }}>
             {previewKind === "none" && (
               <div style={{ padding: 12, color: "var(--text-secondary)" }}>{t(lang, "noArtifact")}</div>
             )}
             {previewKind === "iframe" && selectedRel && (
               <iframe
-                title="preview"
+                title={lang === "es" ? `Vista previa: ${selectedRel}` : `Preview: ${selectedRel}`}
                 src={previewUrl(cuadrilla, runId, selectedRel)}
                 style={{ width: "100%", height: 320, border: "none", borderRadius: 8 }}
                 sandbox="allow-same-origin allow-scripts"
@@ -418,7 +519,7 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
             {previewKind === "img" && selectedRel && (
               <img
                 src={previewUrl(cuadrilla, runId, selectedRel)}
-                alt=""
+                alt={selectedRel.split("/").pop() ?? "preview"}
                 style={{ maxWidth: "100%", maxHeight: 320, objectFit: "contain", display: "block", margin: "0 auto" }}
               />
             )}
@@ -427,7 +528,7 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
                 style={{
                   margin: 0,
                   padding: 12,
-                  fontSize: 11,
+                  fontSize: "0.75rem",
                   maxHeight: 320,
                   overflow: "auto",
                   whiteSpace: "pre-wrap",
@@ -439,11 +540,21 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
             )}
           </div>
           {selectedRel && (
-            <div style={{ display: "flex", gap: 8 }}>
-              <a href={previewUrl(cuadrilla, runId, selectedRel)} target="_blank" rel="noreferrer" style={{ ...btn, display: "inline-block", textDecoration: "none" }}>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <a
+                href={previewUrl(cuadrilla, runId, selectedRel)}
+                target="_blank"
+                rel="noreferrer"
+                className="metrics-btn"
+                style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}
+              >
                 {t(lang, "openTab")}
               </a>
-              <a href={downloadUrl(cuadrilla, runId, selectedRel)} style={{ ...btn, display: "inline-block", textDecoration: "none" }}>
+              <a
+                href={downloadUrl(cuadrilla, runId, selectedRel)}
+                className="metrics-btn"
+                style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}
+              >
                 {t(lang, "download")}
               </a>
             </div>
@@ -451,87 +562,55 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: 12 }}>
         <div style={{ border: "1px solid var(--border)", borderRadius: 8, padding: 12 }}>
-          <div style={{ fontWeight: 600, marginBottom: 8, fontSize: 13 }}>{t(lang, "diffIntra")}</div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <input style={inputStyle} value={diffLeft} onChange={(e) => setDiffLeft(e.target.value)} placeholder={t(lang, "left")} />
-            <input style={inputStyle} value={diffRight} onChange={(e) => setDiffRight(e.target.value)} placeholder={t(lang, "right")} />
-            <button type="button" style={btn} onClick={runIntraDiff}>
+          <h3 style={{ fontWeight: 600, marginBottom: 8, fontSize: "0.8125rem" }}>{t(lang, "diffIntra")}</h3>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <input className="metrics-input" value={diffLeft} onChange={(e) => setDiffLeft(e.target.value)} placeholder={t(lang, "left")} aria-label={t(lang, "left")} />
+            <input className="metrics-input" value={diffRight} onChange={(e) => setDiffRight(e.target.value)} placeholder={t(lang, "right")} aria-label={t(lang, "right")} />
+            <button type="button" className="metrics-btn" onClick={runIntraDiff}>
               {t(lang, "applyDiff")}
             </button>
           </div>
         </div>
         <div style={{ border: "1px solid var(--border)", borderRadius: 8, padding: 12 }}>
-          <div style={{ fontWeight: 600, marginBottom: 8, fontSize: 13 }}>{t(lang, "diffRuns")}</div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <input style={inputStyle} value={diffRunLeft} onChange={(e) => setDiffRunLeft(e.target.value)} placeholder="run A" />
-            <input style={inputStyle} value={diffRunRight} onChange={(e) => setDiffRunRight(e.target.value)} placeholder="run B" />
-            <input style={inputStyle} value={diffRunRel} onChange={(e) => setDiffRunRel(e.target.value)} placeholder={t(lang, "relPath")} />
-            <button type="button" style={btn} onClick={runCrossDiff}>
+          <h3 style={{ fontWeight: 600, marginBottom: 8, fontSize: "0.8125rem" }}>{t(lang, "diffRuns")}</h3>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <input
+              className="metrics-input"
+              value={diffRunLeft}
+              onChange={(e) => setDiffRunLeft(e.target.value)}
+              placeholder={t(lang, "diffRunA")}
+              aria-label={t(lang, "diffRunA")}
+            />
+            <input
+              className="metrics-input"
+              value={diffRunRight}
+              onChange={(e) => setDiffRunRight(e.target.value)}
+              placeholder={t(lang, "diffRunB")}
+              aria-label={t(lang, "diffRunB")}
+            />
+            <input className="metrics-input" value={diffRunRel} onChange={(e) => setDiffRunRel(e.target.value)} placeholder={t(lang, "relPath")} aria-label={t(lang, "relPath")} />
+            <button type="button" className="metrics-btn" onClick={runCrossDiff}>
               {t(lang, "applyDiff")}
             </button>
           </div>
         </div>
       </div>
 
-      <pre
-        style={{
-          margin: 0,
-          padding: 12,
-          fontSize: 11,
-          maxHeight: 200,
-          overflow: "auto",
-          border: "1px solid var(--border)",
-          borderRadius: 8,
-          background: "var(--bg-sidebar)",
-        }}
-      >
-        {diffOut}
-      </pre>
+      <DiffView text={diffOut} lang={lang} />
 
       <div style={{ border: "1px solid var(--border)", borderRadius: 8, padding: 12 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-          <span style={{ fontWeight: 600, fontSize: 13 }}>{t(lang, "auditTitle")}</span>
-          <button type="button" style={btn} onClick={refreshAudit}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, flexWrap: "wrap", gap: 8 }}>
+          <span style={{ fontWeight: 600, fontSize: "0.8125rem" }}>{t(lang, "auditTitle")}</span>
+          <button type="button" className="metrics-btn" onClick={refreshAudit}>
             {t(lang, "refreshAudit")}
           </button>
         </div>
-        <pre style={{ fontSize: 10, maxHeight: 140, overflow: "auto", margin: 0, whiteSpace: "pre-wrap" }}>
+        <pre style={{ fontSize: "0.625rem", maxHeight: 140, overflow: "auto", margin: 0, whiteSpace: "pre-wrap" }} aria-live="polite">
           {auditLines.join("\n")}
         </pre>
       </div>
     </div>
   );
 }
-
-const selectStyle: React.CSSProperties = {
-  marginLeft: 6,
-  background: "var(--bg-secondary)",
-  color: "var(--text-primary)",
-  border: "1px solid var(--border)",
-  borderRadius: 6,
-  padding: "4px 8px",
-};
-
-const inputStyle: React.CSSProperties = {
-  background: "var(--bg-secondary)",
-  color: "var(--text-primary)",
-  border: "1px solid var(--border)",
-  borderRadius: 6,
-  padding: "6px 8px",
-  fontSize: 12,
-};
-
-const btn: React.CSSProperties = {
-  background: "var(--bg-secondary)",
-  color: "var(--text-primary)",
-  border: "1px solid var(--border)",
-  borderRadius: 6,
-  padding: "6px 10px",
-  fontSize: 12,
-  cursor: "pointer",
-};
-
-const th: React.CSSProperties = { padding: "8px 10px", fontSize: 11 };
-const td: React.CSSProperties = { padding: "8px 10px" };

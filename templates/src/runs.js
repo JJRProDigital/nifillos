@@ -1,4 +1,4 @@
-import { readdir, readFile } from 'node:fs/promises';
+import { readdir, readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { DASHBOARD_LIMITS } from './dashboardLimits.js';
@@ -156,6 +156,20 @@ export async function buildRunSummary(cuadrilla, runId, targetDir, pricing) {
   const alertTokens =
     pricing.alertTotalTokens != null && tc.totalTokens >= pricing.alertTotalTokens;
 
+  const completedAt = state.completedAt ?? state.failedAt ?? null;
+  const startedAt = state.startedAt ?? null;
+  let metricsChartAt =
+    (typeof completedAt === 'string' && completedAt ? completedAt : null) ||
+    (typeof startedAt === 'string' && startedAt ? startedAt : null);
+  if (!metricsChartAt) {
+    try {
+      const st = await stat(runDir);
+      metricsChartAt = new Date(st.mtimeMs).toISOString();
+    } catch {
+      metricsChartAt = null;
+    }
+  }
+
   return {
     cuadrilla,
     runId,
@@ -163,8 +177,9 @@ export async function buildRunSummary(cuadrilla, runId, targetDir, pricing) {
     steps,
     duration,
     durationMs,
-    startedAt: state.startedAt ?? null,
-    completedAt: state.completedAt ?? state.failedAt ?? null,
+    startedAt,
+    completedAt,
+    metricsChartAt,
     agentCount,
     hasUsageJson: usage != null && registeredTokens(usage),
     hasManifest: manifest != null,

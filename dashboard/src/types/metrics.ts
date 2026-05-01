@@ -37,6 +37,8 @@ export type RunSummary = {
   durationMs: number | null;
   startedAt: string | null;
   completedAt: string | null;
+  /** ISO timestamp for charts when startedAt/completedAt absent (server: output dir mtime). */
+  metricsChartAt: string | null;
   agentCount: number;
   hasUsageJson: boolean;
   hasManifest: boolean;

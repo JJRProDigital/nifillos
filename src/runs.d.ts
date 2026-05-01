@@ -9,6 +9,8 @@ export type RunSummaryRow = {
   durationMs: number | null;
   startedAt: string | null;
   completedAt: string | null;
+  /** ISO timestamp for trend charts when state dates are missing (run folder mtime). */
+  metricsChartAt: string | null;
   agentCount: number;
   hasUsageJson: boolean;
   hasManifest: boolean;

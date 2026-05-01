@@ -118,3 +118,40 @@ test('listCuadrillaRunsPage returns error for invalid cuadrilla id', async () =>
     await rm(dir, { recursive: true, force: true });
   }
 });
+
+test('listRunSummaries sets metricsChartAt from output folder mtime when state has no dates', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'nif-mchart-'));
+  try {
+    await mkdir(join(dir, '_nifillos'), { recursive: true });
+    await writeFile(
+      join(dir, '_nifillos', 'dashboard-pricing.json'),
+      JSON.stringify({
+        description: 't',
+        eurPerMillionInputTokens: 3,
+        eurPerMillionOutputTokens: 15,
+        tokensPerStepEstimate: 1000,
+        estimateInputShare: 0.4,
+        monthlyBudgetEur: null,
+      }),
+      'utf-8',
+    );
+    const runDir = join(dir, 'cuadrillas', 'c1', 'output', 'run-nodate');
+    await mkdir(runDir, { recursive: true });
+    await writeFile(
+      join(runDir, 'state.json'),
+      JSON.stringify({
+        status: 'completed',
+        step: { current: 1, total: 1 },
+        agents: [],
+      }),
+      'utf-8',
+    );
+    const out = await listRunSummaries(dir);
+    assert.equal(out.runs.length, 1);
+    assert.match(out.runs[0].metricsChartAt, /^\d{4}-\d{2}-\d{2}T/);
+    assert.equal(out.runs[0].startedAt, null);
+    assert.equal(out.runs[0].completedAt, null);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});

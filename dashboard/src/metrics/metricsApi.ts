@@ -5,6 +5,12 @@ import type {
   RunsPageResponse,
   DashboardLimits,
 } from "@/types/metrics";
+import type { CuadrillaInfo, CuadrillaState } from "@/types/state";
+
+export type CuadrillaSnapshotResponse = {
+  cuadrillas: CuadrillaInfo[];
+  activeStates: Record<string, CuadrillaState>;
+};
 
 export class MetricsApiError extends Error {
   readonly status: number;
@@ -40,6 +46,11 @@ async function apiFetch<T>(path: string): Promise<T> {
 
 export async function fetchRunsSummary(): Promise<RunsListResponse> {
   return apiFetch<RunsListResponse>("/__cuadrillas_api/runs");
+}
+
+/** Misma lista que el WebSocket SNAPSHOT; útil para refrescar sin F5 si el watcher falla. */
+export async function fetchCuadrillaSnapshot(): Promise<CuadrillaSnapshotResponse> {
+  return apiFetch<CuadrillaSnapshotResponse>("/__cuadrillas_api/snapshot");
 }
 
 export async function fetchRunsPage(

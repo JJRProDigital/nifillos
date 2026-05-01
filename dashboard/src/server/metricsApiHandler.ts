@@ -9,6 +9,7 @@ import {
   weakEtag,
 } from "../../../src/runs.js";
 import { DASHBOARD_LIMITS } from "../../../src/dashboardLimits.js";
+import { buildSnapshotPayload } from "./cuadrillaSnapshot";
 
 const SEG = /^[a-zA-Z0-9._-]+$/;
 
@@ -157,6 +158,16 @@ export async function tryHandleMetricsApi(
   const limits = DASHBOARD_LIMITS;
 
   try {
+    if (req.method === "GET" && url.pathname === "/__cuadrillas_api/snapshot") {
+      const payload = buildSnapshotPayload(ctx.cuadrillasDir);
+      const json = JSON.stringify(payload);
+      res.setHeader("Content-Type", "application/json; charset=utf-8");
+      res.setHeader("Cache-Control", "no-store");
+      res.statusCode = 200;
+      res.end(json);
+      return true;
+    }
+
     if (req.method === "GET" && url.pathname === "/__cuadrillas_api/runs") {
       const data = await listRunSummaries(repoRoot, { limits });
       const json = JSON.stringify(data);

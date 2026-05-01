@@ -81,6 +81,34 @@ test('listCuadrillaRunsPage paginates by runId desc', async () => {
   }
 });
 
+test('listCuadrillaRunsPage focusRunId aligns offset to page containing run', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'nif-focus-'));
+  try {
+    for (const id of ['2026-04-01-run', '2026-04-02-run', '2026-04-03-run']) {
+      const runDir = join(dir, 'cuadrillas', 'cx', 'output', id);
+      await mkdir(runDir, { recursive: true });
+      await writeFile(
+        join(runDir, 'state.json'),
+        JSON.stringify({
+          status: 'completed',
+          step: { current: 1, total: 1 },
+          agents: [],
+          startedAt: '2026-04-01T10:00:00Z',
+          completedAt: '2026-04-01T10:01:00Z',
+        }),
+        'utf-8',
+      );
+    }
+    const p = await listCuadrillaRunsPage(dir, 'cx', 0, 1, { focusRunId: '2026-04-01-run' });
+    assert.equal(p.error, undefined);
+    assert.equal(p.offset, 2);
+    assert.equal(p.runs.length, 1);
+    assert.equal(p.runs[0].runId, '2026-04-01-run');
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test('listCuadrillaRunsPage returns error for invalid cuadrilla id', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'nif-inv-'));
   try {

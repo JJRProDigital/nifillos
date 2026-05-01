@@ -62,16 +62,29 @@ The **Architect** asks questions and writes files under `cuadrillas/<name>/`.
 
 ---
 
-## 5. (Optional) Dashboard (virtual office)
+## 5. (Optional) Dashboard
 
-1. In the IDE, request the dashboard (e.g. from **`/nifillos`**).
-2. In a terminal at the project root:
+There are **two** common setups:
 
-   ```bash
-   npx serve cuadrillas/<cuadrilla-name>/dashboard
-   ```
+### A. Project dashboard (2D office + metrics)
 
-3. Open the URL shown (often `http://localhost:3000`).
+At the repo root you have a `dashboard/` folder (Vite + React). To run the **Office** (live state) and **Metrics** (runs, artifacts, preview, diff):
+
+```bash
+cd dashboard
+npm install    # first time only
+npm run dev
+```
+
+Open the URL Vite prints (often `http://localhost:5173`). If the metrics API runs separately, from `dashboard/` run `npm run metrics:serve`, or set **`NIFILLOS_METRICS_API`** when it lives on another host/port. See **`dashboard/README.md`** in your project; package repo also has `docs/dashboard-metrics.md`.
+
+### B. Static site inside a cuadrilla
+
+Some cuadrillas ship `cuadrillas/<name>/dashboard/` as static HTML. Then:
+
+```bash
+npx serve cuadrillas/<cuadrilla-name>/dashboard
+```
 
 ---
 
@@ -91,12 +104,12 @@ npx nifillos skills
 
 ## 7. MCP (Playwright, Excalidraw, …)
 
-Check `.mcp.json`, `.cursor/mcp.json`, or `.vscode/mcp.json` as shipped by `init`.
+**mcp** and **hybrid** skills usually need MCP servers. After `init`, check project JSON (`.mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json`, etc.) **and** any IDE-local MCP/plugin settings.
 
-- **Playwright:** browser automation (Sherlock, screenshots, some skills).
+- **Playwright:** browser automation (Sherlock, screenshots, several skills).
 - **Excalidraw:** diagrams via HTTP MCP.
 
-If connection fails, verify `npx` and firewall rules.
+Run `npx nifillos skills` and read [skills/README.md](skills/README.md). If something fails to connect, check `npx`, firewall, and each skill’s env vars (see YAML frontmatter in `skills/<id>/SKILL.md`).
 
 ---
 
@@ -121,8 +134,10 @@ Current layout: **`cuadrillas/`**, **`cuadrilla.yaml`**, **`cuadrilla-party.csv`
 ## Security: secrets and Git
 
 - **Do not commit** API keys, tokens, or passwords in tracked files (e.g. `.mcp.json` with `Authorization` or embedded secrets).
-- Use **`.env`** (usually gitignored) for skill variables.
-- Prefer **environment variables** or **machine-local** MCP settings. Run `git status` before committing.
+- Use **`.env`** (usually gitignored) for skill variables (`APIFY_TOKEN`, OpenRouter keys, Instagram tokens, …).
+- Prefer **environment variables** or **machine-local** / IDE-local MCP settings. Run `git status` before committing.
+- Do not commit browser automation profiles (e.g. **`_nifillos/_browser_profile/`**, typically in `.gitignore`).
+- **Package templates** must use placeholders, not real secrets.
 
 If you leaked a secret, **rotate it at the provider** and clean Git history if needed.
 

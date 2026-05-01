@@ -164,7 +164,27 @@ async function copyCommonTemplates(targetDir) {
       // does not exist — copy it
     }
     await cp(entry, destPath);
+    await rewriteDashboardPathsAfterTemplateCopy(destPath, relativePath);
     console.log(`  ${t('createdFile', { path: relativePath })}`);
+  }
+}
+
+/** Rutas ../../src en tsconfig e imports profundos en métricas: válidas bajo templates/dashboard; tras init quedan junto a src/ del usuario. */
+async function rewriteDashboardPathsAfterTemplateCopy(destPath, relativePath) {
+  const norm = relativePath.replace(/\\/g, '/');
+  let text = await readFile(destPath, 'utf-8');
+  let next = text;
+
+  if (norm === "dashboard/tsconfig.app.json" || norm === "dashboard/tsconfig.node.json") {
+    next = next.replaceAll('"../../src/', '"../src/');
+  } else if (norm === "dashboard/src/server/metricsApiHandler.ts") {
+    next = next.replaceAll("../../../../src/", "../../../src/");
+  } else {
+    return;
+  }
+
+  if (next !== text) {
+    await writeFile(destPath, next, "utf-8");
   }
 }
 
@@ -244,7 +264,8 @@ export async function getTemplateEntries(dir) {
   for (const entry of entries) {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
-      results.push(...await getTemplateEntries(fullPath));
+      if (entry.name === 'node_modules' || entry.name === 'dist') continue;
+      results.push(...(await getTemplateEntries(fullPath)));
     } else {
       results.push(fullPath);
     }

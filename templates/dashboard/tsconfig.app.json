@@ -21,15 +21,14 @@
     "composite": true,
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "types": ["vite/client"]
+    }
   },
   "include": [
     "src",
     "scripts",
-    "../src/runs.js",
-    "../src/dashboardLimits.js",
-    "../src/runs.d.ts",
-    "../src/dashboardLimits.d.ts"
+    "../../src/runs.js",
+    "../../src/dashboardLimits.js",
+    "../../src/runs.d.ts",
+    "../../src/dashboardLimits.d.ts"
   ]
 }

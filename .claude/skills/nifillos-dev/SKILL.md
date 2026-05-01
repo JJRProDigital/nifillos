@@ -36,6 +36,11 @@ Understand this before checking anything:
   `templates/_nifillos/core/*`. Any change to a core file that isn't synced to templates
   means `npx nifillos init` delivers STALE content to new users.
 
+- **`templates/src/*`** (`runs.js`, `runs.d.ts`, `dashboardLimits.js`, `dashboardLimits.d.ts`) →
+  Mirror of repo root `src/` files consumed by `dashboard/` (metrics API imports
+  `../../../src/runs.js`). MUST stay in sync with root `src/`; `update` overwrites the user's
+  project copy so the dashboard and CLI metrics stay aligned.
+
 - **`skills/*`** → Bundled skills catalog. Two distribution sub-types:
   - **Multi-file skills** (have scripts/assets/agents dirs alongside SKILL.md, e.g. `nifillos-skill-creator`):
     also have a mirror in `templates/skills/*` so the full directory structure is copied during init.
@@ -127,6 +132,15 @@ For EACH changed file matching `_nifillos/core/**`:
 4. If template file doesn't exist:
    - **FAIL**: "Template missing for `_nifillos/core/{file}`"
    - **Fix**: `mkdir -p templates/_nifillos/core/{dir} && cp _nifillos/core/{file} templates/_nifillos/core/{file}`
+
+#### Check A2: Dashboard API mirror (`src/runs.js`, `src/runs.d.ts`, `src/dashboardLimits.js`, `src/dashboardLimits.d.ts`)
+
+The Vite dashboard imports these from the **user project root** `src/`. They must exist under `templates/src/` (copy of repo root `src/`) so `init` / `update` deploy them.
+
+If any of these files change under repo `src/`:
+
+1. Diff against `templates/src/{same name}`
+2. If different or missing: **FAIL** — copy into `templates/src/` (same commands as root)
 
 #### Check B: Skills sync (`skills/**` changed)
 

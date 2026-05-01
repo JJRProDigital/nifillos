@@ -31,6 +31,7 @@ export type CuadrillaStatus =
   | "idle"
   | "running"
   | "completed"
+  | "failed"
   | "checkpoint";
 
 export interface CuadrillaState {
@@ -44,6 +45,10 @@ export interface CuadrillaState {
   agents: Agent[];
   handoff: Handoff | null;
   startedAt: string | null;
+  /** ISO timestamp when the pipeline finished successfully (runner output). */
+  completedAt?: string | null;
+  /** ISO timestamp when the pipeline failed (runner output). */
+  failedAt?: string | null;
   updatedAt: string;
 }
 

@@ -1,3 +1,19 @@
+---
+name: market-landing
+description: >
+  CRO analysis for landing pages: section-by-section teardown and prioritized fixes.
+  Triggers: /market landing <url> or /market cro <url>. Output in Spanish.
+description_es: >
+  Análisis CRO de landings: desglose por secciones y mejoras priorizadas en español.
+  Disparadores: /market landing <url> o /market cro <url>.
+type: prompt
+version: "1.0.0"
+categories:
+  - marketing
+  - conversion-optimization
+  - landing-pages
+---
+
 # Landing Page CRO Analysis
 
 ## Skill Purpose

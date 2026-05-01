@@ -1,7 +1,9 @@
 import { useCuadrillaStore } from "@/store/useCuadrillaStore";
+import type { MetricsLang } from "@/metrics/metricsCopy";
+import { t } from "@/metrics/metricsCopy";
 import { CuadrillaCard } from "./CuadrillaCard";
 
-export function CuadrillaSelector() {
+export function CuadrillaSelector({ lang = "es" }: { lang?: MetricsLang }) {
   const cuadrillas = useCuadrillaStore((s) => s.cuadrillas);
   const activeStates = useCuadrillaStore((s) => s.activeStates);
   const selectedCuadrilla = useCuadrillaStore((s) => s.selectedCuadrilla);
@@ -16,6 +18,7 @@ export function CuadrillaSelector() {
 
   return (
     <aside
+      aria-label={t(lang, "navCuadrillaList")}
       style={{
         width: 240,
         minWidth: 240,
@@ -37,12 +40,12 @@ export function CuadrillaSelector() {
           color: "var(--text-secondary)",
         }}
       >
-        Cuadrillas
+        {t(lang, "sidebarCuadrillas")}
       </div>
       <div style={{ flex: 1, overflowY: "auto" }}>
         {list.length === 0 && (
-          <div style={{ padding: "16px 12px", color: "var(--text-secondary)", fontSize: 12 }}>
-            No hay cuadrillas
+          <div style={{ padding: "16px 12px", color: "var(--text-secondary)", fontSize: 12 }} role="status">
+            {t(lang, "officeEmptyTitle")}
           </div>
         )}
         {list.map((c) => (
@@ -52,6 +55,7 @@ export function CuadrillaSelector() {
             state={activeStates.get(c.code)}
             isSelected={selectedCuadrilla === c.code}
             onSelect={() => selectCuadrilla(c.code)}
+            lang={lang}
           />
         ))}
       </div>

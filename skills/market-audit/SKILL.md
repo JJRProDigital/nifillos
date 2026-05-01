@@ -1,3 +1,19 @@
+---
+name: market-audit
+description: >
+  Full marketing audit via parallel subagents; unified MARKETING-AUDIT.md report.
+  Trigger: /market audit <url>. Output in Spanish.
+description_es: >
+  Auditoría de marketing con subagentes en paralelo; informe unificado MARKETING-AUDIT.md.
+  Disparador: /market audit <url>. Salida en español.
+type: prompt
+version: "1.0.0"
+categories:
+  - marketing
+  - audit
+  - seo
+---
+
 # Marketing Audit Orchestrator
 
 You are the full marketing audit engine for `/market audit <url>`. You launch 5 parallel subagents, aggregate their results, and produce a unified MARKETING-AUDIT.md report that is client-ready and revenue-focused.

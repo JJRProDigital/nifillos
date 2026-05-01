@@ -9,6 +9,8 @@ Type `/nifillos` to open the main menu, or use any of these commands:
 - `/nifillos run <name>` — Run a cuadrilla
 - `/nifillos help` — See all commands
 
+**Onboarding (humans):** [docs/quick-start.md](docs/quick-start.md) · [docs/guia-inicio-rapido.md](docs/guia-inicio-rapido.md) (includes secrets/Git hygiene).
+
 ## Directory Structure
 
 - `_nifillos/` — Nifillos core files (do not modify manually)

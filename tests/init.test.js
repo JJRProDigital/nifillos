@@ -23,6 +23,23 @@ test('init creates _nifillos directory structure', async () => {
   }
 });
 
+test('init copies GUIA.md and GUIDE.md to project root', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
+
+  try {
+    await init(tempDir, { _skipPrompts: true });
+
+    const guia = await readFile(join(tempDir, 'GUIA.md'), 'utf-8');
+    const guide = await readFile(join(tempDir, 'GUIDE.md'), 'utf-8');
+    assert.ok(guia.includes('npx nifillos update'));
+    assert.ok(guia.includes('Seguridad'));
+    assert.ok(guide.includes('npx nifillos update'));
+    assert.ok(guide.includes('Security'));
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+});
+
 test('init creates empty cuadrillas directory', async () => {
   const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 

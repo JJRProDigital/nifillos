@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sobre este proyecto — Nifillos</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --text: #1a1a1a;
+      --muted: #555;
+      --border: #e0e0e0;
+      --accent: #2563eb;
+      --bg: #fafafa;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text: #f0f0f0;
+        --muted: #aaa;
+        --border: #333;
+        --accent: #60a5fa;
+        --bg: #121212;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--bg);
+      padding: 2rem 1.25rem 4rem;
+    }
+    .wrap {
+      max-width: 40rem;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+      line-height: 1.25;
+    }
+    .lede {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 0 0 1.5rem;
+    }
+    h2 {
+      font-size: 1.2rem;
+      margin: 2rem 0 0.75rem;
+      font-weight: 650;
+    }
+    p { margin: 0 0 1rem; }
+    .muted { color: var(--muted); }
+    ul {
+      margin: 0 0 1.25rem;
+      padding-left: 1.35rem;
+    }
+    li { margin-bottom: 0.5rem; }
+    .hook {
+      font-weight: 600;
+      margin: 1.25rem 0 1rem;
+    }
+  </style>
+</head>
+<body>
+  <article class="wrap">
+    <h1>Sobre este proyecto</h1>
+    <p class="lede">Nifillos: orquesta equipos de IA dentro de tu IDE para automatizar trabajo repetitivo</p>
+    <p>Muchas personas y negocios saben que la IA puede ayudar, pero se quedan en “charlas sueltas” con un asistente: sin flujos guardados, sin pasos claros y sin que varios “roles” trabajen en cadena sobre un mismo objetivo.</p>
+    <p class="hook">Ese es el problema que resuelve Nifillos.</p>
+
+    <h2>¿Qué hace Nifillos?</h2>
+    <p>Nifillos organiza <strong>cuadrillas de agentes</strong> (equipos de IA) que colaboran en tu proyecto: diseñan el flujo, investigan, redactan, generan assets o publican según lo que configures, siempre desde el IDE (Cursor, Claude Code, otros con plantillas).</p>
+    <ul>
+      <li><strong>Inicializas</strong> el proyecto con el CLI (<code>npx nifillos init</code>) y obtienes la estructura, skills y configuración del IDE.</li>
+      <li><strong>Describe</strong> en lenguaje natural qué necesitas o usas el menú <strong><code>/nifillos</code></strong> para crear y ejecutar cuadrillas.</li>
+      <li>El <strong>Arquitecto</strong> y el sistema <strong>montan la cuadrilla</strong> (agentes, pipeline, carpetas de salida).</li>
+      <li><strong>Sherlock</strong> y otras piezas pueden <strong>investigar perfiles y contenido real</strong> cuando el flujo lo requiere.</li>
+      <li>El <strong>Pipeline Runner</strong> <strong>ejecuta</strong> la cuadrilla con <strong>checkpoints</strong> (te para solo cuando hay que decidir o aprobar).</li>
+      <li><strong>Instalas skills</strong> (redes, imágenes, scraping, PDF, etc.) para <strong>conectar</strong> tu cuadrilla con herramientas y APIs sin rearmar todo desde cero cada vez.</li>
+    </ul>
+
+    <h2>¿Qué problema soluciona en el día a día?</h2>
+    <ul>
+      <li>Evita <strong>repetir el mismo briefing</strong> en cada sesión sin dejar un equipo estandarizado.</li>
+      <li>Reduce <strong>horas</strong> en tareas que se pueden <strong>desglosar</strong> (investigación → borrador → revisión → entregables).</li>
+      <li>Facilita <strong>producir más piezas</strong> (posts, guiones, informes, visuales) con <strong>un flujo reutilizable</strong>.</li>
+      <li>Hace más <strong>simple</strong> que perfiles no técnicos trabajen con IA <strong>encajada</strong> en un proyecto, no suelta en el aire.</li>
+    </ul>
+
+    <h2>¿Cómo lo soluciona?</h2>
+    <p>En lugar de empezar de cero en cada tarea, Nifillos te da una <strong>base basada en archivos</strong>: cuadrillas, memoria de contexto, skills instalables, MCP (por ejemplo automatización de navegador y diagramas) y comandos CLI para <strong>actualizar</strong> y <strong>mantener</strong> el framework. Pasas de “preguntar cosas sueltas al chat” a <strong>“equipo de agentes que ejecuta un proceso”</strong>, con pausas solo donde tú quieres intervenir.</p>
+
+    <h2>¿Qué beneficios tiene para tu negocio?</h2>
+    <ul>
+      <li><strong>Más output en menos tiempo</strong>: más campañas, más contenido o más entregables con el mismo equipo humano.</li>
+      <li><strong>Ahorro de coste</strong>: menos horas en coordinación manual y en rehacer lo mismo en distintas herramientas.</li>
+      <li><strong>Procesos repetibles</strong>: lo que funciona una vez se puede <strong>replicar</strong> y <strong>mejorar</strong> sobre la misma estructura.</li>
+      <li><strong>Mejor calidad percibida</strong>: flujos con revisión en <strong>checkpoints</strong> y contexto de negocio en memoria del proyecto.</li>
+      <li><strong>Más oportunidades comerciales</strong>: más capacidad de ejecutar contenido, análisis o propuestas sin cuello de botella humano en cada micro-paso.</li>
+    </ul>
+
+    <p>Nifillos te ayuda a pasar de “usar IA aislada” a <strong>hacer trabajar varios agentes en conjunto</strong> sobre tus proyectos reales, con entregas claras y un camino trazado dentro del IDE.</p>
+  </article>
+</body>
+</html>

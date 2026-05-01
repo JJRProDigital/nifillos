@@ -35,6 +35,12 @@ npm install -D git+https://github.com/JJRProDigital/nifillos.git
 npx nifillos update
 ```
 
+Tras un `update`, en el **dashboard** hace falta refrescar dependencias (p. ej. `pixi.js` / `@pixi/react`):
+
+```bash
+cd dashboard && npm install
+```
+
 `update` también comprueba y migra el diseño antiguo. Si solo quieres esa migración sin copiar plantillas del paquete:
 
 ```bash
@@ -141,6 +147,12 @@ To **pull the latest package from GitHub** and refresh templates/core:
 ```bash
 npm install -D git+https://github.com/JJRProDigital/nifillos.git
 npx nifillos update
+```
+
+After `update`, refresh **dashboard** dependencies (`pixi.js`, `@pixi/react`, etc.):
+
+```bash
+cd dashboard && npm install
 ```
 
 `update` runs the same layout migration as `migrate` when  `cuadrillas/` exists. External automation (CI, scripts) should use paths **`cuadrillas/`**, **`cuadrilla.yaml`**, **`cuadrilla-party.csv`**, and dashboard/state field **`cuadrilla`** (not `squads` / `squad`).

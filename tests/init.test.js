@@ -212,6 +212,68 @@ test('init with _ides codex creates AGENTS.md', async () => {
   }
 });
 
+test('init with _ides opencode creates AGENTS.md, skill, and opencode.json', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
+
+  try {
+    await init(tempDir, { _skipPrompts: true, _ides: ['opencode'] });
+
+    const agents = await readFile(join(tempDir, 'AGENTS.md'), 'utf-8');
+    assert.ok(agents.includes('Nifillos'));
+    assert.ok(agents.includes('opencode.json'));
+
+    const skill = await readFile(
+      join(tempDir, '.opencode', 'skills', 'nifillos', 'SKILL.md'),
+      'utf-8'
+    );
+    assert.ok(skill.includes('name: nifillos'));
+    assert.ok(skill.includes('AGENTS.md'));
+
+    const mcpRaw = await readFile(join(tempDir, 'opencode.json'), 'utf-8');
+    const mcp = JSON.parse(mcpRaw);
+    assert.ok(mcp.mcp?.playwright, 'playwright MCP missing');
+    assert.equal(mcp.mcp.playwright.type, 'local');
+    assert.ok(mcp.mcp?.excalidraw, 'excalidraw MCP missing');
+    assert.equal(mcp.mcp.excalidraw.type, 'remote');
+
+    const prefs = await readFile(join(tempDir, '_nifillos', '_memory', 'preferences.md'), 'utf-8');
+    assert.ok(prefs.includes('opencode'));
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+});
+
+test('init with opencode and codex writes AGENTS.md only once', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
+
+  try {
+    await init(tempDir, { _skipPrompts: true, _ides: ['opencode', 'codex'] });
+
+    const agents = await readFile(join(tempDir, 'AGENTS.md'), 'utf-8');
+    assert.ok(agents.includes('Nifillos'));
+
+    // OpenCode-native skill still present
+    const skill = await readFile(
+      join(tempDir, '.opencode', 'skills', 'nifillos', 'SKILL.md'),
+      'utf-8'
+    );
+    assert.ok(skill.includes('name: nifillos'));
+
+    // Codex skill also present (different path)
+    const codexSkill = await readFile(
+      join(tempDir, '.agents', 'skills', 'nifillos', 'SKILL.md'),
+      'utf-8'
+    );
+    assert.ok(codexSkill.includes('name: nifillos'));
+
+    const prefs = await readFile(join(tempDir, '_nifillos', '_memory', 'preferences.md'), 'utf-8');
+    assert.ok(prefs.includes('opencode'));
+    assert.ok(prefs.includes('codex'));
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+});
+
 test('init with _ides antigravity creates .antigravity/rules.md', async () => {
   const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 

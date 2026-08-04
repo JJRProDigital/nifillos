@@ -14,13 +14,41 @@ CLI de orquestación multi-agente para tu IDE (licencia MIT). Incluye comando `/
 - **Copia en proyectos `init`:** [templates/GUIA.md](templates/GUIA.md) y [templates/GUIDE.md](templates/GUIDE.md) se copian a la raíz del proyecto del usuario; `npx nifillos update` las sobrescribe con la versión del paquete.
 - **Dashboard — API de métricas:** [docs/dashboard-metrics.md](docs/dashboard-metrics.md)
 
-## Uso rápido
+## Instalación
 
-Inicializar un proyecto (copia plantillas, skills empaquetadas, configuración por IDE):
+En la carpeta del proyecto donde quieras usar Nifillos:
+
+### 1. Instalar el paquete
+
+```bash
+npm install
+```
+
+Si aún no tienes Nifillos como dependencia (clon fresco o carpeta nueva):
+
+```bash
+npm install -D git+https://github.com/JJRProDigital/nifillos.git
+```
+
+(o `npm install -D nifillos` cuando esté publicado en npm).
+
+### 2. Inicializar Nifillos
 
 ```bash
 npx nifillos init
 ```
+
+El asistente pide idioma, nombre e IDE(s) — incluye **OpenCode**, Cursor, Claude Code, Codex, etc. — y copia plantillas, skills y configuración.
+
+### 3. Reiniciar la terminal y comprobar `/nifillos`
+
+1. **Cierra y vuelve a abrir** la terminal (o reinicia el IDE / la sesión del agente).
+2. Abre el proyecto en el IDE que elegiste.
+3. Comprueba que aparece el comando o la skill **`/nifillos`** (menú principal).
+
+Si no aparece tras reiniciar: confirma que en `_nifillos/_memory/preferences.md` figura tu IDE, y vuelve a ejecutar `npx nifillos update` o `init` marcando ese IDE.
+
+## Uso rápido
 
 Actualizar archivos del framework desde la versión instalada del paquete (respeta `_memory`, `cuadrillas`, etc.):
 
@@ -67,7 +95,7 @@ npx nifillos
 
 ## En el IDE
 
-Tras `init`, abre el proyecto en Cursor, Claude Code, Codex, etc. y usa el comando slash **`/nifillos`** (menú, crear cuadrilla, ejecutar, skills, …). Los archivos concretos dependen del IDE (por ejemplo `.cursor/rules/nifillos.mdc`, `.claude/skills/nifillos/SKILL.md`).
+Tras `init` y reiniciar la terminal/IDE, usa **`/nifillos`** (menú, crear cuadrilla, ejecutar, skills, …). Los archivos concretos dependen del IDE (por ejemplo `.cursor/rules/nifillos.mdc`, `.claude/skills/nifillos/SKILL.md`, `.opencode/skills/nifillos/SKILL.md`).
 
 ## Extender el proyecto
 
@@ -75,7 +103,7 @@ Tras `init`, abre el proyecto en Cursor, Claude Code, Codex, etc. y usa el coman
 |-------------|----------------|
 | Nueva skill en el **paquete** publicado | Añade `skills/<id>/SKILL.md`, actualiza [skills/README.md](skills/README.md), sube versión en `package.json`. |
 | Skill solo en un **proyecto** | Carpeta `skills/<id>/SKILL.md` o `npx nifillos install ./carpeta`. |
-| **MCP / “plugins”** | Skills tipo `mcp` / `hybrid` y `.mcp.json` / `.cursor/mcp.json` / `.vscode/mcp.json` en plantillas (Playwright + Excalidraw HTTP); perfil Playwright bajo `_nifillos/config/`. |
+| **MCP / “plugins”** | Skills tipo `mcp` / `hybrid` y `.mcp.json` / `.cursor/mcp.json` / `.vscode/mcp.json` / `opencode.json` en plantillas (Playwright + Excalidraw HTTP); perfil Playwright bajo `_nifillos/config/`. |
 | **Plantillas** | `templates/` (núcleo), `templates/ide-templates/<ide>/` (por IDE). |
 | **Cuadrillas de ejemplo** | `templates/cuadrillas/` o documentación en tu repo. |
 

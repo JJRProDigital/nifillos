@@ -19,7 +19,8 @@ const IDES = [
   { label: 'Antigravity', value: 'antigravity', checked: true },
   { label: 'Claude Code', value: 'claude-code' },
   { label: 'Codex (OpenAI)', value: 'codex' },
-  { label: 'Cursor', value: 'cursor' }, 
+  { label: 'Cursor', value: 'cursor' },
+  { label: 'OpenCode', value: 'opencode' },
   { label: 'VS Code + Copilot', value: 'vscode-copilot' },
 ];
 
@@ -96,6 +97,8 @@ export async function init(targetDir, options = {}) {
       console.log(`  ${t('step3ClaudeCode')}\n`);
     } else if (ide === 'codex') {
       console.log(`  ${t('step1Codex')}\n`);
+    } else if (ide === 'opencode') {
+      console.log(`  ${t('step1OpenCode')}\n`);
     } else if (ide === 'antigravity') {
       console.log(`  ${t('step1Antigravity')}\n`);
     } else if (ide === 'cursor') {

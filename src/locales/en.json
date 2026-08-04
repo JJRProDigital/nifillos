@@ -4,6 +4,7 @@
   "atLeastOneIde": "Please select at least one IDE.",
   "chooseIdes": "Which IDEs/tools do you use? (select all that apply)",
   "step1Codex": "1. See AGENTS.md in your project root for Codex instructions",
+  "step1OpenCode": "1. Open this project in OpenCode and use the nifillos skill (or follow AGENTS.md)",
   "step1Antigravity": "1. See .antigravity/rules.md for Antigravity instructions",
   "step1Cursor": "1. Open Cursor, type / in the chat and select Nifillos to get started.",
   "ideNotAvailable": "⚠️  \"{label}\" is not available yet. Choose another option.",

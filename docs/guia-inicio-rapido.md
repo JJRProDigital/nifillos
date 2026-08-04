@@ -24,7 +24,7 @@ El asistente pregunta idioma, tu nombre, IDE(s) y copia plantillas, carpeta `ski
 
 Abre **la raíz del proyecto** (donde está `_nifillos/`).
 
-En **Cursor**, **Claude Code**, **Codex**, **Antigravity** o **VS Code + Copilot**, el punto de entrada es el comando slash:
+En **Cursor**, **Claude Code**, **Codex**, **OpenCode**, **Antigravity** o **VS Code + Copilot**, el punto de entrada es el comando slash:
 
 ```
 /nifillos
@@ -101,7 +101,7 @@ Referencia completa de CLI y catálogo: [nifillos-comandos-y-skills.md](./nifill
 
 ## 7. MCP (Playwright, Excalidraw, etc.)
 
-Las skills **mcp** y **hybrid** dependen de servidores MCP. Tras `init`, revisa `.mcp.json`, `.cursor/mcp.json` o `.vscode/mcp.json` (según plantilla) y la **configuración local del IDE** si usas plugins MCP.
+Las skills **mcp** y **hybrid** dependen de servidores MCP. Tras `init`, revisa `.mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json` o `opencode.json` (según plantilla) y la **configuración local del IDE** si usas plugins MCP.
 
 - **Playwright:** automatización de navegador (Sherlock, capturas, algunas skills).
 - **Excalidraw:** diagramas vía MCP HTTP.

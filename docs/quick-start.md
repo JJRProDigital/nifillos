@@ -24,7 +24,7 @@ The wizard asks for language, your name, IDE(s), then copies templates, bundled 
 
 Open the **project root** (where `_nifillos/` lives).
 
-In **Cursor**, **Claude Code**, **Codex**, **Antigravity**, or **VS Code + Copilot**, the entry point is the slash command:
+In **Cursor**, **Claude Code**, **Codex**, **OpenCode**, **Antigravity**, or **VS Code + Copilot**, the entry point is the slash command:
 
 ```
 /nifillos
@@ -99,7 +99,7 @@ Full CLI reference (Spanish): [nifillos-comandos-y-skills.md](./nifillos-comando
 
 ## 7. MCP (Playwright, Excalidraw, …)
 
-**mcp** and **hybrid** skills need MCP servers. After `init`, check `.mcp.json`, `.cursor/mcp.json`, or `.vscode/mcp.json` as applicable, plus any **IDE-local** MCP/plugin config.
+**mcp** and **hybrid** skills need MCP servers. After `init`, check `.mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json`, or `opencode.json` as applicable, plus any **IDE-local** MCP/plugin config.
 
 - **Playwright:** browser automation (Sherlock, screenshots, some skills).
 - **Excalidraw:** diagrams via HTTP MCP.

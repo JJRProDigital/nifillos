@@ -35,7 +35,7 @@ npx nifillos migrate
 
 Abre **esta carpeta** como raíz del proyecto (donde está `_nifillos/`).
 
-En **Cursor**, **Claude Code**, **Codex**, **Antigravity** o **VS Code + Copilot**, el punto de entrada es:
+En **Cursor**, **Claude Code**, **Codex**, **OpenCode**, **Antigravity** o **VS Code + Copilot**, el punto de entrada es:
 
 ```
 /nifillos
@@ -113,7 +113,7 @@ npx nifillos skills
 
 ## 7. MCP (Playwright, Excalidraw, etc.)
 
-Las skills **mcp** o **hybrid** suelen necesitar servidores MCP. Tras `init`, revisa los JSON del proyecto (p. ej. `.mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json`, según IDE) **y** la configuración local del IDE si añadiste plugins MCP.
+Las skills **mcp** o **hybrid** suelen necesitar servidores MCP. Tras `init`, revisa los JSON del proyecto (p. ej. `.mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json`, `opencode.json`, según IDE) **y** la configuración local del IDE si añadiste plugins MCP.
 
 - **Playwright:** navegador (Sherlock, capturas, varias skills).
 - **Excalidraw:** diagramas vía MCP HTTP.

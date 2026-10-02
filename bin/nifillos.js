@@ -8,6 +8,7 @@ import { skillsCli } from '../src/skills-cli.js';
 import { agentsCli } from '../src/agents-cli.js';
 import { listRuns, printRuns } from '../src/runs.js';
 import { runMigrateCli } from '../src/migrate-legacy-layout.js';
+import { doctorCli } from '../src/doctor.js';
 
 const { positionals } = parseArgs({
   allowPositionals: true,
@@ -46,6 +47,9 @@ if (command === '--version' || command === '-v' || command === 'version') {
   const args = positionals.slice(2);
   const result = await agentsCli(subcommand, args, process.cwd());
   if (!result.success) process.exitCode = 1;
+} else if (command === 'doctor') {
+  const { ok } = await doctorCli(process.cwd());
+  if (!ok) process.exitCode = 1;
 } else if (command === 'runs') {
   const cuadrillaName = positionals[1] || null;
   const runs = await listRuns(cuadrillaName, process.cwd());
@@ -59,6 +63,7 @@ if (command === '--version' || command === '-v' || command === 'version') {
 
   Usage:
     npx nifillos --version               Show the installed version
+    npx nifillos doctor                  Diagnose this Nifillos installation
     npx nifillos init                    Initialize a project
     npx nifillos update                  Update framework files from the package
     npx nifillos migrate                 Rename squads/ → cuadrillas/ and fix legacy file keys

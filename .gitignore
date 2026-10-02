@@ -11,5 +11,6 @@ _nifillos/_browser_profile/
 **/__pycache__/
 *.pyc
 .superpowers/
+.atl/
 temp/
 .claude/settings.local.json

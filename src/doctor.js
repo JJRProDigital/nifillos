@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { getTemplateEntries, loadSavedLocale } from './init.js';
 import { t } from './i18n.js';
 import { listInstalled } from './skills.js';
+import { listCuadrillas, validateCuadrillaDir } from './validate.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATES_DIR = join(__dirname, '..', 'templates');
@@ -119,6 +120,25 @@ export async function doctor(targetDir) {
   // Skills
   const installedSkills = await listInstalled(targetDir);
   add('skills', 'ok', t('doctorSkillsCount', { count: installedSkills.length }));
+
+  // Cuadrilla YAML validation
+  const cuadrillaNames = await listCuadrillas(targetDir);
+  if (cuadrillaNames.length === 0) {
+    add('cuadrillas', 'ok', t('doctorCuadrillasNone'));
+  } else {
+    let invalid = 0;
+    for (const name of cuadrillaNames) {
+      const { errors } = await validateCuadrillaDir(targetDir, name);
+      if (errors.length > 0) invalid++;
+    }
+    add(
+      'cuadrillas',
+      invalid > 0 ? 'fail' : 'ok',
+      invalid > 0
+        ? t('doctorCuadrillasInvalid', { count: invalid, total: cuadrillaNames.length })
+        : t('doctorCuadrillasOk', { count: cuadrillaNames.length })
+    );
+  }
 
   // Playwright chromium browser
   const pwDir = playwrightBrowsersDir();

@@ -104,5 +104,11 @@
   "doctorDashboardOk": "Dashboard built and ready (npm run dev / npm start inside dashboard/)",
   "doctorDashboardNotBuilt": "Dashboard not built — run 'cd dashboard && npm run build' or 'npm start'",
   "doctorDashboardNoDeps": "Dashboard dependencies missing — run 'cd dashboard && npm install'",
-  "doctorSummary": "Summary: {ok} ok, {warn} warnings, {fail} failures"
+  "doctorSummary": "Summary: {ok} ok, {warn} warnings, {fail} failures",
+  "doctorCuadrillasOk": "Cuadrilla definitions valid ({count} checked)",
+  "doctorCuadrillasInvalid": "{count} of {total} cuadrillas have invalid cuadrilla.yaml — run 'npx nifillos validate' for details",
+  "doctorCuadrillasNone": "No cuadrillas yet — create one with /nifillos create",
+  "validateTitle": "\n  🔍 Nifillos — Validate cuadrillas\n",
+  "validateNoCuadrillas": "No cuadrillas/ directory (or cuadrilla not found) — nothing to validate.",
+  "validateSummary": "Checked {count} cuadrilla(s): {ok} valid, {invalid} with errors."
 }

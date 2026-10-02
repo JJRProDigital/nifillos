@@ -1,6 +1,6 @@
 {
   "name": "nifillos",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Multi-agent orchestration CLI for IDE-based AI cuadrillas",
   "type": "module",
   "bin": {

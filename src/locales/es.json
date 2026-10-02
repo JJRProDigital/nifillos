@@ -80,5 +80,7 @@
   "migrateConflictParty": "⚠️  {name}: existen squad-party.csv y cuadrilla-party.csv — resuélvelo manualmente.",
   "migrateTitle": "\n  🔧 Nifillos — Migrar diseño antiguo\n",
   "migrateNoCuadrillasFolder": "No hay carpetas squads/ ni cuadrillas/ aquí — nada que migrar.",
-  "migrateNeedInit": "Ejecuta `npx nifillos init` primero, o este comando desde la raíz del proyecto (donde esté cuadrillas/ o squads/)."
+  "migrateNeedInit": "Ejecuta `npx nifillos init` primero, o este comando desde la raíz del proyecto (donde esté cuadrillas/ o squads/).",
+  "playwrightRetry": "⚠️  Falló la instalación de navegadores de Playwright (¿distro no soportada?). Reintentando con override de plataforma...",
+  "playwrightSkipped": "Los navegadores de Playwright no se instalaron. Las funciones de navegador de Sherlock los necesitan: ejecuta 'npx playwright install chromium' manualmente, o define PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04 si tu distro Linux no está soportada oficialmente."
 }

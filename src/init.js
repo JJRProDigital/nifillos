@@ -139,8 +139,27 @@ async function installDependencies(targetDir) {
   execSync('npm install', { cwd: targetDir, stdio: 'inherit' });
   console.log(`\n  Installing dashboard dependencies...`);
   execSync('npm install', { cwd: join(targetDir, 'dashboard'), stdio: 'inherit' });
+  await installPlaywrightBrowser(targetDir);
+}
+
+async function installPlaywrightBrowser(targetDir) {
   console.log(`\n  Installing Playwright browsers...`);
-  execSync('npx playwright install chromium', { cwd: targetDir, stdio: 'inherit' });
+  try {
+    execSync('npx playwright install chromium', { cwd: targetDir, stdio: 'inherit' });
+  } catch {
+    // Unsupported distro (e.g. a newer Ubuntu than this Playwright version knows) —
+    // retry forcing a known-good platform so a fallback build gets downloaded.
+    console.log(`\n  ${t('playwrightRetry')}`);
+    try {
+      execSync('npx playwright install chromium', {
+        cwd: targetDir,
+        stdio: 'inherit',
+        env: { ...process.env, PLAYWRIGHT_HOST_PLATFORM_OVERRIDE: 'ubuntu24.04' },
+      });
+    } catch {
+      console.warn(`\n  ⚠️  ${t('playwrightSkipped')}`);
+    }
+  }
 }
 
 async function writeProjectReadme(targetDir) {

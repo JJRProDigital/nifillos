@@ -81,5 +81,7 @@
   "migrateConflictParty": "⚠️  {name}: both squad-party.csv and cuadrilla-party.csv exist — resolve manually.",
   "migrateTitle": "\n  🔧 Nifillos — Migrate legacy layout\n",
   "migrateNoCuadrillasFolder": "No squads/ or cuadrillas/ directory here — nothing to migrate.",
-  "migrateNeedInit": "Run `npx nifillos init` first, or run this command from your project root (where cuadrillas/ or squads/ lives)."
+  "migrateNeedInit": "Run `npx nifillos init` first, or run this command from your project root (where cuadrillas/ or squads/ lives).",
+  "playwrightRetry": "⚠️  Playwright browser install failed (unsupported distro?). Retrying with platform override...",
+  "playwrightSkipped": "Playwright browsers were not installed. Sherlock browser features need them: run 'npx playwright install chromium' manually, or set PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04 if your Linux distro is not officially supported."
 }

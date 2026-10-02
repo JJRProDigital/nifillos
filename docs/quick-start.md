@@ -1,5 +1,7 @@
 # Quick start (~10 minutes)
 
+<!-- Twin of templates/GUIDE.md (shipped to user projects on init/update): edit both together. -->
+
 One path from zero to a running cuadrilla, with pointers to deeper docs when you need them.
 
 **Requirement:** [Node.js 20+](https://nodejs.org/).

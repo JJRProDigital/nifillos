@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "start": "npm run build && npm run metrics:serve",
     "preview": "vite preview",
     "metrics:serve": "tsx scripts/metrics-server.ts"
   },

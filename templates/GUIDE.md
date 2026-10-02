@@ -1,5 +1,7 @@
 # Quick start (~10 minutes)
 
+<!-- Twin of docs/quick-start.md: edit both together. This copy is shipped to user projects on init/update. -->
+
 A single path through **this project**: IDE, cuadrillas, dashboard, skills, MCP, and migrations. For the **framework source and full docs**, see the [Nifillos repository on GitHub](https://github.com/JJRProDigital/nifillos).
 
 **Requirement:** [Node.js 20+](https://nodejs.org/).

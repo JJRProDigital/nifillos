@@ -32,6 +32,16 @@
   "engines": {
     "node": ">=20.0.0"
   },
+  "exports": {
+    "./runs": {
+      "types": "./src/runs.d.ts",
+      "import": "./src/runs.js"
+    },
+    "./dashboardLimits": {
+      "types": "./src/dashboardLimits.d.ts",
+      "import": "./src/dashboardLimits.js"
+    }
+  },
   "files": [
     "bin/",
     "src/",

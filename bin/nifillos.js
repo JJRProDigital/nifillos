@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { parseArgs } from 'node:util';
+import { readFile } from 'node:fs/promises';
 import { init } from '../src/init.js';
 import { update } from '../src/update.js';
 import { skillsCli } from '../src/skills-cli.js';
@@ -15,7 +16,10 @@ const { positionals } = parseArgs({
 
 const command = positionals[0];
 
-if (command === 'init') {
+if (command === '--version' || command === '-v' || command === 'version') {
+  const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf-8'));
+  console.log(`nifillos v${pkg.version}`);
+} else if (command === 'init') {
   await init(process.cwd());
 } else if (command === 'install') {
   const result = await skillsCli('install', positionals.slice(1), process.cwd());
@@ -54,6 +58,7 @@ if (command === 'init') {
   nifillos — Multi-agent orchestration for your IDE
 
   Usage:
+    npx nifillos --version               Show the installed version
     npx nifillos init                    Initialize a project
     npx nifillos update                  Update framework files from the package
     npx nifillos migrate                 Rename squads/ → cuadrillas/ and fix legacy file keys

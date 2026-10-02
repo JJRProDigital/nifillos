@@ -122,16 +122,8 @@ function extractUsageBreakdown(u) {
  * @param {string} targetDir
  * @param {Awaited<ReturnType<typeof loadDashboardPricing>>} pricing
  */
-export async function buildRunSummary(cuadrilla, runId, targetDir, pricing) {
-  const runDir = join(targetDir, 'cuadrillas', cuadrilla, 'output', runId);
-  const statePath = join(runDir, 'state.json');
-  const usagePath = join(runDir, 'usage.json');
-  const manifestPath = join(runDir, 'manifest.json');
-
-  const state = (await tryReadJson(statePath)) || {};
-  const usage = await tryReadJson(usagePath);
-  const manifest = await tryReadJson(manifestPath);
-
+/** Single source of truth for state.json parsing — used by both the CLI (listRuns) and the dashboard (buildRunSummary). */
+function parseRunState(state) {
   const status = typeof state.status === 'string' ? state.status : 'unknown';
   let steps = null;
   if (state.step && typeof state.step === 'object') {
@@ -149,6 +141,20 @@ export async function buildRunSummary(cuadrilla, runId, targetDir, pricing) {
     duration = formatDuration(durationMs);
   }
 
+  return { status, steps, duration, durationMs };
+}
+
+export async function buildRunSummary(cuadrilla, runId, targetDir, pricing) {
+  const runDir = join(targetDir, 'cuadrillas', cuadrilla, 'output', runId);
+  const statePath = join(runDir, 'state.json');
+  const usagePath = join(runDir, 'usage.json');
+  const manifestPath = join(runDir, 'manifest.json');
+
+  const state = (await tryReadJson(statePath)) || {};
+  const usage = await tryReadJson(usagePath);
+  const manifest = await tryReadJson(manifestPath);
+
+  const { status, steps, duration, durationMs } = parseRunState(state);
   const agentCount = Array.isArray(state.agents) ? state.agents.length : 0;
   const tc = tokenAndCostFromUsageOrEstimate(state, usage, pricing, agentCount);
 
@@ -324,52 +330,17 @@ export function weakEtag(body) {
 }
 
 export async function listRuns(cuadrillaName, targetDir = process.cwd()) {
-  const cuadrillasDir = join(targetDir, 'cuadrillas');
-  let cuadrillaNames;
-
-  try {
-    if (cuadrillaName) {
-      if (!safeCuadrillaName(cuadrillaName)) return [];
-      cuadrillaNames = [cuadrillaName];
-    } else {
-      const entries = await readdir(cuadrillasDir, { withFileTypes: true });
-      cuadrillaNames = entries.filter((e) => e.isDirectory()).map((e) => e.name);
-    }
-  } catch {
-    return [];
-  }
+  const grouped = await listAllRunIdsGrouped(targetDir);
+  const names = cuadrillaName
+    ? (safeCuadrillaName(cuadrillaName) && grouped[cuadrillaName] ? [cuadrillaName] : [])
+    : Object.keys(grouped);
 
   const runs = [];
 
-  for (const name of cuadrillaNames) {
-    const outputDir = join(cuadrillasDir, name, 'output');
-    let runDirs;
-    try {
-      const entries = await readdir(outputDir, { withFileTypes: true });
-      runDirs = entries.filter((e) => e.isDirectory()).map((e) => e.name);
-    } catch {
-      continue;
-    }
-
-    for (const runId of runDirs) {
-      if (!safeRunId(runId)) continue;
-      const run = { cuadrilla: name, runId, status: 'unknown', steps: null, duration: null };
-
-      try {
-        const raw = await readFile(join(outputDir, runId, 'state.json'), 'utf-8');
-        const state = JSON.parse(raw);
-        run.status = state.status || 'unknown';
-        if (state.step) run.steps = `${state.step.current}/${state.step.total}`;
-        if (state.startedAt && (state.completedAt || state.failedAt)) {
-          const start = new Date(state.startedAt).getTime();
-          const end = new Date(state.completedAt || state.failedAt).getTime();
-          run.duration = formatDuration(end - start);
-        }
-      } catch {
-        // No state.json or malformed — keep defaults
-      }
-
-      runs.push(run);
+  for (const name of names) {
+    for (const runId of grouped[name].runIds) {
+      const state = (await tryReadJson(join(targetDir, 'cuadrillas', name, 'output', runId, 'state.json'))) || {};
+      runs.push({ cuadrilla: name, runId, ...parseRunState(state) });
     }
   }
 

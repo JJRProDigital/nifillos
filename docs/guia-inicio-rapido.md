@@ -1,5 +1,7 @@
 # Guía de inicio rápido (≈10 minutos)
 
+<!-- Gemela de templates/GUIA.md (se envía a los proyectos de usuario en init/update): si editas una, actualiza la otra. -->
+
 Un solo recorrido: desde cero hasta tener una cuadrilla ejecutándose, con enlaces al detalle técnico cuando haga falta.
 
 **Requisito:** [Node.js 20+](https://nodejs.org/).

@@ -1,5 +1,7 @@
 # Guía de inicio rápido (~10 minutos)
 
+<!-- Gemela de docs/guia-inicio-rapido.md: si editas una, actualiza la otra. Esta copia se envía a los proyectos de usuario en init/update. -->
+
 Recorrido único en este proyecto: IDE, cuadrillas, dashboard, skills, MCP y migraciones. Para el **código fuente y más documentación** del framework, visita el [repositorio Nifillos en GitHub](https://github.com/JJRProDigital/nifillos).
 
 **Requisito:** [Node.js 20+](https://nodejs.org/).

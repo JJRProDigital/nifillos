@@ -125,18 +125,27 @@ export async function installSkill(id, targetDir) {
 /**
  * Copy a skill from a local directory (must contain SKILL.md). Folder name becomes skill id.
  */
-export async function installSkillFromPath(absSourceDir, targetDir) {
+function normalizeSkillId(raw) {
+  return raw
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+export { parseSkillFrontmatter };
+
+export async function installSkillFromPath(absSourceDir, targetDir, { id } = {}) {
   const resolved = resolve(absSourceDir);
   const st = await stat(resolved);
   if (!st.isDirectory()) {
     throw new Error(`Skill path is not a directory: ${resolved}`);
   }
   await stat(join(resolved, 'SKILL.md'));
-  const id = basename(resolved);
-  validateSkillId(id);
-  const destDir = join(targetDir, 'skills', id);
+  const skillId = normalizeSkillId(id ?? basename(resolved));
+  validateSkillId(skillId);
+  const destDir = join(targetDir, 'skills', skillId);
   await cp(resolved, destDir, { recursive: true });
-  invalidateSkillMetaForId(id);
+  invalidateSkillMetaForId(skillId);
 }
 
 function findSkillRootInClone(cloneRoot) {
@@ -166,15 +175,53 @@ function findSkillRootInClone(cloneRoot) {
 }
 
 /**
- * Shallow-clone a git URL and install the skill (SKILL.md at root or one subfolder).
+ * Split a git skill source into { url, ref }. Supports pinning with a trailing
+ * @ref (tag, branch or commit SHA): https://github.com/user/repo@v1.2.3
+ * The @ in user credentials (https://user@host/...) never counts as a pin.
+ * @returns {{url: string, ref: string|null}}
+ */
+export function parseGitSkillSource(source) {
+  const at = source.lastIndexOf('@');
+  const lastSlash = source.lastIndexOf('/');
+  // A pin only exists when the last @ sits in the final path segment (after
+  // the last /). The @ in https://user@host/... comes before that slash.
+  if (at === -1 || at < lastSlash || at === source.length - 1) {
+    return { url: source, ref: null };
+  }
+  return { url: source.slice(0, at), ref: source.slice(at + 1) };
+}
+
+/**
+ * Shallow-clone a git URL (optionally pinned to a tag/branch/SHA via @ref)
+ * and install the skill (SKILL.md at root or one subfolder).
  */
 export async function installSkillFromGit(repoUrl, targetDir) {
+  const { url, ref } = parseGitSkillSource(repoUrl);
   const tmpDir = await mkdtemp(join(tmpdir(), 'nifillos-git-'));
   try {
-    execFileSync('git', ['clone', '--depth', '1', repoUrl, tmpDir], { stdio: 'inherit' });
+    if (ref && /^[0-9a-f]{7,64}$/i.test(ref)) {
+      // Commit SHAs cannot be cloned with --branch; fetch the exact revision.
+      execFileSync('git', ['init', tmpDir]);
+      execFileSync('git', ['-C', tmpDir, 'remote', 'add', 'origin', url]);
+      execFileSync('git', ['-C', tmpDir, 'fetch', '--depth', '1', 'origin', ref], { stdio: 'inherit' });
+      execFileSync('git', ['-C', tmpDir, 'checkout', 'FETCH_HEAD']);
+    } else {
+      const args = ['clone', '--depth', '1'];
+      if (ref) args.push('--branch', ref);
+      args.push(url, tmpDir);
+      execFileSync('git', args, { stdio: 'inherit' });
+    }
     const skillRoot = await findSkillRootInClone(tmpDir);
-    const id = basename(skillRoot);
-    await installSkillFromPath(skillRoot, targetDir);
+    let id;
+    if (skillRoot === tmpDir) {
+      // SKILL.md at repo root: prefer the frontmatter name (the skill's declared
+      // identity), falling back to the normalized repository name.
+      const fm = parseSkillFrontmatter(await readFile(join(skillRoot, 'SKILL.md'), 'utf-8'), '');
+      id = normalizeSkillId(fm.name) || normalizeSkillId(basename(url).replace(/\/+$/, '').replace(/\.git$/, ''));
+    } else {
+      id = normalizeSkillId(basename(skillRoot));
+    }
+    await installSkillFromPath(skillRoot, targetDir, { id });
     return id;
   } finally {
     await rm(tmpDir, { recursive: true, force: true });

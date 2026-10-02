@@ -7,6 +7,7 @@ import {
   installSkillFromPath,
   installSkillFromGit,
   looksLikeGitRemote,
+  parseGitSkillSource,
   removeSkill,
   getSkillMeta,
   getLocalizedDescription,
@@ -124,7 +125,11 @@ async function runInstall(idOrPath, targetDir) {
     console.log(`\n  ${t('skillsInstalling', { id: idOrPath })}`);
     const id = await installSkillFromGit(idOrPath, targetDir);
     console.log(`  ${t('skillsInstalled', { id })}\n`);
-    await logEvent('skill:install', { name: id, url: idOrPath, source: 'git' }, targetDir);
+    await logEvent(
+      'skill:install',
+      { name: id, url: idOrPath, ref: parseGitSkillSource(idOrPath).ref, source: 'git' },
+      targetDir
+    );
     return;
   }
 

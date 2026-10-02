@@ -390,3 +390,60 @@ test('looksLikeGitRemote detects https GitHub URLs', () => {
   assert.equal(looksLikeGitRemote('https://github.com/foo/bar.git'), true);
   assert.equal(looksLikeGitRemote('apify'), false);
 });
+
+import { execFileSync } from 'node:child_process';
+import { parseGitSkillSource, installSkillFromGit } from '../src/skills.js';
+
+test('parseGitSkillSource splits url and ref', () => {
+  assert.deepEqual(parseGitSkillSource('https://github.com/u/repo'), {
+    url: 'https://github.com/u/repo',
+    ref: null,
+  });
+  assert.deepEqual(parseGitSkillSource('https://github.com/u/repo@v1.2.3'), {
+    url: 'https://github.com/u/repo',
+    ref: 'v1.2.3',
+  });
+  assert.deepEqual(parseGitSkillSource('https://github.com/u/repo@9f0f5c9'), {
+    url: 'https://github.com/u/repo',
+    ref: '9f0f5c9',
+  });
+  // @ in credentials must not be treated as a pin
+  assert.deepEqual(parseGitSkillSource('https://user@github.com/u/repo'), {
+    url: 'https://user@github.com/u/repo',
+    ref: null,
+  });
+  // trailing @ means no pin
+  assert.deepEqual(parseGitSkillSource('https://github.com/u/repo@'), {
+    url: 'https://github.com/u/repo@',
+    ref: null,
+  });
+});
+
+test('installSkillFromGit installs from a pinned tag', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-git-src-'));
+  const targetDir = await mkdtemp(join(tmpdir(), 'nifillos-git-dst-'));
+  const git = (...args) => execFileSync('git', ['-C', tempDir, ...args]);
+  try {
+    execFileSync('git', ['init', '-b', 'main', tempDir]);
+    await writeFile(join(tempDir, 'SKILL.md'), '---\nname: demo-git\nversion: 1\ndescription: v1\n---\n', 'utf-8');
+    git('-c', 'user.email=t@t', '-c', 'user.name=t', 'add', '.');
+    git('-c', 'user.email=t@t', '-c', 'user.name=t', 'commit', '-m', 'v1');
+    git('tag', 'v1');
+    await writeFile(join(tempDir, 'SKILL.md'), '---\nname: demo-git\nversion: 2\ndescription: v2\n---\n', 'utf-8');
+    git('-c', 'user.email=t@t', '-c', 'user.name=t', 'add', '.');
+    git('-c', 'user.email=t@t', '-c', 'user.name=t', 'commit', '-m', 'v2');
+
+    const remote = `file://${tempDir.replace(/\\/g, '/')}`;
+
+    await installSkillFromGit(`${remote}@v1`, targetDir);
+    const pinned = await readFile(join(targetDir, 'skills', 'demo-git', 'SKILL.md'), 'utf-8');
+    assert.ok(pinned.includes('version: 1'), 'must install the tagged version');
+
+    await installSkillFromGit(remote, targetDir);
+    const latest = await readFile(join(targetDir, 'skills', 'demo-git', 'SKILL.md'), 'utf-8');
+    assert.ok(latest.includes('version: 2'), 'without a pin, installs default branch');
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+    await rm(targetDir, { recursive: true, force: true });
+  }
+});

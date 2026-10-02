@@ -51,6 +51,15 @@ npx nifillos install https://github.com/org/repo-skill.git
 
 El id de una skill solo puede contener `^[a-z0-9][a-z0-9-]*$`. Carpeta local: el **nombre de la carpeta** es el id.
 
+**Fijar versión de una skill Git:** añade `@ref` a la URL para instalar un tag, rama o commit concreto (recomendado para reproducibilidad):
+
+```bash
+npx nifillos install https://github.com/org/repo-skill.git@v1.2.3
+npx nifillos install https://github.com/org/repo-skill@9f0f5c9
+```
+
+Sin `@ref` se clona la rama por defecto. Si el `SKILL.md` está en la raíz del repo, el id se toma del frontmatter (`name:`) o del nombre del repo normalizado; si está en una subcarpeta, del nombre de la carpeta.
+
 ---
 
 ## Cómo usar las skills (visión general)

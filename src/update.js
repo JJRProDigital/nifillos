@@ -27,7 +27,8 @@ async function loadSavedIdes(targetDir) {
   } catch {
     // No preferences file
   }
-  return ['claude-code'];
+  // Never guess IDEs here: copying the wrong IDE templates would clobber user files.
+  return [];
 }
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -123,6 +124,9 @@ export async function update(targetDir) {
 
   // 6. Copy IDE-specific templates based on saved preferences
   const ides = await loadSavedIdes(targetDir);
+  if (ides.length === 0) {
+    console.log(`\n  ${t('updateNoIdes')}`);
+  }
   for (const ide of ides) {
     const ideSrcDir = join(TEMPLATES_DIR, 'ide-templates', ide);
     let ideEntries;
@@ -136,6 +140,19 @@ export async function update(targetDir) {
       if (isProtected(relPath)) continue;
 
       const destPath = join(targetDir, relPath);
+      let existing = null;
+      try {
+        existing = await readFile(destPath, 'utf-8');
+      } catch {
+        // does not exist yet
+      }
+      const next = await readFile(entry, 'utf-8');
+      if (existing === next) continue; // unchanged — nothing to do
+      if (existing !== null) {
+        // User's version differs from the bundled template — keep a backup, never lose edits.
+        await cp(destPath, destPath + '.bak');
+        console.log(`  ${t('updateBackedUp', { path: relPath.replaceAll('\\', '/') })}`);
+      }
       await mkdir(dirname(destPath), { recursive: true });
       await cp(entry, destPath);
       console.log(`  ${t('updatedFile', { path: relPath.replaceAll('\\', '/') })}`);

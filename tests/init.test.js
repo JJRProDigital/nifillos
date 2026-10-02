@@ -212,6 +212,21 @@ test('init with _ides codex creates AGENTS.md', async () => {
   }
 });
 
+test('init does not overwrite existing IDE files (no-clobber)', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
+
+  try {
+    await writeFile(join(tempDir, 'AGENTS.md'), 'my custom agents file', 'utf-8');
+
+    await init(tempDir, { _skipPrompts: true, _ides: ['codex'] });
+
+    const content = await readFile(join(tempDir, 'AGENTS.md'), 'utf-8');
+    assert.equal(content, 'my custom agents file');
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+});
+
 test('init with _ides opencode creates AGENTS.md, skill, and opencode.json', async () => {
   const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-test-'));
 

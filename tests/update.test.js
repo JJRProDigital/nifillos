@@ -256,3 +256,43 @@ test('update runs migrate squads → cuadrillas when only squads/ exists', async
     await rm(tempDir, { recursive: true, force: true });
   }
 });
+
+test('update backs up modified IDE files instead of losing them', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-update-idebak-'));
+
+  try {
+    await init(tempDir, { _skipPrompts: true, _ides: ['codex'] });
+    const agentsPath = join(tempDir, 'AGENTS.md');
+    await writeFile(agentsPath, 'my custom agents file', 'utf-8');
+
+    const result = await update(tempDir);
+    assert.equal(result.success, true);
+
+    const updated = await readFile(agentsPath, 'utf-8');
+    assert.ok(updated.includes('Nifillos'), 'AGENTS.md must be refreshed from the template');
+    const backup = await readFile(agentsPath + '.bak', 'utf-8');
+    assert.equal(backup, 'my custom agents file');
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+});
+
+test('update does not guess IDEs when preferences lack the IDEs key', async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'nifillos-update-noides-'));
+
+  try {
+    await init(tempDir, { _skipPrompts: true, _ides: ['opencode'] });
+    const prefsPath = join(tempDir, '_nifillos', '_memory', 'preferences.md');
+    const prefs = await readFile(prefsPath, 'utf-8');
+    await writeFile(prefsPath, prefs.replace(/\*\*IDEs:\*\*.+\n/, ''), 'utf-8');
+
+    const result = await update(tempDir);
+    assert.equal(result.success, true);
+
+    await assert.rejects(stat(join(tempDir, '.claude', 'skills', 'nifillos', 'SKILL.md')), {
+      code: 'ENOENT',
+    });
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+});

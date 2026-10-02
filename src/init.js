@@ -231,6 +231,13 @@ async function copyIdeTemplates(ides, targetDir) {
       writtenPaths.add(relativePath);
 
       const destPath = join(targetDir, relativePath);
+
+      try {
+        await stat(destPath);
+        continue; // already exists — keep the user's version (no-clobber, same as common templates)
+      } catch {
+        // does not exist — copy it
+      }
       const destDir = dirname(destPath);
       await mkdir(destDir, { recursive: true });
       await cp(entry, destPath);

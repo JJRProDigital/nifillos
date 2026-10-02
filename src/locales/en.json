@@ -28,6 +28,8 @@
   "updateFileCount": "✓ Updated: {count} system files",
   "updateLatestHint": "💡 Tip: Use 'npx nifillos@latest update' to always get the newest version.",
   "updateDashboardNpmInstallHint": "📦 Dashboard: run \"cd dashboard && npm install\" to pick up new dependencies (e.g. Pixi) after an update.",
+  "updateNoIdes": "⚠️  No IDE list found in _nifillos/_memory/preferences.md — IDE files were not updated. Run 'npx nifillos init' to select your IDEs.",
+  "updateBackedUp": "💾 Your version of {path} differed from the bundled template — backup saved to {path}.bak",
   "skillsNotInitialized": "No Nifillos installation found. Run 'init' first.",
   "skillsFetching": "Fetching skills registry...",
   "skillsInstalledHeader": "Installed:",

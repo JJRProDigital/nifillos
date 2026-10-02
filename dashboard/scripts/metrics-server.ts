@@ -3,6 +3,7 @@ import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { tryHandleMetricsApi } from "../src/server/metricsApiHandler";
+import { MetricsEventBus, watchCuadrillasDir } from "../src/server/metricsEvents";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dashboardDir = path.resolve(__dirname, "..");
@@ -10,6 +11,13 @@ const distDir = path.join(dashboardDir, "dist");
 const repoRoot = path.resolve(dashboardDir, "..");
 const cuadrillasDir = path.join(repoRoot, "cuadrillas");
 const port = Number(process.env.NIFILLOS_METRICS_PORT || 8787) || 8787;
+
+const metricsBus = new MetricsEventBus();
+const watcher = watchCuadrillasDir(cuadrillasDir, metricsBus);
+if (!watcher) {
+  // eslint-disable-next-line no-console
+  console.warn("fs.watch unavailable for cuadrillas/ — SSE clients will see no push events; polling still works");
+}
 
 const MIME_TYPES: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -69,7 +77,7 @@ const server = http.createServer((req, res) => {
     res.end("Bad request");
     return;
   }
-  void tryHandleMetricsApi(req, res, { cuadrillasDir, repoRoot }).then(async (handled) => {
+  void tryHandleMetricsApi(req, res, { cuadrillasDir, repoRoot, events: metricsBus }).then(async (handled) => {
     if (handled) return;
     if (await serveStatic(urlPath, res)) return;
     res.statusCode = 404;

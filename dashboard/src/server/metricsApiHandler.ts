@@ -10,6 +10,7 @@ import {
 } from "../../../src/runs.js";
 import { DASHBOARD_LIMITS } from "../../../src/dashboardLimits.js";
 import { buildSnapshotPayload } from "./cuadrillaSnapshot";
+import type { MetricsEventBus } from "./metricsEvents";
 
 const SEG = /^[a-zA-Z0-9._-]+$/;
 
@@ -149,7 +150,7 @@ a{color:#7dd3fc}</style></head><body>${inner}</body></html>`;
 export async function tryHandleMetricsApi(
   req: IncomingMessage,
   res: ServerResponse,
-  ctx: { cuadrillasDir: string; repoRoot: string },
+  ctx: { cuadrillasDir: string; repoRoot: string; events?: MetricsEventBus },
 ): Promise<boolean> {
   const url = new URL(req.url || "/", "http://local");
   if (!url.pathname.startsWith("/__cuadrillas_api")) return false;
@@ -158,6 +159,33 @@ export async function tryHandleMetricsApi(
   const limits = DASHBOARD_LIMITS;
 
   try {
+    if (req.method === "GET" && url.pathname === "/__cuadrillas_api/events") {
+      if (!ctx.events) {
+        // No event bus available (e.g. proxied mode) — client falls back to polling.
+        res.statusCode = 501;
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        res.end(JSON.stringify({ error: "events_unavailable" }));
+        return true;
+      }
+      res.writeHead(200, {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-store",
+        Connection: "keep-alive",
+      });
+      res.write("retry: 3000\n\n");
+      const unsubscribe = ctx.events.subscribe(() => {
+        res.write("event: change\ndata: {}\n\n");
+      });
+      const heartbeat = setInterval(() => {
+        res.write(": hb\n\n");
+      }, 25_000);
+      req.on("close", () => {
+        clearInterval(heartbeat);
+        unsubscribe();
+      });
+      return true;
+    }
+
     if (req.method === "GET" && url.pathname === "/__cuadrillas_api/snapshot") {
       const payload = buildSnapshotPayload(ctx.cuadrillasDir);
       const json = JSON.stringify(payload);

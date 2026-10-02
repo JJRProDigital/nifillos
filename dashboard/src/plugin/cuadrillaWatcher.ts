@@ -7,6 +7,7 @@ import path from "node:path";
 import type { CuadrillaState, WsMessage } from "../types/state";
 import { tryHandleMetricsApi } from "../server/metricsApiHandler";
 import { buildSnapshotPayload, resolveCuadrillaCode } from "../server/cuadrillaSnapshot";
+import { MetricsEventBus } from "../server/metricsEvents";
 
 function resolveCuadrillasDir(): string {
   const candidates = [
@@ -45,11 +46,13 @@ export function cuadrillaWatcherPlugin(): Plugin {
       server.config.logger.info(`[cuadrilla-watcher] cuadrillas dir: ${cuadrillasDir}`);
 
       const repoRoot = path.resolve(cuadrillasDir, "..");
+      const metricsBus = new MetricsEventBus();
       if (!process.env.NIFILLOS_METRICS_API) {
         server.middlewares.use((req, res, next) => {
           void tryHandleMetricsApi(req, res, {
             cuadrillasDir,
             repoRoot,
+            events: metricsBus,
           }).then((handled) => {
             if (handled) return;
             next();
@@ -103,6 +106,7 @@ export function cuadrillaWatcherPlugin(): Plugin {
         snapshotTimers.set(
           key,
           setTimeout(() => {
+            metricsBus.emitChange(); // wake SSE metrics subscribers
             broadcast(wss, buildSnapshot(cuadrillasDir));
           }, 120),
         );

@@ -35,6 +35,8 @@ function formatLoadError(lang: MetricsLang, e: unknown): string {
 
 export function MetricsView({ lang }: { lang: MetricsLang }) {
   const [cuadrillas, setCuadrillas] = useState<string[]>([]);
+  const [sseConnected, setSseConnected] = useState(false);
+  const refreshRef = useRef<() => void>(() => {});
   const [chartRuns, setChartRuns] = useState<RunSummary[]>([]);
   const [cuadrilla, setCuadrilla] = useState("");
   const [runId, setRunId] = useState("");
@@ -135,14 +137,29 @@ export function MetricsView({ lang }: { lang: MetricsLang }) {
         /* no pisar summaryError */
       }
     };
-    const id = window.setInterval(refresh, 15000);
+    refreshRef.current = refresh;
+    const id = window.setInterval(refresh, sseConnected ? 60_000 : 15_000);
     document.addEventListener("visibilitychange", refresh);
     return () => {
       cancelled = true;
       window.clearInterval(id);
       document.removeEventListener("visibilitychange", refresh);
     };
-  }, [syncUrl]);
+  }, [syncUrl, sseConnected]);
+
+  /** Push en vivo: SSE /__cuadrillas_api/events dispara refresco inmediato; polling queda como red de seguridad. */
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof EventSource === "undefined") return;
+    const es = new EventSource("/__cuadrillas_api/events");
+    es.addEventListener("open", () => setSseConnected(true));
+    es.addEventListener("error", () => setSseConnected(false));
+    es.addEventListener("change", () => {
+      if (typeof document === "undefined" || document.visibilityState === "visible") {
+        refreshRef.current();
+      }
+    });
+    return () => es.close();
+  }, []);
 
   useEffect(() => {
     if (!cuadrilla) {

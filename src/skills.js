@@ -3,6 +3,7 @@ import { dirname, join, resolve, sep, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
+import { parse as parseYaml } from 'yaml';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const BUNDLED_SKILLS_DIR = join(__dirname, '..', 'skills');
@@ -14,45 +15,36 @@ function metaCacheKey(id, targetDir) {
 }
 
 function parseSkillFrontmatter(raw, id) {
+  const empty = { name: id, description: '', descriptions: {}, type: '', env: [] };
   const content = raw.replace(/\r\n/g, '\n');
   const fmMatch = content.match(/^---\n([\s\S]*?)\n---/);
-  if (!fmMatch) return { name: id, description: '', descriptions: {}, type: '', env: [] };
+  if (!fmMatch) return empty;
 
-  const fm = fmMatch[1];
-  const name = fm.match(/^name:\s*(.+)$/m)?.[1]?.trim() || id;
-  const type = fm.match(/^type:\s*(.+)$/m)?.[1]?.trim() || '';
-
-  let description = '';
-  const descBlock = fm.match(/^description:\s*>\s*\n((?:\s{2,}.+\n?)+)/m);
-  if (descBlock) {
-    description = descBlock[1].replace(/\n\s*/g, ' ').trim();
-  } else {
-    const descInline = fm.match(/^description:\s*(.+)$/m);
-    if (descInline) description = descInline[1].trim();
+  let fm;
+  try {
+    fm = parseYaml(fmMatch[1]);
+  } catch {
+    return empty;
   }
+  if (typeof fm !== 'object' || fm === null || Array.isArray(fm)) return empty;
 
+  // Any `description_<locale>` key works — locales are data, not code.
   const descriptions = {};
-  for (const code of ['es']) {
-    const key = `description_${code}`;
-    const blockMatch = fm.match(new RegExp(`^${key}:\\s*>\\s*\\n((?:\\s{2,}.+\\n?)+)`, 'm'));
-    if (blockMatch) {
-      descriptions[code] = blockMatch[1].replace(/\n\s*/g, ' ').trim();
-    } else {
-      const inlineMatch = fm.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'));
-      if (inlineMatch) descriptions[code] = inlineMatch[1].trim();
+  for (const [key, value] of Object.entries(fm)) {
+    if (key.startsWith('description_') && key.length > 'description_'.length && typeof value === 'string') {
+      descriptions[key.slice('description_'.length)] = value.trim();
     }
   }
 
-  const env = [];
-  const envSection = fm.match(/^env:\s*\n((?:\s+-\s+.+\n?)+)/m);
-  if (envSection) {
-    for (const line of envSection[1].split('\n')) {
-      const item = line.match(/^\s+-\s+(.+)/);
-      if (item) env.push(item[1].trim());
-    }
-  }
-
-  return { name, description, descriptions, type, env };
+  return {
+    name: typeof fm.name === 'string' && fm.name.trim() ? fm.name.trim() : id,
+    description: typeof fm.description === 'string' ? fm.description.trim() : '',
+    descriptions,
+    type: typeof fm.type === 'string' ? fm.type.trim() : '',
+    env: Array.isArray(fm.env)
+      ? fm.env.map((e) => String(e).trim()).filter(Boolean)
+      : [],
+  };
 }
 
 export async function listInstalled(targetDir) {

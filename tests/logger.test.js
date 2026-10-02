@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, rm, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { logEvent, readCliLogs } from '../src/logger.js';
+import { logEvent, readCliLogs, MAX_LOG_BYTES } from '../src/logger.js';
 
 test('logEvent writes JSONL line to cli.log', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'osq-log-'));
@@ -121,6 +121,26 @@ test('readCliLogs returns empty array when no log file', async () => {
   try {
     const logs = await readCliLogs({}, dir);
     assert.equal(logs.length, 0);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('logEvent rotates cli.log to cli.log.old past the size limit', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'osq-log-'));
+  try {
+    const { mkdir, writeFile } = await import('node:fs/promises');
+    const logDir = join(dir, '_nifillos', 'logs');
+    await mkdir(logDir, { recursive: true });
+    await writeFile(join(logDir, 'cli.log'), 'x'.repeat(MAX_LOG_BYTES + 1), 'utf-8');
+
+    await logEvent('init', {}, dir);
+
+    const rotated = await readFile(join(logDir, 'cli.log.old'), 'utf-8');
+    assert.equal(rotated.length, MAX_LOG_BYTES + 1);
+    const current = await readFile(join(logDir, 'cli.log'), 'utf-8');
+    assert.equal(current.trim().split('\n').length, 1);
+    assert.equal(JSON.parse(current).action, 'init');
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

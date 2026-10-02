@@ -6,7 +6,7 @@ on:
 
 permissions:
   contents: write
-  id-token: write # npm provenance
+  id-token: write # OIDC — npm trusted publishing (no NPM_TOKEN needed)
 
 jobs:
   publish:
@@ -16,13 +16,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
+      # Trusted publishing (OIDC) requires npm >= 11.5.1; node 22 ships npm 10.x.
+      # npm 12 is avoided on purpose: its install-time security defaults (allowScripts
+      # off) would skip dependency lifecycle scripts during `npm ci`.
+      - run: npm install -g npm@11
       - run: npm ci
       - run: npm run lint
       - run: npm test
       - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:

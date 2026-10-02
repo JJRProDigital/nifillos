@@ -8,8 +8,8 @@ CLI de orquestación multi-agente para tu IDE (licencia MIT). Incluye comando `/
 
 ## Documentación
 
-- **Guía paso a paso (~10 min, español):** [docs/guia-inicio-rapido.md](docs/guia-inicio-rapido.md) — init, IDE, primera cuadrilla, ejecución, dashboard, skills, MCP y migración `squads` → `cuadrillas`, con apartado de **seguridad** (secretos y Git).
-- **Quick start (English):** [docs/quick-start.md](docs/quick-start.md)
+- **Guía paso a paso (~10 min, español):** [templates/GUIA.md](templates/GUIA.md) — init, IDE, primera cuadrilla, ejecución, dashboard, skills, MCP, diagnóstico/validación y migración `squads` → `cuadrillas`, con apartado de **seguridad** (secretos y Git).
+- **Quick start (English):** [templates/GUIDE.md](templates/GUIDE.md)
 - **CLI y catálogo de skills (español):** [docs/nifillos-comandos-y-skills.md](docs/nifillos-comandos-y-skills.md)
 - **Copia en proyectos `init`:** [templates/GUIA.md](templates/GUIA.md) y [templates/GUIDE.md](templates/GUIDE.md) se copian a la raíz del proyecto del usuario; `npx nifillos update` las sobrescribe con la versión del paquete.
 - **Dashboard — API de métricas:** [docs/dashboard-metrics.md](docs/dashboard-metrics.md)
@@ -79,6 +79,13 @@ cd dashboard && npm install
 npx nifillos migrate
 ```
 
+**Diagnóstico y validación:**
+
+```bash
+npx nifillos doctor              # diagnóstico de la instalación (versiones, IDEs, Playwright, dashboard)
+npx nifillos validate [cuadrilla]  # valida cuadrilla.yaml (schema, agentes, party, pipeline)
+```
+
 
 
 Skills:
@@ -133,14 +140,21 @@ npm install
 npm run dev
 ```
 
-La API **`/__cuadrillas_api/*`** la sirve el middleware de Vite en desarrollo. Si defines **`NIFILLOS_METRICS_API`** (URL de un backend remoto), el dashboard solo **proxifica** ese prefijo y no monta el handler local. Para un servidor HTTP autónomo de métricas:
+La API **`/__cuadrillas_api/*`** la sirve el middleware de Vite en desarrollo. Si defines **`NIFILLOS_METRICS_API`** (URL de un backend remoto), el dashboard solo **proxifica** ese prefijo y no monta el handler local. Para producción sin Vite dev, `npm start` compila y sirve la UI + la API en un solo proceso:
+
+```bash
+cd dashboard
+npm start        # build + servidor standalone (UI dist/ + API)
+```
+
+Para solo la API de métricas (sin UI):
 
 ```bash
 cd dashboard
 npm run metrics:serve
 ```
 
-(puerto **`NIFILLOS_METRICS_PORT`** o **8787**). Detalle de rutas, `usage.json` y precios: [docs/dashboard-metrics.md](docs/dashboard-metrics.md).
+(puerto **`NIFILLOS_METRICS_PORT`** o **8787**). Las métricas se actualizan en vivo vía **SSE** (`/__cuadrillas_api/events`), con polling como fallback. Detalle de rutas, `usage.json` y precios: [docs/dashboard-metrics.md](docs/dashboard-metrics.md).
 
 Publicar en npm (ajusta `repository` y `bugs` en [package.json](package.json)):
 
@@ -165,7 +179,7 @@ MIT. Ver [LICENSE](LICENSE) y [NOTICE](NOTICE).
 
 **nifillos** npm CLI for multi-agent cuadrillas in your IDE (MIT). Slash command **`/nifillos`**, skill install by **bundled id**, **local path**, or **git URL**, and `getSkillMeta` fallback to the project’s `skills/` folder.
 
-**Walkthrough:** [docs/quick-start.md](docs/quick-start.md) (init → IDE → first cuadrilla → run → dashboard, skills, MCP, migration, **secrets/Git**). Spanish: [docs/guia-inicio-rapido.md](docs/guia-inicio-rapido.md).
+**Walkthrough:** [templates/GUIDE.md](templates/GUIDE.md) (init → IDE → first cuadrilla → run → dashboard, skills, MCP, migration, **secrets/Git**). Spanish: [templates/GUIA.md](templates/GUIA.md).
 
 ```bash
 npx nifillos init

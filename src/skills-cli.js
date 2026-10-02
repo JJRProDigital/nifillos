@@ -12,6 +12,7 @@ import {
   getSkillMeta,
   getLocalizedDescription,
 } from './skills.js';
+import { fetchRemoteRegistry, resolveRegistryEntry } from './registry.js';
 import { loadLocale, t, getLocaleCode } from './i18n.js';
 import { loadSavedLocale } from './init.js';
 import { logEvent } from './logger.js';
@@ -50,6 +51,9 @@ export async function skillsCli(subcommand, args, targetDir) {
       await runUpdate(targetDir);
     } else if (subcommand === 'update-one') {
       await runUpdateOne(args[0], targetDir);
+    } else if (subcommand === 'remote') {
+      const okRemote = await runRemote();
+      if (!okRemote) return { success: false };
     } else {
       console.log(`\n  ${t('skillsUnknownCommand', { cmd: subcommand })}\n`);
       return { success: false };
@@ -145,9 +149,55 @@ async function runInstall(idOrPath, targetDir) {
   }
 
   console.log(`\n  ${t('skillsInstalling', { id: idOrPath })}`);
-  await installSkill(idOrPath, targetDir);
+  try {
+    await installSkill(idOrPath, targetDir);
+  } catch (err) {
+    // Not in the bundle — try the remote skills registry before giving up.
+    if (!String(err.message).includes('not found in registry')) throw err;
+    let entry;
+    try {
+      const entries = await fetchRemoteRegistry();
+      entry = resolveRegistryEntry(entries, idOrPath);
+    } catch {
+      // registry unreachable — surface the original bundled error
+      throw err;
+    }
+    if (!entry) throw err;
+    console.log(`  ${t('skillsRemoteFound', { url: entry.url, ref: entry.ref ?? 'default branch' })}`);
+    const remoteSource = entry.ref ? `${entry.url}@${entry.ref}` : entry.url;
+    const id = await installSkillFromGit(remoteSource, targetDir);
+    console.log(`  ${t('skillsInstalled', { id })}\n`);
+    await logEvent(
+      'skill:install',
+      { name: id, url: entry.url, ref: entry.ref, source: 'registry' },
+      targetDir
+    );
+    return;
+  }
   console.log(`  ${t('skillsInstalled', { id: idOrPath })}\n`);
   await logEvent('skill:install', { name: idOrPath }, targetDir);
+}
+
+async function runRemote() {
+  let entries;
+  try {
+    entries = await fetchRemoteRegistry();
+  } catch (err) {
+    console.log(`\n  ${t('skillsRemoteError', { message: err.message })}\n`);
+    return false;
+  }
+  console.log(`\n  ${t('skillsRemoteHeader')}`);
+  if (entries.length === 0) {
+    console.log(`  ${t('skillsRemoteEmpty')}`);
+  } else {
+    for (const e of entries) {
+      const version = e.ref ? `@${e.ref}` : '';
+      console.log(`    ${e.id}${version} — ${e.description || e.url}`);
+    }
+    console.log(`\n  ${t('skillsRemoteInstallHint')}`);
+  }
+  console.log('');
+  return true;
 }
 
 async function runRemove(id, targetDir) {

@@ -2,7 +2,7 @@
 
 Referencia en español del CLI `nifillos` y de las skills empaquetadas en el paquete. Requisito: **Node.js 20+**.
 
-¿Primera vez con el framework? Sigue antes la **[guía de inicio rápido](guia-inicio-rapido.md)** (init, IDE, cuadrilla, MCP, migración y seguridad).
+¿Primera vez con el framework? Sigue antes la **[guía de inicio rápido](../templates/GUIA.md)** (init, IDE, cuadrilla, MCP, migración y seguridad).
 
 Tras `npx nifillos init`, el proyecto tiene `_nifillos/`, plantillas por IDE y (según plantilla) skills copiadas bajo `skills/<id>/`. Las rutas de scripts en esta guía asumen **raíz del proyecto** y carpeta `skills/<id>/`.
 
@@ -24,12 +24,15 @@ Muestra el resumen de comandos si no pasas subcomando o si el comando no existe.
 |--------|-------------|
 | `npx nifillos init` | Inicializa el proyecto: plantillas, skills del bundle, configuración por IDE. |
 | `npx nifillos update` | Actualiza archivos del framework desde la versión del paquete instalada. También aplica migración de layout legacy (`squads/` → `cuadrillas/`, etc.) cuando aplica. |
+| `npx nifillos doctor` | Diagnostica la instalación: versiones, archivos de IDE, perfil de empresa, skills, Playwright, dashboard. |
+| `npx nifillos validate [cuadrilla]` | Valida `cuadrilla.yaml`: schema, agentes vs `cuadrilla-party.csv`, archivos de pipeline. |
 | `npx nifillos migrate` | Solo migración legacy: renombra carpetas/archivos y claves (`squad` → `cuadrilla` en `state.json` bajo cuadrillas). No copia plantillas nuevas del paquete. |
-| `npx nifillos install <id \| ruta \| git>` | Instala una skill: id del paquete, carpeta local con `SKILL.md`, o URL de repositorio Git. |
+| `npx nifillos install <id \| ruta \| git>` | Instala una skill: id del paquete, carpeta local con `SKILL.md`, URL de repositorio Git (con `@ref` opcional) o id del **registro remoto**. |
 | `npx nifillos uninstall <id>` | Elimina la skill `skills/<id>/`. |
 | `npx nifillos update <id-skill>` | Actualiza **solo** esa skill desde el bundle (debe estar ya instalada). |
 | `npx nifillos skills` | Lista skills instaladas (equivale a `npx nifillos skills list`). |
 | `npx nifillos skills list` | Igual: lista instaladas. |
+| `npx nifillos skills remote` | Lista el **registro remoto** de skills (`skills-registry.json` en el repo; override con `NIFILLOS_SKILLS_REGISTRY`). |
 | `npx nifillos skills install` | **No existe** — usar `npx nifillos install <id>`. |
 | `npx nifillos skills remove` | **No existe** — usar `npx nifillos uninstall <id>`. |
 | `npx nifillos skills update` | Actualiza **todas** las skills instaladas desde el bundle. |

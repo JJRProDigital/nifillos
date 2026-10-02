@@ -30,7 +30,7 @@ Antes de empezar,  lee el [README](README.md).
 - Las **plantillas** y el código publicado en este repositorio deben mostrar **placeholders** o documentar el nombre de la variable, nunca valores reales de producción.
 - Si un contributor sube un secreto por error: **revocar el token** en el proveedor de inmediato; el historial de Git puede requerir limpieza adicional.
 
-Guía para usuarios (mismo criterio, más detalle): [docs/guia-inicio-rapido.md](docs/guia-inicio-rapido.md#seguridad-secretos-y-git).
+Guía para usuarios (mismo criterio, más detalle): [templates/GUIA.md](templates/GUIA.md#seguridad-secretos-y-git).
 
 ---
 

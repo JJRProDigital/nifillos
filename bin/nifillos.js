@@ -11,12 +11,17 @@ import { runMigrateCli } from '../src/migrate-legacy-layout.js';
 import { doctorCli } from '../src/doctor.js';
 import { validateCli } from '../src/validate.js';
 
+// Flags like --version must be read from raw argv: parseArgs with strict:false
+// swallows unknown options instead of turning them into positionals.
+const rawFirst = process.argv.slice(2)[0];
+const isVersionArg = rawFirst === '--version' || rawFirst === '-v' || rawFirst === 'version';
+
 const { positionals } = parseArgs({
   allowPositionals: true,
   strict: false,
 });
 
-const command = positionals[0];
+const command = isVersionArg ? '--version' : positionals[0];
 
 if (command === '--version' || command === '-v' || command === 'version') {
   const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf-8'));

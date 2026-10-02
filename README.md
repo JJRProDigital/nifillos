@@ -16,21 +16,25 @@ CLI de orquestación multi-agente para tu IDE (licencia MIT). Incluye comando `/
 
 ## Instalación
 
-En la carpeta del proyecto donde quieras usar Nifillos:
+### 1. Instalar el CLI (aún no está en npm)
 
-### 1. Instalar el paquete
+Nifillos se instala directamente desde GitHub:
 
 ```bash
-npm install
+npm install -g github:JJRProDigital/nifillos
 ```
 
-Si aún no tienes Nifillos como dependencia (clon fresco o carpeta nueva):
+Alternativas:
 
 ```bash
+# Sin instalación global (descarga y ejecuta):
+npx github:JJRProDigital/nifillos init
+
+# Como dependencia de desarrollo del proyecto (si clonaste este repo):
 npm install -D git+https://github.com/JJRProDigital/nifillos.git
 ```
 
-(o `npm install -D nifillos` cuando esté publicado en npm).
+> (cuando esté publicado en npm, bastará `npm install -g nifillos`).
 
 ### 2. Inicializar Nifillos
 
